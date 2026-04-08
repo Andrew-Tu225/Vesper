@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!--
+      Vesper — logo mark
+      A precision 4-pointed "dazzle" star: the visual shorthand for AI,
+      and a direct reference to the evening star (Vesper = Venus).
+      Outer radius 90, inner radius 9 (10:1 ratio for sharp elongated points).
+      Inner corner coordinates at 45° from center: 9/√2 ≈ 6.36
+    -->
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#4F46E5"/>
+      <stop offset="50%"  stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <path
+    d="M100,10
+       L106.4,93.6
+       L190,100
+       L106.4,106.4
+       L100,190
+       L93.6,106.4
+       L10,100
+       L93.6,93.6
+       Z"
+    fill="url(#g)"
+  />
+</svg>

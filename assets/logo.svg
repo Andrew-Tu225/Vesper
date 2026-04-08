@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 296 80" width="296" height="80">
+  <defs>
+    <!--
+      Vesper — horizontal lockup (light background)
+      Mark: dazzle star, center (40,40), outer r=34, inner r=3.4, inner-at-45° ≈ 2.4
+      Wordmark: "Vesper" geometric sans-serif, weight 500
+    -->
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#4F46E5"/>
+      <stop offset="50%"  stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mark: 4-pointed dazzle star -->
+  <!-- center (40,40) · outer r=34 → points at y=6, x=74, y=74, x=6 -->
+  <!-- inner r=3.4 · at 45° ≈ 2.4 → corners at (±2.4, ±2.4) from center -->
+  <path
+    d="M40,6
+       L42.4,37.6
+       L74,40
+       L42.4,42.4
+       L40,74
+       L37.6,42.4
+       L6,40
+       L37.6,37.6
+       Z"
+    fill="url(#g)"
+  />
+
+  <!-- Wordmark -->
+  <text
+    x="90"
+    y="40"
+    font-family="'Inter', 'Outfit', 'DM Sans', system-ui, -apple-system, sans-serif"
+    font-weight="500"
+    font-size="36"
+    letter-spacing="-0.5"
+    fill="#0F172A"
+    dominant-baseline="central"
+  >Vesper</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 296 80" width="296" height="80">
+  <defs>
+    <!-- Vesper — horizontal lockup (dark background) -->
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#818CF8"/>
+      <stop offset="50%"  stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#C4B5FD"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mark: lighter gradient variant for dark backgrounds -->
+  <path
+    d="M40,6
+       L42.4,37.6
+       L74,40
+       L42.4,42.4
+       L40,74
+       L37.6,42.4
+       L6,40
+       L37.6,37.6
+       Z"
+    fill="url(#g)"
+  />
+
+  <!-- Wordmark in white -->
+  <text
+    x="90"
+    y="40"
+    font-family="'Inter', 'Outfit', 'DM Sans', system-ui, -apple-system, sans-serif"
+    font-weight="500"
+    font-size="36"
+    letter-spacing="-0.5"
+    fill="#F8FAFC"
+    dominant-baseline="central"
+  >Vesper</text>
+</svg>
