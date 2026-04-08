@@ -21,7 +21,6 @@ _UPDATED_AT_TABLES = [
     "users",
     "workspace",
     "oauth_token",
-    "raw_event",
     "content_signal",
     "draft_post",
 ]
@@ -102,7 +101,6 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     )
     # Nonce must be unique: AES-GCM security breaks on nonce reuse under the same key.
-    # The DB constraint converts a probabilistic cryptographic property into a hard guarantee.
     op.create_unique_constraint("uq_oauth_token_nonce", "oauth_token", ["nonce"])
     # Partial unique indexes enforce one token per (workspace/user, provider, type)
     op.execute(
@@ -116,46 +114,29 @@ def upgrade() -> None:
         "WHERE user_id IS NOT NULL"
     )
 
-    # ── raw_event ──────────────────────────────────────────────────────────────
-    op.create_table(
-        "raw_event",
-        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("uuid_generate_v4()")),
-        sa.Column("workspace_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("workspace.id"), nullable=False),
-        sa.Column("source_type", sa.String(16), nullable=False),
-        sa.Column("source_id", sa.String(255), nullable=False),
-        sa.Column("source_channel", sa.String(255), nullable=True),
-        sa.Column("raw_payload", postgresql.JSONB(), nullable=False),
-        sa.Column("preview_text", sa.Text(), nullable=True),
-        sa.Column("status", sa.String(32), server_default="pending", nullable=False),
-        sa.Column("classification", postgresql.JSONB(), nullable=True),
-        sa.Column("error_detail", sa.Text(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-    )
-    op.execute(
-        "CREATE UNIQUE INDEX uq_raw_event_dedup "
-        "ON raw_event (workspace_id, source_type, source_id) "
-        "WHERE status != 'error'"
-    )
-    op.create_index("ix_raw_event_status_created", "raw_event", ["status", "created_at"])
-
     # ── content_signal ─────────────────────────────────────────────────────────
+    # No raw_event table. Classify-first pipeline: Celery workers classify the
+    # inbound payload in memory and only write here if the signal is worthy.
+    # Deduplication is handled via Redis SETNX (key: dedup:{workspace}:{source}:{id}).
     op.create_table(
         "content_signal",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("uuid_generate_v4()")),
         sa.Column("workspace_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("workspace.id"), nullable=False),
-        sa.Column("raw_event_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("raw_event.id"), nullable=False, unique=True),
-        sa.Column("source_type", sa.String(16), nullable=False),
+        sa.Column("source_type", sa.String(16), nullable=False),   # 'slack' | 'gmail'
+        sa.Column("source_id", sa.String(255), nullable=False),    # message_ts, email_id, etc.
+        sa.Column("source_channel", sa.String(255), nullable=True),
         sa.Column("signal_type", sa.String(32), nullable=True),
         sa.Column("original_text", sa.Text(), nullable=True),
         sa.Column("redacted_text", sa.Text(), nullable=True),
         sa.Column("summary", sa.Text(), nullable=True),
         sa.Column("sensitivity", sa.String(16), server_default="unknown", nullable=False),
         sa.Column("status", sa.String(32), server_default="detected", nullable=False),
+        sa.Column("raw_payload", postgresql.JSONB(), nullable=True),  # original envelope, worthy signals only
         sa.Column("metadata", postgresql.JSONB(), server_default=sa.text("'{}'::jsonb"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     )
+    op.create_unique_constraint("uq_content_signal_source", "content_signal", ["workspace_id", "source_type", "source_id"])
     op.create_index("ix_content_signal_workspace_status", "content_signal", ["workspace_id", "status"])
     op.create_index("ix_content_signal_created_at", "content_signal", ["created_at"])
 
@@ -186,8 +167,6 @@ def upgrade() -> None:
     )
 
     # ── style_entry ────────────────────────────────────────────────────────────
-    # Use raw DDL so the embedding column gets the native vector(1536) type,
-    # which SQLAlchemy's create_table cannot render without the extension loaded first.
     op.execute("""
         CREATE TABLE style_entry (
             id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -222,7 +201,7 @@ def upgrade() -> None:
     op.create_index("ix_audit_log_entity", "audit_log", ["entity_type", "entity_id"])
     op.create_index("ix_audit_log_workspace_created", "audit_log", ["workspace_id", "created_at"])
 
-    # ── updated_at triggers (one per table with that column) ──────────────────
+    # ── updated_at triggers ────────────────────────────────────────────────────
     for table in _UPDATED_AT_TABLES:
         op.execute(f"""
             CREATE TRIGGER trg_{table}_updated_at
@@ -232,7 +211,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    # Drop triggers before tables
     for table in reversed(_UPDATED_AT_TABLES):
         op.execute(f"DROP TRIGGER IF EXISTS trg_{table}_updated_at ON {table}")
 
@@ -242,10 +220,8 @@ def downgrade() -> None:
     op.drop_table("style_entry")
     op.drop_table("draft_post")
     op.drop_table("content_signal")
-    op.drop_table("raw_event")
     op.drop_table("oauth_token")
     op.drop_table("workspace_member")
     op.drop_table("workspace")
     op.drop_table("users")
     # Extensions are shared infrastructure — do not drop them here.
-    # To remove them, do so manually after confirming no other objects depend on them.
