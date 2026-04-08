@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,9 +28,22 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
 
     # App
-    app_secret_key: str  # required — 32-byte hex for AES-256-GCM
+    app_secret_key: str  # required — 64-char hex string (32 random bytes); generate: openssl rand -hex 32
     app_base_url: str = "http://localhost:8000"
     app_env: str = "development"
+
+    @field_validator("app_secret_key")
+    @classmethod
+    def validate_secret_key(cls, v: str) -> str:
+        try:
+            key_bytes = bytes.fromhex(v)
+        except ValueError as exc:
+            raise ValueError("APP_SECRET_KEY must be a valid hex string") from exc
+        if len(key_bytes) != 32:
+            raise ValueError(
+                f"APP_SECRET_KEY must be exactly 64 hex characters (32 bytes); got {len(v)} chars"
+            )
+        return v
 
     @property
     def is_production(self) -> bool:
