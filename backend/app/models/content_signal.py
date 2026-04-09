@@ -45,7 +45,7 @@ class ContentSignal(Base, TimestampMixin):
     )  # unknown | low | medium | high
     status: Mapped[str] = mapped_column(
         String(32), nullable=False, default="detected"
-    )  # detected | drafted | in_review | approved | scheduled | posted
+    )  # detected | classified | enriched | drafted | in_review | approved | scheduled | posted | failed
     raw_payload: Mapped[dict | None] = mapped_column(
         JSONB, nullable=True
     )  # original Slack/Gmail envelope — stored only for worthy signals
