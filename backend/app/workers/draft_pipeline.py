@@ -199,7 +199,7 @@ def enrich_context(self, signal_id: str) -> str:
     max_retries=3,
     default_retry_delay=30,
 )
-def redact_signal(self, signal_id: str) -> str:
+def redact_signal(_self, signal_id: str) -> str:
     """Remove sensitive details before the signal reaches the drafter.
 
     Phase 2 will call GPT-4o-mini to redact PII, customer names, and
@@ -220,7 +220,7 @@ def redact_signal(self, signal_id: str) -> str:
     max_retries=3,
     default_retry_delay=60,
 )
-def generate_draft(self, signal_id: str) -> str:
+def generate_draft(_self, signal_id: str) -> str:
     """Generate LinkedIn post variants using the style library as few-shot examples.
 
     Phase 2 will:
