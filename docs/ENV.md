@@ -22,23 +22,47 @@ Copy `.env.example` to `.env` and fill in all required values before running the
 
 | Variable | Required | Description | Where to get it |
 |----------|----------|-------------|-----------------|
-| `SLACK_CLIENT_ID` | Yes (Phase 2) | OAuth app client ID | Slack app dashboard → Basic Information |
-| `SLACK_CLIENT_SECRET` | Yes (Phase 2) | OAuth app client secret | Slack app dashboard → Basic Information |
-| `SLACK_SIGNING_SECRET` | Yes (Phase 2) | Used to verify webhook request signatures | Slack app dashboard → Basic Information |
+| `SLACK_CLIENT_ID` | Yes | OAuth app client ID | Slack app dashboard → Basic Information |
+| `SLACK_CLIENT_SECRET` | Yes | OAuth app client secret | Slack app dashboard → Basic Information |
+| `SLACK_SIGNING_SECRET` | Yes | Used to verify webhook request signatures | Slack app dashboard → Basic Information |
+
+Redirect URI to register in Slack app settings → OAuth & Permissions:
+```
+{APP_BASE_URL}/api/oauth/slack/callback
+```
 
 ## Google / Gmail
 
 | Variable | Required | Description | Where to get it |
 |----------|----------|-------------|-----------------|
-| `GOOGLE_CLIENT_ID` | Yes (Phase 3) | Google OAuth client ID | Google Cloud Console → APIs & Services → Credentials |
-| `GOOGLE_CLIENT_SECRET` | Yes (Phase 3) | Google OAuth client secret | Google Cloud Console → APIs & Services → Credentials |
+| `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID | Google Cloud Console → APIs & Services → Credentials |
+| `GOOGLE_CLIENT_SECRET` | Yes | Google OAuth client secret | Google Cloud Console → APIs & Services → Credentials |
+
+Redirect URI to register in Google Cloud Console → Credentials → Authorized redirect URIs:
+```
+{APP_BASE_URL}/api/auth/google/callback
+```
+
+Required OAuth scopes: `openid email profile`
 
 ## LinkedIn
 
 | Variable | Required | Description | Where to get it |
 |----------|----------|-------------|-----------------|
-| `LINKEDIN_CLIENT_ID` | Yes (Phase 5) | LinkedIn app client ID | LinkedIn Developer Portal |
-| `LINKEDIN_CLIENT_SECRET` | Yes (Phase 5) | LinkedIn app client secret | LinkedIn Developer Portal |
+| `LINKEDIN_CLIENT_ID` | Yes | LinkedIn app client ID | LinkedIn Developer Portal → app → Auth tab |
+| `LINKEDIN_CLIENT_SECRET` | Yes | LinkedIn app primary client secret | LinkedIn Developer Portal → app → Auth tab |
+
+Redirect URI to register in LinkedIn Developer Portal → app → Auth → Authorized redirect URLs:
+```
+{APP_BASE_URL}/api/oauth/linkedin/callback
+```
+
+Required LinkedIn app products (add under the Products tab):
+- **Sign In with LinkedIn using OpenID Connect** — unlocks `openid profile email` (auto-approved)
+- **Share on LinkedIn** — unlocks `w_member_social` (auto-approved)
+- **Advertising API** — unlocks `r_organization_social` + `w_organization_social` for company-page posting (requires LinkedIn review, 1–3 days)
+
+Scopes currently used: `openid profile email w_member_social` — update `_SCOPES` in `backend/app/services/linkedin_oauth.py` once `Advertising API` is approved to add `r_organization_social w_organization_social`.
 
 ## OpenAI
 

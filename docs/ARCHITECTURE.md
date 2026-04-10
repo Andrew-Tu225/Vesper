@@ -1,9 +1,9 @@
 # Vesper — Architecture
 
-## Current State (Phase 1.4 in progress)
+## Current State (Phase 1 complete)
 
-Foundation is in place: database schema, async infrastructure, crypto layer, OAuth route stubs, and Docker setup.
-Celery worker layer added: 5 named queues, batch intake scanner model, draft pipeline task stubs, workspace settings schema.
+Foundation is in place: database schema, async infrastructure, crypto layer, Docker setup, and all three OAuth flows (Google login, Slack install, LinkedIn install).
+Celery worker layer added: 5 named queues, batch intake scanner model, draft pipeline task stubs, proactive LinkedIn token refresh via Celery Beat.
 
 ## Stack
 
@@ -126,11 +126,50 @@ Deduplication: Redis `SETNX dedup:{workspace_id}:{source_type}:{source_id}` with
 
 | Method | Path | Status | Description |
 |--------|------|--------|-------------|
-| GET | `/health` | Live | DB + Redis liveness/readiness check |
-| GET | `/api/oauth/slack/install` | Stub (Phase 2) | Redirect to Slack OAuth consent |
-| GET | `/api/oauth/slack/callback` | Stub (Phase 2) | Handle Slack OAuth callback |
-| GET | `/api/oauth/linkedin/install` | Stub (Phase 5) | Redirect to LinkedIn OAuth consent |
-| GET | `/api/oauth/linkedin/callback` | Stub (Phase 5) | Handle LinkedIn OAuth callback |
+| GET | `/health` | ✅ Live | DB + Redis liveness/readiness check |
+| GET | `/api/auth/google/login` | ✅ Live | Redirect to Google OAuth consent screen |
+| GET | `/api/auth/google/callback` | ✅ Live | Exchange code, upsert user, set session cookie |
+| POST | `/api/auth/google/logout` | ✅ Live | Delete server-side session, clear cookie |
+| GET | `/api/auth/google/me` | ✅ Live | Return current authenticated user |
+| GET | `/api/oauth/slack/install` | ✅ Live | Redirect authenticated user to Slack OAuth consent |
+| GET | `/api/oauth/slack/callback` | ✅ Live | Exchange code, encrypt + store bot token, upsert workspace |
+| GET | `/api/oauth/linkedin/install` | ✅ Live | Redirect authenticated user to LinkedIn OAuth consent |
+| GET | `/api/oauth/linkedin/callback` | ✅ Live | Exchange code, encrypt + store access + refresh tokens |
+
+### Authentication
+
+All routes except `/health`, `/api/auth/google/login`, and `/api/auth/google/callback` require an authenticated session. The session is a server-side Redis key (24h TTL) identified by an HttpOnly `vesper_session` cookie set at Google login.
+
+### OAuth flow summary
+
+```
+Browser                     Backend                      Provider
+  │                            │                            │
+  │── GET /api/auth/google/login ──▶ generate state ──────▶ │
+  │◀── 302 accounts.google.com/o/oauth2/auth ───────────────│
+  │                            │                            │
+  │── GET /api/auth/google/callback?code=&state= ──────────▶│
+  │                            │── exchange code ──────────▶│
+  │                            │◀── id_token (JWT) ─────────│
+  │                            │   upsert user, set cookie  │
+  │◀── 302 /dashboard ─────────│                            │
+  │                            │                            │
+  │── GET /api/oauth/slack/install (cookie) ───────────────▶│
+  │◀── 302 slack.com/oauth/v2/authorize ────────────────────│
+  │── GET /api/oauth/slack/callback?code=&state= ──────────▶│
+  │                            │── exchange code ──────────▶│
+  │                            │◀── bot token ──────────────│
+  │                            │   encrypt + store token    │
+  │◀── 302 /onboarding?step=connect_linkedin ───────────────│
+  │                            │                            │
+  │── GET /api/oauth/linkedin/install (cookie) ────────────▶│
+  │◀── 302 linkedin.com/oauth/v2/authorization ─────────────│
+  │── GET /api/oauth/linkedin/callback?code=&state= ───────▶│
+  │                            │── exchange code ──────────▶│
+  │                            │◀── access + refresh tokens─│
+  │                            │   encrypt + store both     │
+  │◀── 302 /onboarding?step=seed_style_library ─────────────│
+```
 
 ## Celery Queues
 
@@ -175,9 +214,9 @@ b64_to_token(packed) → EncryptedToken  # unpack
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| 1 — Foundation | Repo, FastAPI skeleton, DB schema, pgvector, crypto, Docker | ✅ Done |
+| 1 — Foundation | Repo, FastAPI skeleton, DB schema, pgvector, crypto, Docker, Google + Slack + LinkedIn OAuth | ✅ Done |
 | 2 — Slack Pipeline | Channel monitoring, classify + draft, Slack approval cards | 🔜 Next |
 | 3 — Email Pipeline | Gmail OAuth, folder config, periodic fetch | Planned |
 | 4 — Brand-Voice Memory | Style library UI, embedding pipeline, retrieval | Planned |
 | 5 — Publishing & Calendar | LinkedIn posting, scheduling, queue + calendar views | Planned |
-| 6 — Safety & Polish | Redaction tuning, error handling, token refresh flows | Planned |
+| 6 — Safety & Polish | Redaction tuning, error handling, Slack token expiry warnings | Planned |
