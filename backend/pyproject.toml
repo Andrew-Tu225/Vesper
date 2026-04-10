@@ -3,6 +3,14 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "--cov=app --cov-report=term-missing --cov-fail-under=80"
 
+[tool.coverage.run]
+omit = [
+    # Stub workers — implemented in Phase 2+, not yet testable
+    "app/workers/*",
+    # Stub model — implemented in Phase 4+
+    "app/models/workspace_settings.py",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"

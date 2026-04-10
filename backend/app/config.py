@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     # App
     app_secret_key: str  # required — 64-char hex string (32 random bytes); generate: openssl rand -hex 32
     app_base_url: str = "http://localhost:8000"
+    app_frontend_url: str = "http://localhost:5173"
     app_env: str = "development"
 
     @field_validator("app_secret_key")

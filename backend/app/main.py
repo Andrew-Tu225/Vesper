@@ -5,6 +5,7 @@ from fastapi import FastAPI
 
 from app.database import engine
 from app.redis import close_redis_pool
+from app.api.auth.google import router as google_auth_router
 from app.api.health import router as health_router
 from app.api.oauth.slack import router as slack_oauth_router
 from app.api.oauth.linkedin import router as linkedin_oauth_router
@@ -28,6 +29,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health_router, tags=["health"])
+    app.include_router(google_auth_router, prefix="/api/auth")
     app.include_router(slack_oauth_router, prefix="/api/oauth")
     app.include_router(linkedin_oauth_router, prefix="/api/oauth")
 
