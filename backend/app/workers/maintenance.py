@@ -3,28 +3,18 @@ maintenance queue — scheduled housekeeping tasks (Celery Beat).
 
 Tasks
 -----
-- refresh_oauth_tokens : proactively refresh tokens expiring within 24 h
+- refresh_oauth_tokens : proactively refresh LinkedIn tokens expiring within 7 days
 - cleanup_stale_signals: move stuck signals to 'failed' after a timeout
 """
 
+import asyncio
 import logging
+from datetime import datetime, timedelta, timezone
 
 from app.workers.celery_app import celery_app
 from app.workers.constants import Queue
 
 logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Celery Beat schedule (add to celery_app.conf.beat_schedule in Phase 6)
-# ---------------------------------------------------------------------------
-# "refresh-oauth-tokens": {
-#     "task": "app.workers.maintenance.refresh_oauth_tokens",
-#     "schedule": crontab(minute=0, hour="*/6"),  # every 6 h
-# },
-# "cleanup-stale-signals": {
-#     "task": "app.workers.maintenance.cleanup_stale_signals",
-#     "schedule": crontab(minute=30, hour=2),      # daily at 02:30 UTC
-# },
 
 
 @celery_app.task(
@@ -35,12 +25,105 @@ logger = logging.getLogger(__name__)
     default_retry_delay=300,
 )
 def refresh_oauth_tokens(self) -> None:
-    """Proactively refresh Slack / LinkedIn OAuth tokens expiring within 24 h.
+    """Proactively refresh LinkedIn OAuth tokens expiring within 7 days.
 
-    Phase 6: query oauth_token table, call provider refresh endpoints,
-    re-encrypt and persist updated tokens.
+    Queries all linkedin_company refresh tokens expiring within the refresh
+    window, calls LinkedIn's token refresh endpoint for each, and re-encrypts
+    the updated tokens. Writes an AuditLog entry on success and failure.
+
+    On failure, logs a warning — Phase 2 will add a Slack notification via
+    the workspace's bot token once the Slack messaging layer is in place.
     """
-    logger.info("refresh_oauth_tokens: (stub)")
+    asyncio.run(_refresh_oauth_tokens_async())
+
+
+async def _refresh_oauth_tokens_async() -> None:
+    from sqlalchemy import select
+
+    from app.database import AsyncSessionLocal
+    from app.models.audit_log import AuditLog
+    from app.models.oauth_token import OAuthToken
+    from app.services.linkedin_oauth import refresh_token_for_workspace
+
+    refresh_window = datetime.now(tz=timezone.utc) + timedelta(days=7)
+
+    async with AsyncSessionLocal() as db:
+        # Query ACCESS tokens expiring within the window. The access token (~60 days)
+        # is what expires in normal operation. The refresh token (~365 days) is only
+        # used as the credential to obtain a new access token — if it expires without
+        # renewal that requires user re-authorization, which we cannot automate.
+        expiring_access = await db.execute(
+            select(OAuthToken).where(
+                OAuthToken.provider == "linkedin_company",
+                OAuthToken.token_type == "access",
+                OAuthToken.expires_at > datetime.now(tz=timezone.utc),
+                OAuthToken.expires_at < refresh_window,
+            )
+        )
+        expiring_access_rows = expiring_access.scalars().all()
+
+        if not expiring_access_rows:
+            logger.info("refresh_oauth_tokens: no access tokens expiring within 7 days")
+            return
+
+        logger.info(
+            "refresh_oauth_tokens: refreshing %d access token(s)", len(expiring_access_rows)
+        )
+
+        for access_row in expiring_access_rows:
+            # Find the corresponding refresh token for this workspace
+            refresh_result = await db.execute(
+                select(OAuthToken).where(
+                    OAuthToken.workspace_id == access_row.workspace_id,
+                    OAuthToken.provider == "linkedin_company",
+                    OAuthToken.token_type == "refresh",
+                    OAuthToken.user_id == None,  # noqa: E711
+                )
+            )
+            refresh_row = refresh_result.scalar_one_or_none()
+
+            if refresh_row is None:
+                logger.warning(
+                    "refresh_oauth_tokens: no refresh token found for workspace %s — skipping",
+                    access_row.workspace_id,
+                )
+                continue
+
+            success = await refresh_token_for_workspace(db, refresh_row)
+
+            if success:
+                db.add(
+                    AuditLog(
+                        workspace_id=refresh_row.workspace_id,
+                        entity_type="oauth_token",
+                        entity_id=refresh_row.id,
+                        action="token_refreshed",
+                        actor="celery",
+                        new_value={"provider": "linkedin_company", "token_type": "refresh"},
+                    )
+                )
+                logger.info(
+                    "refresh_oauth_tokens: refreshed tokens for workspace %s",
+                    refresh_row.workspace_id,
+                )
+            else:
+                db.add(
+                    AuditLog(
+                        workspace_id=refresh_row.workspace_id,
+                        entity_type="oauth_token",
+                        entity_id=refresh_row.id,
+                        action="token_refresh_failed",
+                        actor="celery",
+                        new_value={"provider": "linkedin_company", "token_type": "refresh"},
+                    )
+                )
+                logger.warning(
+                    "refresh_oauth_tokens: FAILED to refresh tokens for workspace %s — "
+                    "LinkedIn reconnect required. Phase 2 will send a Slack warning.",
+                    refresh_row.workspace_id,
+                )
+
+        await db.commit()
 
 
 @celery_app.task(

@@ -20,6 +20,7 @@ content worthiness. Real-time Slack webhooks are used only for the manual
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 from kombu import Exchange, Queue
 
 from app.workers.constants import Queue as Q
@@ -80,6 +81,13 @@ celery_app.conf.update(
     # Timezone
     timezone="UTC",
     enable_utc=True,
+    # Beat schedule — proactive LinkedIn token refresh once per day at 02:00 UTC
+    beat_schedule={
+        "refresh-oauth-tokens": {
+            "task": "app.workers.maintenance.refresh_oauth_tokens",
+            "schedule": crontab(minute=0, hour=2),
+        },
+    },
 )
 
 # Eagerly import task modules so all tasks are registered before routing resolves.
