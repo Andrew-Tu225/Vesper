@@ -178,11 +178,11 @@ async def test_logout_without_cookie_still_returns_200(client, mock_redis):
     mock_redis.delete.assert_not_called()
 
 
-# ── GET /api/auth/google/me ───────────────────────────────────────────────────
+# ── GET /api/auth/me ──────────────────────────────────────────────────────────
 
 
 async def test_me_without_cookie_returns_401(client):
-    resp = await client.get("/api/auth/google/me")
+    resp = await client.get("/api/auth/me")
 
     assert resp.status_code == 401
 
@@ -191,7 +191,7 @@ async def test_me_with_expired_session_returns_401(client, mock_redis):
     mock_redis.get = AsyncMock(return_value=None)
 
     resp = await client.get(
-        "/api/auth/google/me", cookies={"vesper_session": "old-session"}
+        "/api/auth/me", cookies={"vesper_session": "old-session"}
     )
 
     assert resp.status_code == 401
@@ -208,7 +208,7 @@ async def test_me_with_valid_session_returns_user(client, mock_redis, mock_db):
     mock_db.execute = AsyncMock(return_value=mock_result)
 
     resp = await client.get(
-        "/api/auth/google/me", cookies={"vesper_session": "valid-session"}
+        "/api/auth/me", cookies={"vesper_session": "valid-session"}
     )
 
     assert resp.status_code == 200
