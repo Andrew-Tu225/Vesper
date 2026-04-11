@@ -1,14 +1,16 @@
 from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
 from app.database import engine
 from app.redis import close_redis_pool
 from app.api.auth.google import router as google_auth_router
+from app.api.deps import get_current_user
 from app.api.health import router as health_router
 from app.api.oauth.slack import router as slack_oauth_router
 from app.api.oauth.linkedin import router as linkedin_oauth_router
+from app.models.user import User
 
 
 @asynccontextmanager
@@ -32,6 +34,15 @@ def create_app() -> FastAPI:
     app.include_router(google_auth_router, prefix="/api/auth")
     app.include_router(slack_oauth_router, prefix="/api/oauth")
     app.include_router(linkedin_oauth_router, prefix="/api/oauth")
+
+    @app.get("/api/auth/me", tags=["auth"])
+    async def get_me(user: User = Depends(get_current_user)) -> dict:
+        return {
+            "id": str(user.id),
+            "email": user.email,
+            "display_name": user.display_name,
+            "avatar_url": user.avatar_url,
+        }
 
     return app
 
