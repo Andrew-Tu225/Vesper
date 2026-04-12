@@ -24,8 +24,16 @@ class Settings(BaseSettings):
     linkedin_client_id: str = ""
     linkedin_client_secret: str = ""
 
-    # OpenAI
+    # OpenAI (direct)
     openai_api_key: str = ""
+
+    # OpenRouter (used during development; takes precedence when both keys are set)
+    openrouter_api_key: str = ""
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+
+    # Model names — OpenRouter uses "openai/gpt-4o-mini"; direct OpenAI uses "gpt-4o-mini"
+    model_classify: str = "openai/gpt-4o-mini"   # cheap model — classify, redact, enrich
+    model_generate: str = "openai/gpt-4o"         # strong model — draft generation
 
     # App
     app_secret_key: str  # required — 64-char hex string (32 random bytes); generate: openssl rand -hex 32
