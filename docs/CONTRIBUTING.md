@@ -36,8 +36,8 @@ docker compose up db redis -d
 
 ```bash
 cd backend
-python -m venv .venv
-source .venv/Scripts/activate   # Windows: .venv\Scripts\activate
+python -m venv venv
+source venv/Scripts/activate   # Windows: venv\Scripts\activate
 pip install -r requirements-dev.txt
 alembic upgrade head
 uvicorn app.main:app --reload
@@ -47,7 +47,7 @@ uvicorn app.main:app --reload
 
 ```bash
 cd backend
-celery -A app.workers.celery_app worker --loglevel=info -Q ai,enrichment,polling,publishing,maintenance
+celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,style_library,intake,publishing,maintenance
 ```
 
 ### 6. Full stack via Docker

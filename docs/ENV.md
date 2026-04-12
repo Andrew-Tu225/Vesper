@@ -64,11 +64,22 @@ Required LinkedIn app products (add under the Products tab):
 
 Scopes currently used: `openid profile email w_member_social` — update `_SCOPES` in `backend/app/services/linkedin_oauth.py` once `Advertising API` is approved to add `r_organization_social w_organization_social`.
 
-## OpenAI
+## OpenAI / OpenRouter
+
+Vesper uses OpenRouter during development and can switch to direct OpenAI in production by
+changing only `.env` — no code change required. OpenRouter takes precedence when
+`OPENROUTER_API_KEY` is set.
 
 | Variable | Required | Description | Where to get it |
 |----------|----------|-------------|-----------------|
-| `OPENAI_API_KEY` | Yes (Phase 2) | API key for classification, embedding, and generation | platform.openai.com → API keys |
+| `OPENAI_API_KEY` | Production only | Direct OpenAI API key — used when `OPENROUTER_API_KEY` is not set | platform.openai.com → API keys |
+| `OPENROUTER_API_KEY` | Dev / optional | OpenRouter key — takes precedence over `OPENAI_API_KEY` when set | openrouter.ai → Keys |
+| `OPENROUTER_BASE_URL` | No | OpenRouter API base URL. Default: `https://openrouter.ai/api/v1` | — |
+| `MODEL_CLASSIFY` | No | Model used for classification, redaction, and enrichment. Default: `openai/gpt-4o-mini` | — |
+| `MODEL_GENERATE` | No | Model used for LinkedIn draft generation. Default: `openai/gpt-4o` | — |
+
+Model name format differs per provider: OpenRouter uses `openai/gpt-4o-mini`; direct OpenAI uses `gpt-4o-mini`.
+Update `MODEL_CLASSIFY` and `MODEL_GENERATE` when switching providers.
 
 ## App
 

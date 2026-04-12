@@ -1,9 +1,14 @@
 # Vesper — Architecture
 
-## Current State (Phase 1 complete)
+## Current State (Phase 2.1 complete)
 
 Foundation is in place: database schema, async infrastructure, crypto layer, Docker setup, and all three OAuth flows (Google login, Slack install, LinkedIn install).
-Celery worker layer added: 5 named queues, batch intake scanner model, draft pipeline task stubs, proactive LinkedIn token refresh via Celery Beat.
+Celery worker layer added: 5 named queues, batch intake scanner stub, draft pipeline task stubs, proactive LinkedIn token refresh via Celery Beat.
+
+Phase 2.1 added the LLM service layer:
+- `services/openai_client.py` — async client factory; routes to OpenRouter (dev) or direct OpenAI (prod) via config
+- `services/schemas.py` — shared Pydantic schemas: `SlackMessage`, `ContentSignalCandidate`, `BatchClassifyResponse`, `RedactResult`
+- `services/classifier.py` — `batch_classify()`: one GPT-4o-mini call per scan window; reads flat Slack message stream, groups related messages into `ContentSignalCandidate` objects (worthy signals only, noise excluded at this step)
 
 ## Stack
 
@@ -87,40 +92,55 @@ Scan checkpoints (`last_slack_scanned_at`, `last_gmail_scanned_at`) are stored i
 
 ## AI Pipeline (Phase 2+)
 
+Batch classification happens at **intake time** — before any `ContentSignal` is written to the DB.
+Only signals the LLM classifies as content-worthy enter the draft pipeline.
+
 ```
-ContentSignal (status=detected)
+Intake (scan_slack_channels)
         │
-        ▼ draft_pipeline queue
+        ├─ Batch classify   — GPT-4o-mini, one call for entire scan window
+        │                     reads flat chronological Slack message stream
+        │                     groups related messages into signals (threads, follow-ups)
+        │                     extracts signal_type + summary per cluster
+        │                     noise is dropped here — never reaches the DB
         │
-        ├─ 1. Classify      — GPT-4o-mini (batch, one call per scan)
-        │                     content-worthy? signal_type? sensitivity?
-        │                     status → classified
+        ├─ Dedup            — Redis SETNX dedup:{workspace_id}:slack:{source_ids[0]} (24h TTL)
+        │                     already-seen signals are skipped
         │
-        ├─ 2. Enrich        — GPT-4o-mini agent with tool use (max 5 iterations)
-        │                     retrieves relevant Slack threads / email Re: chains
-        │                     self-judges whether context is sufficient
-        │                     produces context_summary in metadata_['enrichment']
-        │                     status → enriched
+        └─ INSERT ContentSignal (status=detected, signal_type, summary, source_id=source_ids[0])
+                              raw_payload stores all source_ids + original message texts
+                              dispatch run_draft_pipeline(signal_id)
+
+Draft pipeline queue (per signal)
+        │
+        ├─ 1. classify_signal   — no LLM call; signal_type + summary pre-set at intake
+        │                         writes original_text from raw_payload
+        │                         status → classified
+        │
+        ├─ 2. enrich_context    — GPT-4o-mini agent with tool use (max 5 iterations)
+        │                         retrieves additional Slack threads / email Re: chains
+        │                         self-judges whether context is sufficient
+        │                         writes context_summary to metadata_['enrichment']
+        │                         status → enriched
         │
         │    Slack tools: get_slack_thread, get_slack_channel_history,
         │                 search_slack_messages
         │    Email tools: get_email_thread, search_emails_by_sender,
         │                 search_emails (all live Gmail API calls)
         │
-        ├─ 3. Redact        — GPT-4o-mini removes sensitive details
-        │                     populates redacted_text, sets sensitivity
+        ├─ 3. redact_signal     — GPT-4o-mini removes PII, customer names, internal specifics
+        │                         writes redacted_text, sets sensitivity (low/medium/high)
+        │                         HARD GATE: failure sets status=failed, pipeline stops
         │
-        ├─ 4. Generate      — GPT-4o writes 2–3 LinkedIn variants
-        │                     uses context_summary + top 2–3 style-library
-        │                     examples (pgvector cosine search) as few-shot context
-        │                     status → drafted
+        ├─ 4. generate_draft    — GPT-4o writes 2–3 LinkedIn variants
+        │                         uses context_summary + top 2–3 style-library entries
+        │                         (pgvector cosine similarity) as few-shot context
+        │                         creates DraftPost records; status → drafted
         │
-        └─ 5. Route         — approval cards posted to Slack #vesper-ai
-                              Approve / Reject / Rewrite / Schedule buttons
-                              status → in_review
+        └─ 5. route             — approval card posted to Slack social_queue_channel
+                                  Approve / Reject / Rewrite / Schedule buttons
+                                  status → in_review
 ```
-
-Deduplication: Redis `SETNX dedup:{workspace_id}:{source_type}:{source_id}` with TTL — prevents double-processing before the DB write.
 
 ## API Endpoints
 
@@ -175,11 +195,11 @@ Browser                     Backend                      Provider
 
 | Queue | Purpose |
 |-------|---------|
-| `ai` | Classification, redaction, generation |
-| `enrichment` | Embedding, style-library updates |
-| `polling` | Gmail periodic fetch |
+| `draft_pipeline` | Per-signal tasks: classify → enrich → redact → generate |
+| `style_library` | Style-entry embedding and pgvector upserts |
+| `intake` | Scheduled batch scans: Slack channels + Gmail inbox |
 | `publishing` | LinkedIn post delivery |
-| `maintenance` | Token refresh, cleanup |
+| `maintenance` | LinkedIn token refresh (Beat), cleanup |
 
 ## Crypto Layer (`backend/app/crypto.py`)
 
@@ -215,7 +235,13 @@ b64_to_token(packed) → EncryptedToken  # unpack
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 1 — Foundation | Repo, FastAPI skeleton, DB schema, pgvector, crypto, Docker, Google + Slack + LinkedIn OAuth | ✅ Done |
-| 2 — Slack Pipeline | Channel monitoring, classify + draft, Slack approval cards | 🔜 Next |
+| 2.1 — LLM Service Layer | OpenAI client factory, shared schemas, batch classifier | ✅ Done |
+| 2.2 — Slack Client | Sync Slack WebClient wrapper for Celery workers | 🔜 Next |
+| 2.3 — Slack Actions Endpoint | Interactive button handler (approve/reject/rewrite/schedule) | Planned |
+| 2.4 — Batch Intake Scanner | scan_slack_channels full implementation | Planned |
+| 2.5 — Draft Pipeline | Full LLM implementations: enrich, redact, generate | Planned |
+| 2.6 — Approval Service | approve/reject/rewrite/schedule handlers | Planned |
+| 2.7–2.9 — REST API + Frontend + Tests | Signals/drafts API, Queue page, integration tests | Planned |
 | 3 — Email Pipeline | Gmail OAuth, folder config, periodic fetch | Planned |
 | 4 — Brand-Voice Memory | Style library UI, embedding pipeline, retrieval | Planned |
 | 5 — Publishing & Calendar | LinkedIn posting, scheduling, queue + calendar views | Planned |
