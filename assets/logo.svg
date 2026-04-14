@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+  <!--
+    Vesper — horizontal lockup (light background)
+    Mark: AI Compose Window — rounded square with draft text lines,
+    blinking cursor, and AI sparkle indicator.
+  -->
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Compose window mark (60×60, vertically centered) -->
+  <rect x="5" y="10" width="60" height="60" rx="14" fill="url(#g)"/>
+
+  <!-- Draft post line 1 — full width -->
+  <line x1="16" y1="29" x2="54" y2="29"
+    stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- Draft post line 2 — medium -->
+  <line x1="16" y1="38" x2="46" y2="38"
+    stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- Draft post line 3 — short, actively being typed -->
+  <line x1="16" y1="47" x2="34" y2="47"
+    stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- Text insertion cursor -->
+  <rect x="36" y="43.5" width="2.5" height="8" rx="1" fill="white"/>
+
+  <!-- AI sparkle indicator (top-right corner of compose window) -->
+  <path d="M 52,21 L 53.2,24 L 56.2,25.2 L 53.2,26.4 L 52,29.4 L 50.8,26.4 L 47.8,25.2 L 50.8,24 Z"
+    fill="rgba(255,255,255,0.92)"/>
+
+  <!-- Wordmark -->
+  <text x="86" y="40"
+    font-family="'Inter', 'SF Pro Display', system-ui, sans-serif"
+    font-weight="500"
+    font-size="30"
+    letter-spacing="-0.5"
+    fill="#1E293B"
+    dominant-baseline="central">Vesper</text>
+</svg>

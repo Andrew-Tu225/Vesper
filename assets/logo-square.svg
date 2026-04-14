@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!--
+    Vesper — square app icon (1024×1024)
+    Suitable for app stores, social media avatars, favicons.
+    The compose window mark is scaled to 600×600 and centered.
+    All internal proportions match logo-icon.svg exactly.
+  -->
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!--
+    White canvas background (remove this rect if embedding on a colored surface).
+  -->
+  <rect width="1024" height="1024" fill="#FFFFFF"/>
+
+  <!--
+    Mark scaled 10× from the 60×60 source → 600×600.
+    Centered: offset = (1024 - 600) / 2 = 212.
+    All source coordinates are in the normalized [0, 60] space.
+  -->
+  <g transform="translate(212,212) scale(10)">
+    <!-- Compose window rounded square -->
+    <rect x="0" y="0" width="60" height="60" rx="14" fill="url(#g)"/>
+
+    <!-- Draft post line 1 — full width -->
+    <line x1="11" y1="19" x2="49" y2="19"
+      stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+    <!-- Draft post line 2 — medium -->
+    <line x1="11" y1="28" x2="41" y2="28"
+      stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+    <!-- Draft post line 3 — short, actively being typed -->
+    <line x1="11" y1="37" x2="29" y2="37"
+      stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+    <!-- Text insertion cursor -->
+    <rect x="31" y="33.5" width="2.5" height="8" rx="1" fill="white"/>
+
+    <!-- AI sparkle indicator (top-right corner) -->
+    <path d="M 47,11 L 48.2,14 L 51.2,15.2 L 48.2,16.4 L 47,19.4 L 45.8,16.4 L 42.8,15.2 L 45.8,14 Z"
+      fill="rgba(255,255,255,0.92)"/>
+  </g>
+</svg>
