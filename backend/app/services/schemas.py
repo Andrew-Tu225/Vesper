@@ -65,9 +65,18 @@ class ContentSignalCandidate(BaseModel):
 
 
 class BatchClassifyResponse(BaseModel):
-    """Structured output envelope for the batch classification LLM call."""
+    """Structured output envelope for the batch classification LLM call.
+
+    candidates         — worthy content signals identified from the message batch.
+    embed_message_ids  — source_ids (Slack message_ts values) the LLM flagged as
+                         carrying enough semantic content to store for future context
+                         retrieval. These are IDs only; the intake worker looks up
+                         the full message text from its local msg_lookup dict, embeds
+                         the text, and stores the vector in slack_message_cache.
+    """
 
     candidates: list[ContentSignalCandidate]
+    embed_message_ids: list[str] = []
 
 
 # ---------------------------------------------------------------------------

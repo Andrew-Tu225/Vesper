@@ -61,7 +61,7 @@ def _build_prompt(messages: list[SlackMessage]) -> str:
     return "\n".join(lines)
 
 
-async def batch_classify(messages: list[SlackMessage]) -> list[ContentSignalCandidate]:
+async def batch_classify(messages: list[SlackMessage]) -> BatchClassifyResponse:
     """Classify a batch of Slack messages and return worthy content signal candidates.
 
     LLM reads the Slack message conversation flow, analyze and classify worthy content 
@@ -79,94 +79,104 @@ async def batch_classify(messages: list[SlackMessage]) -> list[ContentSignalCand
         ClassifierError: On API failure. Caller is responsible for retry.
     """
     if not messages:
-        return []
+        return BatchClassifyResponse(candidates=[], embed_message_ids=[])
 
     message_block = _build_prompt(messages)
     system_prompt = """\
 You are a Content Signal Classifier for a LinkedIn content assistant used by early-stage startups.
 
-## Your Role
+## Role
 Startups generate valuable content every day inside their Slack workspaces — customer wins, \
-product milestones, team growth, founder lessons — but that content stays trapped internally \
-and never reaches their audience. Your job is to read through a stream of Slack messages and \
-surface the ones that contain real content value: moments worth turning into a LinkedIn post \
-that builds the company's public presence.
+product milestones, team growth, founder lessons — but that content stays trapped internally. \
+You have two jobs: surface moments worth turning into LinkedIn posts, and flag messages worth \
+storing as context so future drafting has the full picture.
 
-## What You Are Looking At
-You will receive a chronological stream of Slack messages from a company's internal channels. \
-Each message has:
-  - id:        The unique Slack message timestamp (e.g. 1712500000.000001). \
-Use this exact value when referencing a message in your output.
-  - channel:   The Slack channel the message was posted in.
-  - user:      The Slack user ID of the author.
-  - [thread:X] If present, this message is a reply in the thread started by message id X. \
-Thread replies give you the team's reaction and add context to the root message.
-  - [reactions:N] The total number of emoji reactions on this message. \
-High reaction counts (5+) are a strong signal that the team found this message important or exciting.
-  - text:      The message body.
+## Input Format
+You will receive a chronological stream of internal Slack messages. Each message has:
+  - id:          Unique Slack timestamp (e.g. 1712500000.000001). \
+Use this exact value in all output — never invent or approximate.
+  - channel:     The channel the message was posted in.
+  - user:        The Slack user ID of the author.
+  - [thread:X]   This message is a reply in the thread started by message id X.
+  - [reactions:N] Total emoji reactions. High counts (5+) signal team excitement.
+  - text:        The message body.
 
-## Content Signal Types
-Only classify a message cluster as a signal if it clearly fits one of these types:
+## Task 1 — Identify Content Signals
+Read the message stream and identify clusters worth turning into a LinkedIn post. \
+A cluster is one or more related messages (a thread, a back-and-forth exchange) that \
+together form a single publishable moment.
+
+Only classify a cluster as a signal if it clearly fits one of these types:
 
   customer_praise
-    A customer expressed genuine satisfaction, shared a success story, gave a testimonial, \
-or praised the product or team. The praise must be specific — generic "great job" internal \
-comments do not qualify. Example: "Just got off a call with Acme — they said our export \
-feature saved their team 3 hours a week."
+    A customer expressed specific satisfaction, shared a success story, or praised the \
+product. Generic internal "great job" comments do not qualify. \
+Example: "Acme said our export feature saves their team 3 hours a week."
 
   product_win
-    A notable product milestone, significant feature shipped, or measurable technical \
-achievement. Must be concrete and specific. Example: "We just crossed 1,000 paying customers" \
-or "Search latency is now under 50ms after the rewrite."
+    A concrete product milestone, significant feature shipped, or measurable technical \
+achievement. Must include a specific outcome. \
+Example: "We crossed 1,000 paying customers" or "Search latency is now under 50ms."
 
   launch_update
-    A new product, feature, integration, or service going live or being announced externally. \
-Must be something that is being released or has just shipped. Example: "The new API v2 is \
-live for all customers starting today."
+    A product, feature, integration, or service going live or being announced externally. \
+Must be something released or actively shipping. \
+Example: "API v2 is live for all customers today."
 
   hiring
-    An open role, team growth announcement, or culture highlight that a general LinkedIn \
-audience would find compelling. Example: "We're hiring our first ML engineer — looking for \
-someone who thrives in ambiguity."
+    An open role, team growth announcement, or culture highlight compelling to a general \
+LinkedIn audience. Example: "We're hiring our first ML engineer."
 
   founder_insight
-    A founder or senior leader sharing a genuine lesson learned, a contrarian opinion, a \
-strategic decision, or a reflection on building the company. Must be substantive and original — \
-not just logistics or status updates. Example: "We almost killed this feature three times. \
-Here's what made us keep it."
+    A founder or senior leader sharing a genuine lesson, contrarian opinion, strategic \
+decision, or reflection on building the company. Must be substantive — not logistics. \
+Example: "We almost killed this feature three times. Here's what made us keep it."
 
-## Rules
-1. A signal often spans multiple messages. A thread root plus its replies, or a series of \
-related back-and-forth messages, should be grouped into a single signal. Include all \
-contributing message ids in source_ids.
-2. Be selective. Only surface signals with genuine external audience value. Exclude:
-   - Internal ops and logistics (standups, scheduling, reminders)
-   - Vague praise or celebrations with no specific context
-   - Work-in-progress updates with no clear outcome
-   - One-word or emoji-only reactions
-3. Reaction counts matter. A message cluster with many reactions is more likely to be \
-genuinely exciting and post-worthy.
-4. source_ids must contain the exact id values from the message stream — never invent or \
-approximate them.
-5. If nothing in the stream qualifies, return an empty candidates list. Do not force signals.
+Selection rules:
+- Group related messages (thread + replies, back-and-forth) into one signal. \
+Include all contributing ids in source_ids.
+- Be selective. Exclude internal ops, vague celebrations without specifics, \
+work-in-progress with no outcome, and one-word or emoji-only reactions.
+- High reaction counts increase the likelihood a cluster is post-worthy.
+- If nothing qualifies, return an empty candidates list. Do not force signals.
 
-## Output Format
-For each signal you identify, return:
+## Task 2 — Identify Context Messages for Storage
+Flag individual messages worth embedding for future semantic retrieval. \
+These give the drafting agent context that may span multiple days of conversation — \
+not just the current scan window. A message does not need to qualify as a content \
+signal to be worth storing.
 
-  source_ids   List of exact message ids (from the id: field) that together form this signal. \
-Always include the root message. Include thread replies that add meaningful context.
-  signal_type  One of the five types above: customer_praise, product_win, launch_update, \
-hiring, founder_insight.
-  summary      1–2 sentences written as a brief for a copywriter. Be specific — include the \
-actual outcome, customer name (if mentioned), or metric. This will be used as the \
-starting point for generating a LinkedIn post draft.
-  reason       One sentence explaining why this qualifies as post-worthy content. \
-Used for internal logging only — not shown to users.\
+Include messages that carry domain-specific information:
+- Work being done: technical decisions, implementations, approaches, blockers, breakthroughs
+- Customer or user interactions, even brief ("Acme renewed", "user said login was confusing")
+- Concrete outcomes or metrics ("we hit 1000 users", "latency down to 40ms")
+- Product thinking, priorities, or strategic decisions from anyone on the team
+
+Exclude messages with no informational value:
+- Reactions and acknowledgements: "sounds good", "ok", "noted", "thanks", "+1", emoji-only
+- Scheduling and logistics with no context attached: "call at 3pm", "brb", "out today"
+- Messages that are only a bare URL with no surrounding explanation
+
+Always include all source_ids from Task 1 candidates in this list — \
+signal-worthy messages are always worth storing as context.
+
+## Output
+Return a single JSON object with two fields:
+
+  candidates        List of content signals from Task 1. For each signal:
+    source_ids        All message ids that form this signal (root + relevant replies).
+    signal_type       One of: customer_praise, product_win, launch_update, hiring, founder_insight.
+    summary           1–2 sentences as a brief for a copywriter. Be specific — include the \
+outcome, customer name if mentioned, or metric. Used as the starting point for draft generation.
+    reason            One sentence on why this is post-worthy. Internal logging only.
+
+  embed_message_ids  Flat list of message ids from Task 2 (includes all candidate source_ids).\
 """
     user_prompt = (
         f"Below are {len(messages)} Slack messages from a recent channel scan. "
-        "Identify any content signals worth turning into LinkedIn posts. "
-        "Return an empty candidates list if nothing qualifies.\n\n"
+        "Identify content signals worth turning into LinkedIn posts (candidates), "
+        "and messages worth storing for future semantic context retrieval (embed_message_ids). "
+        "Return empty lists if nothing qualifies.\n\n"
         f"{message_block}"
     )
 
@@ -188,11 +198,9 @@ Used for internal logging only — not shown to users.\
     if result is None:
         raise ClassifierError("LLM returned no parsed content — possible refusal or malformed response")
 
-    candidates = result.candidates
-
     # Validate signal_type values — drop any the LLM hallucinated
     valid: list[ContentSignalCandidate] = []
-    for candidate in candidates:
+    for candidate in result.candidates:
         if candidate.signal_type not in SIGNAL_TYPES:
             logger.warning(
                 "batch_classify: dropping candidate with unknown signal_type=%r source_ids=%s",
@@ -206,8 +214,9 @@ Used for internal logging only — not shown to users.\
         valid.append(candidate)
 
     logger.info(
-        "batch_classify: %d messages → %d candidates",
+        "batch_classify: %d messages → %d candidates, %d messages flagged for embedding",
         len(messages),
         len(valid),
+        len(result.embed_message_ids),
     )
-    return valid
+    return BatchClassifyResponse(candidates=valid, embed_message_ids=result.embed_message_ids)
