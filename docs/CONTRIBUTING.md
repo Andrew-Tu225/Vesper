@@ -47,7 +47,7 @@ uvicorn app.main:app --reload
 
 ```bash
 cd backend
-celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,style_library,intake,publishing,maintenance
+celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,intake,publishing,maintenance
 ```
 
 ### 6. Full stack via Docker

@@ -1,14 +1,21 @@
 # Vesper — Architecture
 
-## Current State (Phase 2.1 complete)
+## Current State (Phase 2.2 complete)
 
-Foundation is in place: database schema, async infrastructure, crypto layer, Docker setup, and all three OAuth flows (Google login, Slack install, LinkedIn install).
-Celery worker layer added: 5 named queues, batch intake scanner stub, draft pipeline task stubs, proactive LinkedIn token refresh via Celery Beat.
+Foundation, Celery worker layer, and LLM service layer are all in place.
 
-Phase 2.1 added the LLM service layer:
-- `services/openai_client.py` — async client factory; routes to OpenRouter (dev) or direct OpenAI (prod) via config
-- `services/schemas.py` — shared Pydantic schemas: `SlackMessage`, `ContentSignalCandidate`, `BatchClassifyResponse`, `RedactResult`
-- `services/classifier.py` — `batch_classify()`: one GPT-4o-mini call per scan window; reads flat Slack message stream, groups related messages into `ContentSignalCandidate` objects (worthy signals only, noise excluded at this step)
+Phase 2.1 added:
+- `services/openai_client.py` — async client factory; routes to OpenRouter (dev) or direct OpenAI (prod)
+- `services/schemas.py` — shared Pydantic schemas: `SlackMessage`, `ContentSignalCandidate`, `BatchClassifyResponse`
+- `services/classifier.py` — `batch_classify()`: one GPT-4o-mini call per scan window; returns content signal candidates **and** `embed_message_ids` for enrichment context storage
+
+Phase 2.2 added:
+- `services/slack_client.py` — sync `WebClient` wrapper for Celery workers (decrypts bot token, wraps channel history + thread + post/update)
+- `services/embedder.py` — `embed_texts()`: batch call to `text-embedding-3-small`; produces 1536-dim vectors
+- `models/slack_message_embedding.py` + migration `002` — stores embedded Slack messages for cross-day enrichment context (30-day TTL, IVFFlat index for cosine search)
+- `app/db_sync.py` — shared psycopg2 `ThreadedConnectionPool` for all Celery workers
+- `workers/maintenance.purge_slack_message_embeddings` — Beat task deletes rows older than 30 days (daily 03:00 UTC)
+- Onboarding step `seed_style_library` replaced with `channels_setup`
 
 ## Stack
 
@@ -21,7 +28,8 @@ Phase 2.1 added the LLM service layer:
 | Worker | Celery 5 + Redis 7 |
 | Crypto | AES-256-GCM (`cryptography` library) |
 | HTTP client | httpx |
-| Slack | slack-sdk 3 |
+| Slack | slack-sdk 3 (sync `WebClient` in workers) |
+| Embeddings | OpenAI `text-embedding-3-small` (1536-dim) |
 
 ## Data Model
 
@@ -32,110 +40,111 @@ users
         ├── oauth_token (workspace_id, user_id?)
         ├── content_signal (workspace_id)
         │     └── draft_post (content_signal_id, workspace_id)
-        ├── style_entry (workspace_id, draft_post_id?)
+        ├── slack_message_embedding (workspace_id)   ← enrichment context; 30-day TTL
         └── audit_log (workspace_id)
 ```
 
+> **Not in MVP:** `style_entry` (brand-voice style library) is deferred post-MVP.
+> `generate_draft` uses zero-shot GPT-4o until the style library is built out.
+
 ### Key tables
 
-**`content_signal`** — the core entity. Created only when an inbound event is classified as content-worthy (classify-first pipeline). Never stores raw noise.
+**`content_signal`** — the core entity. Created only after batch classification identifies a worthy signal. Never stores noise.
 
 | Column | Type | Notes |
 |--------|------|-------|
 | `source_type` | `varchar(16)` | `slack` or `gmail` |
-| `source_id` | `varchar(255)` | Original message_ts or email_id — dedup key |
+| `source_id` | `varchar(255)` | `source_ids[0]` from classifier — dedup anchor |
 | `signal_type` | `varchar(32)` | `customer_praise` \| `product_win` \| `launch_update` \| `hiring` \| `founder_insight` |
-| `original_text` | text | Raw message text |
-| `redacted_text` | text | Redacted version (sensitive details removed) |
-| `summary` | text | AI-generated summary |
+| `original_text` | text | Reconstructed from `raw_payload` messages |
+| `redacted_text` | text | PII-stripped version |
+| `summary` | text | LLM-extracted summary (set at intake time by classifier) |
 | `sensitivity` | `varchar(16)` | `unknown` \| `low` \| `medium` \| `high` |
 | `status` | `varchar(32)` | `detected` → `classified` → `enriched` → `drafted` → `in_review` → `approved` → `scheduled` → `posted` |
-| `raw_payload` | jsonb | Original Slack/Gmail envelope — stored only for worthy signals |
+| `raw_payload` | jsonb | All `source_ids` + original message texts |
 
-**`oauth_token`** — all OAuth tokens encrypted with AES-256-GCM before storage. Three-column layout: `encrypted_token`, `nonce`, `tag`. Nonce is enforced unique at the DB level (GCM security requirement).
+**`slack_message_embedding`** — enrichment context store. The classifier's `embed_message_ids` are looked up in `msg_lookup`, embedded via `text-embedding-3-small`, and upserted here. The `enrich_context` pipeline task uses pgvector cosine search against this table to find relevant context spanning multiple days.
 
-**`style_entry`** — brand-voice memory. Stores `vector(1536)` embeddings (text-embedding-3-small) of approved posts. Indexed with `ivfflat` for cosine similarity search.
+| Column | Type | Notes |
+|--------|------|-------|
+| `workspace_id` | uuid | FK → workspace |
+| `channel_id` | varchar | Slack channel ID |
+| `message_ts` | varchar | Slack message timestamp — dedup key |
+| `author_id` | varchar | Slack user ID |
+| `text` | text | Raw message text |
+| `embedding` | vector(1536) | `text-embedding-3-small` output |
+| `stored_at` | timestamptz | Used for 30-day TTL cleanup |
+
+Unique index on `(workspace_id, channel_id, message_ts)`. IVFFlat index (`lists=10`) for cosine similarity. Index on `stored_at` for TTL DELETE.
+
+**`oauth_token`** — all OAuth tokens encrypted with AES-256-GCM. Three-column layout: `encrypted_token`, `nonce`, `tag`. Nonce enforced unique at DB level (GCM security requirement).
+
+## Onboarding Step Progression
+
+```
+workspace.onboarding_step
+
+"connect_slack"     ← default on workspace creation
+        ↓ (Slack OAuth installs bot, creates workspace)
+"connect_linkedin"
+        ↓ (LinkedIn OAuth stores access + refresh tokens)
+"channels_setup"
+        ↓ (user selects enrichment_channels; saved to workspace.settings)
+onboarding_complete = True
+```
 
 ## Content Intake Model
 
 Auto content discovery runs as a **scheduled batch scan**, not real-time event processing.
-A single message rarely has enough context to judge content worthiness. Scanning an
-accumulated window gives the classifier full threads, replies, and email chains.
 
 ```
 Celery Beat (configurable per workspace, default 3×/day)
         │
-        ├─ scan_slack_channels   (intake queue)
-        │    fetch messages from enrichment_channels since last_slack_scanned_at
-        │    batch classify full list → one LLM call
-        │    create ContentSignal only for worthy items
-        │    dispatch draft_pipeline for each winner
-        │    update last_slack_scanned_at
-        │
-        └─ scan_gmail_inbox      (intake queue)
-             fetch emails from configured labels since last_gmail_scanned_at
-             batch classify full list → one LLM call
-             create ContentSignal only for worthy items
-             dispatch draft_pipeline for each winner
-             update last_gmail_scanned_at
-
-Manual trigger (always available, independent of schedule)
-        Slack "Create LinkedIn draft" message action
-          → FastAPI webhook → ContentSignal → draft_pipeline
+        └─ scan_slack_channels   (intake queue)
+             fetch messages from enrichment_channels since last_slack_scanned_at
+             batch classify → one GPT-4o-mini call (candidates + embed_message_ids)
+             embed embed_message_ids → upsert slack_message_embedding rows
+             dedup candidates via Redis SETNX (24h TTL)
+             create ContentSignal for each new worthy candidate
+             dispatch run_draft_pipeline(signal_id) for each
+             update last_slack_scanned_at
 ```
 
-Slack Events API webhooks are used **only** for the manual message action.
-Auto channel monitoring uses the batch scanner, not webhooks.
+Slack Events API webhooks are used **only** for the manual "Create LinkedIn draft" message action (Phase 2.4+). Auto channel monitoring uses the batch scanner.
 
-Scan checkpoints (`last_slack_scanned_at`, `last_gmail_scanned_at`) are stored in
-`workspace.settings` JSONB and updated after each successful scan run.
-
-## AI Pipeline (Phase 2+)
-
-Batch classification happens at **intake time** — before any `ContentSignal` is written to the DB.
-Only signals the LLM classifies as content-worthy enter the draft pipeline.
+## AI Pipeline
 
 ```
 Intake (scan_slack_channels)
         │
         ├─ Batch classify   — GPT-4o-mini, one call for entire scan window
-        │                     reads flat chronological Slack message stream
-        │                     groups related messages into signals (threads, follow-ups)
-        │                     extracts signal_type + summary per cluster
-        │                     noise is dropped here — never reaches the DB
+        │                     Task 1: groups related messages into ContentSignalCandidates
+        │                     Task 2: flags messages for enrichment embedding
+        │                     noise dropped here — never reaches the DB
+        │
+        ├─ Embed            — text-embedding-3-small; upsert slack_message_embedding
         │
         ├─ Dedup            — Redis SETNX dedup:{workspace_id}:slack:{source_ids[0]} (24h TTL)
-        │                     already-seen signals are skipped
         │
-        └─ INSERT ContentSignal (status=detected, signal_type, summary, source_id=source_ids[0])
-                              raw_payload stores all source_ids + original message texts
-                              dispatch run_draft_pipeline(signal_id)
+        └─ INSERT ContentSignal (status=detected)
+           dispatch run_draft_pipeline(signal_id)
 
-Draft pipeline queue (per signal)
+Draft pipeline (per signal)
         │
         ├─ 1. classify_signal   — no LLM call; signal_type + summary pre-set at intake
-        │                         writes original_text from raw_payload
-        │                         status → classified
+        │                         writes original_text from raw_payload; status → classified
         │
-        ├─ 2. enrich_context    — GPT-4o-mini agent with tool use (max 5 iterations)
-        │                         retrieves additional Slack threads / email Re: chains
-        │                         self-judges whether context is sufficient
-        │                         writes context_summary to metadata_['enrichment']
-        │                         status → enriched
+        ├─ 2. enrich_context    — GPT-4o-mini agent (max 5 iterations)
+        │                         tools: get_slack_thread, search_context (pgvector over
+        │                         slack_message_embedding — spans 30 days of context)
+        │                         writes context_summary; status → enriched
         │
-        │    Slack tools: get_slack_thread, get_slack_channel_history,
-        │                 search_slack_messages
-        │    Email tools: get_email_thread, search_emails_by_sender,
-        │                 search_emails (all live Gmail API calls)
+        ├─ 3. redact_signal     — GPT-4o-mini strips PII, customer names, internal specifics
+        │                         HARD GATE: failure → status=failed, pipeline stops
         │
-        ├─ 3. redact_signal     — GPT-4o-mini removes PII, customer names, internal specifics
-        │                         writes redacted_text, sets sensitivity (low/medium/high)
-        │                         HARD GATE: failure sets status=failed, pipeline stops
-        │
-        ├─ 4. generate_draft    — GPT-4o writes 2–3 LinkedIn variants
-        │                         uses context_summary + top 2–3 style-library entries
-        │                         (pgvector cosine similarity) as few-shot context
-        │                         creates DraftPost records; status → drafted
+        ├─ 4. generate_draft    — GPT-4o zero-shot (no style library in MVP)
+        │                         3 LinkedIn post variants; inserts DraftPost records
+        │                         status → drafted
         │
         └─ 5. route             — approval card posted to Slack social_queue_channel
                                   Approve / Reject / Rewrite / Schedule buttons
@@ -188,7 +197,7 @@ Browser                     Backend                      Provider
   │                            │── exchange code ──────────▶│
   │                            │◀── access + refresh tokens─│
   │                            │   encrypt + store both     │
-  │◀── 302 /onboarding?step=seed_style_library ─────────────│
+  │◀── 302 /onboarding?step=channels_setup ─────────────────│
 ```
 
 ## Celery Queues
@@ -196,10 +205,9 @@ Browser                     Backend                      Provider
 | Queue | Purpose |
 |-------|---------|
 | `draft_pipeline` | Per-signal tasks: classify → enrich → redact → generate |
-| `style_library` | Style-entry embedding and pgvector upserts |
-| `intake` | Scheduled batch scans: Slack channels + Gmail inbox |
+| `intake` | Scheduled batch scans: Slack channels |
 | `publishing` | LinkedIn post delivery |
-| `maintenance` | LinkedIn token refresh (Beat), cleanup |
+| `maintenance` | LinkedIn token refresh, purge embeddings (Beat) |
 
 ## Crypto Layer (`backend/app/crypto.py`)
 
@@ -218,15 +226,15 @@ b64_to_token(packed) → EncryptedToken  # unpack
 ┌─────────────┐   ┌─────────────┐   ┌───────────────────┐
 │  frontend   │   │   backend   │   │      worker       │
 │  (React)    │──▶│  (FastAPI)  │   │  (Celery)         │
-│  :5173      │   │  :8000      │   │  queues: ai etc.  │
-└─────────────┘   └──────┬──────┘   └────────┬──────────┘
-                         │                   │
-              ┌──────────┴──────────┐         │
-              │                     │         │
-         ┌────▼──────┐        ┌─────▼─────────▼──┐
-         │ PostgreSQL│        │      Redis        │
-         │  +pgvector│        │  (broker + cache) │
-         │  :5432    │        │  :6379            │
+│  :5173      │   │  :8000      │   │  draft_pipeline   │
+└─────────────┘   └──────┬──────┘   │  intake           │
+                         │          │  publishing        │
+              ┌──────────┴──────────┤  maintenance       │
+              │                     └────────┬──────────┘
+         ┌────▼──────┐                       │
+         │ PostgreSQL│        ┌──────────────▼──┐
+         │  +pgvector│        │      Redis        │
+         │  :5432    │        │  (broker + cache) │
          └───────────┘        └───────────────────┘
 ```
 
@@ -236,13 +244,14 @@ b64_to_token(packed) → EncryptedToken  # unpack
 |-------|-------|--------|
 | 1 — Foundation | Repo, FastAPI skeleton, DB schema, pgvector, crypto, Docker, Google + Slack + LinkedIn OAuth | ✅ Done |
 | 2.1 — LLM Service Layer | OpenAI client factory, shared schemas, batch classifier | ✅ Done |
-| 2.2 — Slack Client | Sync Slack WebClient wrapper for Celery workers | 🔜 Next |
-| 2.3 — Slack Actions Endpoint | Interactive button handler (approve/reject/rewrite/schedule) | Planned |
-| 2.4 — Batch Intake Scanner | scan_slack_channels full implementation | Planned |
-| 2.5 — Draft Pipeline | Full LLM implementations: enrich, redact, generate | Planned |
-| 2.6 — Approval Service | approve/reject/rewrite/schedule handlers | Planned |
-| 2.7–2.9 — REST API + Frontend + Tests | Signals/drafts API, Queue page, integration tests | Planned |
+| 2.2 — Slack Client + Embedding | Sync Slack client, text embedder, slack_message_embedding model + migration, shared DB pool, purge task | ✅ Done |
+| 2.3 — Channels Setup API | Channel selection endpoint, onboarding completion | 🔜 Next |
+| 2.4 — Slack Actions Endpoint | Interactive button handler (approve/reject/rewrite/schedule) | Planned |
+| 2.5 — Batch Intake Scanner | scan_slack_channels full implementation (classify + embed + create signals) | Planned |
+| 2.6 — Draft Pipeline | Full LLM: enrich (pgvector + thread tools), redact (hard gate), generate (zero-shot GPT-4o) | Planned |
+| 2.7 — Approval Service | approve/reject/rewrite/schedule handlers | Planned |
+| 2.8–2.10 — REST API + Frontend + Tests | Signals/drafts API, Queue page, integration tests | Planned |
 | 3 — Email Pipeline | Gmail OAuth, folder config, periodic fetch | Planned |
-| 4 — Brand-Voice Memory | Style library UI, embedding pipeline, retrieval | Planned |
+| 4 — Brand-Voice Memory | Style library UI, embedding pipeline, retrieval wired into generation | Post-MVP |
 | 5 — Publishing & Calendar | LinkedIn posting, scheduling, queue + calendar views | Planned |
 | 6 — Safety & Polish | Redaction tuning, error handling, Slack token expiry warnings | Planned |
