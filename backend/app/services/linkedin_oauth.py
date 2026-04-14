@@ -110,7 +110,7 @@ async def upsert_tokens(
 
     - Inserts or updates two OAuthToken rows: token_type='access' and 'refresh'.
     - Both rows use provider='linkedin_company' and user_id=NULL (workspace-level).
-    - Advances workspace.onboarding_step from 'connect_linkedin' → 'seed_style_library'.
+    - Advances workspace.onboarding_step from 'connect_linkedin' → 'channels_setup'.
     - Writes an AuditLog entry for the connection event.
     """
     token_rows = (
@@ -150,7 +150,7 @@ async def upsert_tokens(
             existing.expires_at = expires_at
 
     if workspace.onboarding_step == "connect_linkedin":
-        workspace.onboarding_step = "seed_style_library"
+        workspace.onboarding_step = "channels_setup"
 
     db.add(
         AuditLog(

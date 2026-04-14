@@ -248,7 +248,7 @@ async def test_callback_consumes_state_before_processing(client, mock_redis, moc
     assert "mystate" in deleted_key
 
 
-async def test_callback_redirects_to_seed_style_library(client, mock_redis, mock_db):
+async def test_callback_redirects_to_channels_setup(client, mock_redis, mock_db):
     user = _make_user()
     workspace = _make_workspace(owner_user_id=user.id)
     mock_redis.get = AsyncMock(return_value=str(user.id))
@@ -268,7 +268,7 @@ async def test_callback_redirects_to_seed_style_library(client, mock_redis, mock
         )
 
     assert resp.status_code == 302
-    assert "seed_style_library" in resp.headers["location"]
+    assert "channels_setup" in resp.headers["location"]
 
 
 # ── upsert_tokens (service) ───────────────────────────────────────────────────
@@ -359,7 +359,7 @@ async def test_upsert_tokens_advances_onboarding_step():
 
     await upsert_tokens(db, workspace, workspace.owner_user_id, data)
 
-    assert workspace.onboarding_step == "seed_style_library"
+    assert workspace.onboarding_step == "channels_setup"
 
 
 async def test_upsert_tokens_does_not_regress_onboarding_step():
@@ -372,12 +372,12 @@ async def test_upsert_tokens_does_not_regress_onboarding_step():
     none_result.scalar_one_or_none.return_value = None
     db.execute = AsyncMock(return_value=none_result)
 
-    workspace = _make_workspace(onboarding_step="seed_style_library")
+    workspace = _make_workspace(onboarding_step="channels_setup")
     data = _make_install_data()
 
     await upsert_tokens(db, workspace, workspace.owner_user_id, data)
 
-    assert workspace.onboarding_step == "seed_style_library"
+    assert workspace.onboarding_step == "channels_setup"
 
 
 # ── exchange_code (service) ───────────────────────────────────────────────────

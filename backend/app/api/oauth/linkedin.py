@@ -115,6 +115,6 @@ async def linkedin_callback(
     await upsert_tokens(db, workspace, user.id, install_data)
 
     return RedirectResponse(
-        url=f"{settings.app_frontend_url}/onboarding?step=seed_style_library",
+        url=f"{settings.app_frontend_url}/onboarding?step=channels_setup",
         status_code=status.HTTP_302_FOUND,
     )
