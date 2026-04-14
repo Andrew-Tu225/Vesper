@@ -19,14 +19,11 @@ Full LLM implementations are deferred to Phase 2.
 """
 
 import logging
-import os
-from urllib.parse import urlparse, urlunparse
 from uuid import UUID
 
-import psycopg2
-import psycopg2.pool
 from celery import chain
 
+from app.db_sync import get_sync_pool
 from app.workers.celery_app import celery_app
 from app.workers.constants import Queue, SignalStatus
 
@@ -34,43 +31,13 @@ logger = logging.getLogger(__name__)
 
 __all__ = ["run_draft_pipeline", "classify_signal", "enrich_context", "redact_signal", "generate_draft"]
 
-# ---------------------------------------------------------------------------
-# DB connection pool (sync — Celery workers run in a sync context)
-# ---------------------------------------------------------------------------
-# Replaced by a proper async repository in Phase 2.
-# Pool size of 2 is intentionally small: workers run one task at a time
-# (worker_prefetch_multiplier=1) so a single connection is almost always enough.
-
-def _make_sync_dsn() -> str:
-    """Convert DATABASE_URL (asyncpg DSN) to a psycopg2-compatible DSN."""
-    raw = os.environ["DATABASE_URL"]
-    parsed = urlparse(raw)
-    # asyncpg uses postgresql+asyncpg:// or postgres+asyncpg://; psycopg2 needs postgresql://
-    if parsed.scheme not in ("postgresql+asyncpg", "postgres+asyncpg", "postgresql", "postgres"):
-        raise ValueError(
-            f"Unsupported DATABASE_URL scheme '{parsed.scheme}'. "
-            "Expected postgresql+asyncpg:// or postgresql://"
-        )
-    sync_parsed = parsed._replace(scheme="postgresql")
-    return urlunparse(sync_parsed)
-
-
-_db_pool: psycopg2.pool.ThreadedConnectionPool | None = None
-
-
-def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
-    global _db_pool
-    if _db_pool is None:
-        _db_pool = psycopg2.pool.ThreadedConnectionPool(1, 2, dsn=_make_sync_dsn())
-    return _db_pool
-
 
 def _update_signal_status(signal_id: str, status: SignalStatus) -> None:
     """Update ContentSignal.status using a pooled sync psycopg2 connection.
 
     Raises psycopg2.Error on failure — callers should catch and retry.
     """
-    pool = _get_pool()
+    pool = get_sync_pool()
     conn = pool.getconn()
     try:
         with conn.cursor() as cur:
