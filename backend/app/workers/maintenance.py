@@ -140,3 +140,37 @@ def cleanup_stale_signals(self) -> None:
     timeout (e.g. 24 h in 'classified' or 'enriched') and set status → failed.
     """
     logger.info("cleanup_stale_signals: (stub)")
+
+
+@celery_app.task(
+    name="app.workers.maintenance.purge_slack_message_embeddings",
+    queue=Queue.MAINTENANCE,
+    bind=True,
+    max_retries=2,
+    default_retry_delay=300,
+)
+def purge_slack_message_embeddings(self) -> None:
+    """Delete slack_message_embedding rows older than 30 days.
+
+    Old messages lose relevance as enrichment context. Running daily at 03:00 UTC
+    keeps the table bounded without impacting active enrichment queries.
+    """
+    from app.db_sync import get_sync_pool
+
+    pool = get_sync_pool()
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM slack_message_embedding"
+                " WHERE stored_at < now() - interval '30 days'"
+            )
+            deleted = cur.rowcount
+        conn.commit()
+        logger.info("purge_slack_message_embeddings: deleted %d rows", deleted)
+    except Exception as exc:
+        conn.rollback()
+        logger.exception("purge_slack_message_embeddings: failed")
+        raise self.retry(exc=exc)
+    finally:
+        pool.putconn(conn)

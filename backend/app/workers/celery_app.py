@@ -87,6 +87,10 @@ celery_app.conf.update(
             "task": "app.workers.maintenance.refresh_oauth_tokens",
             "schedule": crontab(minute=0, hour=2),
         },
+        "purge-slack-message-embeddings": {
+            "task": "app.workers.maintenance.purge_slack_message_embeddings",
+            "schedule": crontab(minute=0, hour=3),
+        },
     },
 )
 
