@@ -346,3 +346,58 @@ def update_message(
         )
     except SlackApiError as exc:
         _handle_api_error("chat.update", ts, exc)
+
+
+# ---------------------------------------------------------------------------
+# Onboarding — channel discovery
+# ---------------------------------------------------------------------------
+
+def list_channels(client: WebClient) -> list[dict]:
+    """Return all non-archived channels available for the onboarding channel picker.
+
+    Called by GET /api/onboarding/channels (via asyncio.to_thread).
+
+    Slack's conversations.list behaviour:
+    - Public channels  → all channels in the workspace
+    - Private channels → only channels where the bot has been manually invited
+                         (/invite @vesper inside Slack); others are not visible
+                         via the API and will not appear in the picker
+
+    Returns:
+        List of dicts with keys: id (str), name (str), num_members (int).
+        Sorted by name ascending.
+
+    Raises:
+        SlackClientError: On Slack API failure.
+    """
+    channels: list[dict] = []
+    cursor: str | None = None
+
+    while True:
+        kwargs: dict = {
+            "exclude_archived": True,
+            "types": "public_channel,private_channel",
+            "limit": 200,
+        }
+        if cursor:
+            kwargs["cursor"] = cursor
+
+        try:
+            response = client.conversations_list(**kwargs)
+        except SlackApiError as exc:
+            _handle_api_error("conversations.list", "list_channels", exc)
+
+        for ch in response.get("channels", []):
+            channels.append({
+                "id": ch["id"],
+                "name": ch["name"],
+                "num_members": ch.get("num_members", 0),
+            })
+
+        next_cursor = (response.get("response_metadata") or {}).get("next_cursor", "")
+        if not next_cursor:
+            break
+        cursor = next_cursor
+
+    channels.sort(key=lambda c: c["name"])
+    return channels

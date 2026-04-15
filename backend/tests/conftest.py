@@ -2,7 +2,7 @@
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 from app.database import get_db
 from app.main import app
@@ -25,6 +25,7 @@ def mock_db() -> AsyncMock:
     db.flush = AsyncMock()
     db.commit = AsyncMock()
     db.rollback = AsyncMock()
+    db.add = MagicMock()  # Session.add() is synchronous in both sync and async SQLAlchemy
     return db
 
 

@@ -10,6 +10,7 @@ from app.api.deps import get_current_user
 from app.api.health import router as health_router
 from app.api.oauth.slack import router as slack_oauth_router
 from app.api.oauth.linkedin import router as linkedin_oauth_router
+from app.api.onboarding import router as onboarding_router
 from app.models.user import User
 
 
@@ -34,6 +35,7 @@ def create_app() -> FastAPI:
     app.include_router(google_auth_router, prefix="/api/auth")
     app.include_router(slack_oauth_router, prefix="/api/oauth")
     app.include_router(linkedin_oauth_router, prefix="/api/oauth")
+    app.include_router(onboarding_router, prefix="/api/onboarding")
 
     @app.get("/api/auth/me", tags=["auth"])
     async def get_me(user: User = Depends(get_current_user)) -> dict:
