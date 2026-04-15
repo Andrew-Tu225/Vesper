@@ -81,12 +81,19 @@ celery_app.conf.update(
     # Timezone
     timezone="UTC",
     enable_utc=True,
-    # Beat schedule — proactive LinkedIn token refresh once per day at 02:00 UTC
+    # Beat schedule
     beat_schedule={
+        # Fan-out Slack channel scans to all eligible workspaces — 2x/day
+        "dispatch-intake-scans": {
+            "task": "app.workers.maintenance.dispatch_intake_scans",
+            "schedule": crontab(minute=0, hour="0,12"),
+        },
+        # Proactive LinkedIn token refresh — daily at 02:00 UTC
         "refresh-oauth-tokens": {
             "task": "app.workers.maintenance.refresh_oauth_tokens",
             "schedule": crontab(minute=0, hour=2),
         },
+        # Purge stale Slack message embeddings — daily at 03:00 UTC
         "purge-slack-message-embeddings": {
             "task": "app.workers.maintenance.purge_slack_message_embeddings",
             "schedule": crontab(minute=0, hour=3),

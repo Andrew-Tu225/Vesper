@@ -3,8 +3,10 @@ maintenance queue — scheduled housekeeping tasks (Celery Beat).
 
 Tasks
 -----
-- refresh_oauth_tokens : proactively refresh LinkedIn tokens expiring within 7 days
-- cleanup_stale_signals: move stuck signals to 'failed' after a timeout
+- dispatch_intake_scans      : fan-out scan_slack_channels to every eligible workspace (2x/day)
+- refresh_oauth_tokens       : proactively refresh LinkedIn tokens expiring within 7 days
+- cleanup_stale_signals      : move stuck signals to 'failed' after a timeout
+- purge_slack_message_embeddings: delete embedding rows older than 30 days
 """
 
 import asyncio
@@ -15,6 +17,62 @@ from app.workers.celery_app import celery_app
 from app.workers.constants import Queue
 
 logger = logging.getLogger(__name__)
+
+
+@celery_app.task(
+    name="app.workers.maintenance.dispatch_intake_scans",
+    queue=Queue.MAINTENANCE,
+    bind=True,
+    max_retries=2,
+    default_retry_delay=120,
+)
+def dispatch_intake_scans(self) -> None:
+    """Fan-out scan_slack_channels to every eligible workspace.
+
+    Eligibility criteria (checked in SQL for atomicity):
+    - onboarding_complete = TRUE
+    - subscription_status = 'active'
+      OR (subscription_status = 'trialing' AND trial_ends_at > now())
+    - enrichment_channels in settings is a non-empty JSON array
+
+    Runs 2x/day via Celery Beat at 00:00 and 12:00 UTC.
+    Each workspace has its own Slack bot token, so scans run in parallel
+    without sharing rate-limit quotas.
+    """
+    from app.db_sync import get_sync_pool
+    from app.workers.intake import scan_slack_channels
+
+    pool = get_sync_pool()
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id::text FROM workspace
+                WHERE onboarding_complete = TRUE
+                  AND (
+                    subscription_status = 'active'
+                    OR (
+                      subscription_status = 'trialing'
+                      AND trial_ends_at > now()
+                    )
+                  )
+                  AND settings->'enrichment_channels' IS NOT NULL
+                  AND jsonb_array_length(settings->'enrichment_channels') > 0
+                """
+            )
+            rows = cur.fetchall()
+    except Exception as exc:
+        logger.error("dispatch_intake_scans: failed to query eligible workspaces: %s", exc)
+        raise self.retry(exc=exc)
+    finally:
+        pool.putconn(conn)
+
+    workspace_ids = [row[0] for row in rows]
+    logger.info("dispatch_intake_scans: dispatching %d workspace(s)", len(workspace_ids))
+
+    for workspace_id in workspace_ids:
+        scan_slack_channels.delay(workspace_id)
 
 
 @celery_app.task(
