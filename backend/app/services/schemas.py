@@ -95,3 +95,19 @@ class RedactResult(BaseModel):
     sensitivity: str = Field(
         description="Overall sensitivity level assessed during redaction: low | medium | high"
     )
+
+
+# ---------------------------------------------------------------------------
+# Draft pipeline — generation
+# ---------------------------------------------------------------------------
+
+class GenerateDraftResponse(BaseModel):
+    """Structured output for LinkedIn draft generation."""
+
+    variants: list[str] = Field(
+        description=(
+            "One LinkedIn post body per requested variant. "
+            "Each variant takes a different angle on the same signal "
+            "(e.g. result-led, journey-led)."
+        )
+    )
