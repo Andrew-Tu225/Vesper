@@ -1,5 +1,3 @@
-import { Resend } from 'resend'
-
 export const config = {
   runtime: 'edge'
 }
@@ -8,63 +6,50 @@ export default async function handler(req: Request): Promise<Response> {
   const apiKey = process.env.RESEND_API_KEY
   const audienceId = process.env.RESEND_AUDIENCE_ID
 
-  // Validate env vars
   if (!apiKey || !audienceId) {
-    return new Response(
-      JSON.stringify({ error: 'Server configuration error: missing Resend credentials' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    )
+    return json({ error: 'Server configuration error: missing Resend credentials' }, 500)
   }
 
-  const resend = new Resend(apiKey)
-
-  // Only accept POST
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return json({ error: 'Method not allowed' }, 405)
   }
 
+  let email: string | undefined
   try {
-    const { email } = (await req.json()) as { email?: string }
-
-    // Validate email
-    if (!email || typeof email !== 'string' || !isValidEmail(email)) {
-      return new Response(JSON.stringify({ error: 'Invalid email address' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Add to Resend audience
-    const response = await resend.contacts.create({
-      email,
-      audienceId
-    })
-
-    if (response.error) {
-      throw new Error(response.error.message)
-    }
-
-    return new Response(JSON.stringify({ success: true, data: response.data }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    })
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Failed to process request'
-
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    const body = await req.json() as { email?: string }
+    email = body.email
+  } catch {
+    return json({ error: 'Invalid JSON body' }, 400)
   }
+
+  if (!email || !isValidEmail(email)) {
+    return json({ error: 'Invalid email address' }, 400)
+  }
+
+  const r = await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  })
+
+  const data = await r.json() as unknown
+  if (!r.ok) {
+    return json({ error: 'Failed to add contact', detail: data }, r.status)
+  }
+
+  return json({ success: true, data })
+}
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  })
 }
 
 function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
-
-
