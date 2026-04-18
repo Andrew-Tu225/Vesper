@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 70" width="200" height="200">
+  <!--
+    Vesper — icon mark only (no wordmark)
+    viewBox is 70×70 with 5px padding on all sides around the 60×60 mark.
+    Scale width/height attributes to render at any size.
+  -->
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Compose window -->
+  <rect x="5" y="5" width="60" height="60" rx="14" fill="url(#g)"/>
+
+  <!-- Draft post line 1 — full width -->
+  <line x1="16" y1="24" x2="54" y2="24"
+    stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- Draft post line 2 — medium -->
+  <line x1="16" y1="33" x2="46" y2="33"
+    stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- Draft post line 3 — short, actively being typed -->
+  <line x1="16" y1="42" x2="34" y2="42"
+    stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- Text insertion cursor -->
+  <rect x="36" y="38.5" width="2.5" height="8" rx="1" fill="white"/>
+
+  <!-- AI sparkle indicator (top-right) -->
+  <path d="M 52,16 L 53.2,19 L 56.2,20.2 L 53.2,21.4 L 52,24.4 L 50.8,21.4 L 47.8,20.2 L 50.8,19 Z"
+    fill="rgba(255,255,255,0.92)"/>
+</svg>

@@ -60,5 +60,13 @@ Thumbs.db
 *.pem
 *.key
 
+# E2E testing artifacts
+frontend/e2e/
+frontend/e2e-screenshots/
+frontend/test-results/
+frontend/playwright-report/
+frontend/playwright.config.ts
+frontend/*.png
+
 #claude
 .claude/
