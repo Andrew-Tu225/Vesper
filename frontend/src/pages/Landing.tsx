@@ -84,7 +84,7 @@ function IconRefresh() {
 
 // ─── Typewriter hero component ────────────────────────────────────────────────
 const TYPEWRITER_PHRASES = [
-  'customer feedbacks',
+  'customer feedback',
   'product updates',
   'company milestones',
   'founder insights',
