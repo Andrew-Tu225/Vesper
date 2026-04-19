@@ -167,7 +167,18 @@ async def test_reject_signal_calls_handle_reject(client, mock_db, no_sig_check):
 
 async def test_approve_signal_opens_approve_modal(client, mock_db, no_sig_check):
     workspace = _make_workspace()
-    _seed_workspace(mock_db, workspace)
+
+    # First execute call: _workspace_id_for_team returns Workspace
+    workspace_result = MagicMock()
+    workspace_result.scalar_one_or_none.return_value = workspace
+
+    # Second execute call: _fetch_draft_body returns a DraftPost with body
+    draft = MagicMock()
+    draft.body = "The draft post body"
+    draft_result = MagicMock()
+    draft_result.scalar_one_or_none.return_value = draft
+
+    mock_db.execute = AsyncMock(side_effect=[workspace_result, draft_result])
 
     with patch("app.api.webhooks.slack_actions._open_approve_modal") as mock_open:
         resp = await client.post(
@@ -178,10 +189,11 @@ async def test_approve_signal_opens_approve_modal(client, mock_db, no_sig_check)
     assert resp.status_code == 200
     mock_open.assert_called_once()
     args = mock_open.call_args[0]
-    assert args[0] == "trigger-abc123"    # trigger_id
-    assert args[1] == str(workspace.id)   # workspace_id
-    assert str(args[2]) == _SIGNAL_ID     # signal_id
-    assert args[3] == _VARIANT            # variant_number
+    assert args[0] == "trigger-abc123"        # trigger_id
+    assert args[1] == str(workspace.id)       # workspace_id
+    assert str(args[2]) == _SIGNAL_ID         # signal_id
+    assert args[3] == _VARIANT                # variant_number
+    assert args[4] == "The draft post body"   # draft_body
 
 
 async def test_rewrite_signal_opens_rewrite_modal(client, mock_db, no_sig_check):

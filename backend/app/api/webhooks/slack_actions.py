@@ -43,6 +43,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import verify_slack_signature
 from app.database import get_db
+from app.models.draft_post import DraftPost
 from app.models.workspace import Workspace
 from app.services import approval
 from app.services.slack_client import SlackClientError, get_workspace_client
@@ -147,8 +148,9 @@ async def _handle_block_action(payload: dict, db: AsyncSession) -> None:
         # Open modal — trigger_id expires in 3 seconds, so this runs first.
         trigger_id = payload.get("trigger_id", "")
         if action_id == ACTION_APPROVE:
+            draft_body = await _fetch_draft_body(signal_id, variant_number, db)
             await asyncio.to_thread(
-                _open_approve_modal, trigger_id, workspace_id, signal_id, variant_number
+                _open_approve_modal, trigger_id, workspace_id, signal_id, variant_number, draft_body
             )
         else:
             await asyncio.to_thread(
@@ -186,7 +188,16 @@ async def _handle_view_submission(payload: dict, db: AsyncSession) -> None:
         except (KeyError, TypeError, ValueError) as exc:
             logger.warning("slack_actions: missing scheduled_at in view submission: %s", exc)
             return
-        await approval.handle_approve(signal_id, variant_number, scheduled_at, actor, db)
+        edited_body = (
+            (values.get("post_body_block") or {})
+            .get("post_body_input", {})
+            .get("value", "")
+            or ""
+        )
+        await approval.handle_approve(
+            signal_id, variant_number, scheduled_at, actor, db,
+            body_override=edited_body or None,
+        )
 
     elif callback_id == CALLBACK_REWRITE_FEEDBACK:
         try:
@@ -202,6 +213,21 @@ async def _handle_view_submission(payload: dict, db: AsyncSession) -> None:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+async def _fetch_draft_body(
+    signal_id: UUID,
+    variant_number: int,
+    db: AsyncSession,
+) -> str:
+    """Return the current body for a specific DraftPost. Empty string if not found."""
+    result = await db.execute(
+        select(DraftPost)
+        .where(DraftPost.content_signal_id == signal_id)
+        .where(DraftPost.variant_number == variant_number)
+    )
+    dp = result.scalar_one_or_none()
+    return dp.body if dp else ""
 
 
 async def _workspace_id_for_team(slack_team_id: str, db: AsyncSession) -> str | None:
@@ -229,8 +255,13 @@ def _open_approve_modal(
     workspace_id: str,
     signal_id: UUID,
     variant_number: int,
+    draft_body: str,
 ) -> None:
-    """Open the approve+schedule datetime modal in Slack.
+    """Open the approve+schedule modal in Slack.
+
+    Includes an editable text field pre-filled with the draft body so the
+    reviewer can make minor copy tweaks before approving. The edited text is
+    captured on submit and saved to DraftPost.body before scheduling.
 
     Sync — called via asyncio.to_thread. Trigger IDs are valid for only
     3 seconds after the button click, so this runs before any other work.
@@ -238,6 +269,8 @@ def _open_approve_modal(
     private_metadata = json.dumps(
         {"signal_id": str(signal_id), "variant_number": variant_number}
     )
+    # Slack plain_text_input initial_value has a 3000-char limit
+    initial_body = draft_body[:3000]
     try:
         client = get_workspace_client(workspace_id)
         client.views_open(
@@ -252,13 +285,28 @@ def _open_approve_modal(
                 "blocks": [
                     {
                         "type": "input",
+                        "block_id": "post_body_block",
+                        "label": {"type": "plain_text", "text": "Post content"},
+                        "hint": {
+                            "type": "plain_text",
+                            "text": "Make any final edits before publishing.",
+                        },
+                        "element": {
+                            "type": "plain_text_input",
+                            "action_id": "post_body_input",
+                            "multiline": True,
+                            "initial_value": initial_body,
+                        },
+                    },
+                    {
+                        "type": "input",
                         "block_id": "schedule_block",
                         "label": {"type": "plain_text", "text": "When to post"},
                         "element": {
                             "type": "datetimepicker",
                             "action_id": "scheduled_at_input",
                         },
-                    }
+                    },
                 ],
             },
         )
