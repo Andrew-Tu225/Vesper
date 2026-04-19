@@ -15,6 +15,8 @@ from app.config import settings
 from app.database import get_db
 from app.redis import get_redis
 
+from app.models.user import User
+
 _TIMESTAMP_TOLERANCE_SECONDS = 300  # 5 minutes
 
 # Session constants — also imported by app.api.auth.google
@@ -58,6 +60,27 @@ async def verify_slack_signature(
 
     if not hmac.compare_digest(expected, x_slack_signature):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Slack signature")
+
+
+async def get_workspace_for_user(user: User, db: AsyncSession) -> UUID:
+    """Return the first workspace_id for the user, or raise HTTP 400."""
+    from app.models.workspace import Workspace
+    from app.models.workspace_member import WorkspaceMember
+
+    result = await db.execute(
+        select(Workspace)
+        .join(WorkspaceMember, WorkspaceMember.workspace_id == Workspace.id)
+        .where(WorkspaceMember.user_id == user.id)
+        .order_by(Workspace.created_at.asc())
+        .limit(1)
+    )
+    workspace = result.scalar_one_or_none()
+    if workspace is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No workspace found — complete Slack OAuth first",
+        )
+    return workspace.id
 
 
 async def get_current_user(

@@ -10,7 +10,9 @@ from app.api.deps import get_current_user
 from app.api.health import router as health_router
 from app.api.oauth.slack import router as slack_oauth_router
 from app.api.oauth.linkedin import router as linkedin_oauth_router
+from app.api.drafts import router as drafts_router
 from app.api.onboarding import router as onboarding_router
+from app.api.signals import router as signals_router
 from app.api.webhooks.slack_actions import router as slack_actions_router
 from app.models.user import User
 
@@ -37,6 +39,8 @@ def create_app() -> FastAPI:
     app.include_router(slack_oauth_router, prefix="/api/oauth")
     app.include_router(linkedin_oauth_router, prefix="/api/oauth")
     app.include_router(onboarding_router, prefix="/api/onboarding")
+    app.include_router(signals_router, prefix="/api")
+    app.include_router(drafts_router, prefix="/api")
     app.include_router(slack_actions_router, prefix="/api/webhooks")
 
     @app.get("/api/auth/me", tags=["auth"])
