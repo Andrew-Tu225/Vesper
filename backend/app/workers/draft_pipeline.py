@@ -37,13 +37,19 @@ from uuid import UUID, uuid4
 from celery import chain
 
 from app.db_sync import get_sync_pool
-from app.services.drafter import run_enrich_agent, run_generate
+from app.services.drafter import run_enrich_agent, run_generate, run_rewrite
 from app.workers.celery_app import celery_app
 from app.workers.constants import Queue, SignalStatus
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["run_draft_pipeline", "classify_signal", "enrich_context", "generate_draft"]
+__all__ = [
+    "run_draft_pipeline",
+    "classify_signal",
+    "enrich_context",
+    "generate_draft",
+    "rewrite_draft",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -546,5 +552,241 @@ def generate_draft(self, signal_id: str) -> str:
     logger.info(
         "generate_draft: signal=%s %d variants posted -> in_review (ts=%s)",
         signal_id, len(variants), message_ts,
+    )
+    return signal_id
+
+
+# ---------------------------------------------------------------------------
+# Rewrite helpers
+# ---------------------------------------------------------------------------
+
+def _build_rewrite_card(
+    summary: str,
+    body: str,
+    signal_id: str,
+    variant_number: int,
+) -> list[dict]:
+    """Build a single-variant Slack card for a rewritten draft.
+
+    Shows only the revised variant so the reviewer evaluates it in isolation,
+    without being distracted by the original variants that are no longer relevant.
+    """
+    button_value = json.dumps({"signal_id": signal_id, "variant_number": variant_number})
+    body_preview = body[:2900] + ("..." if len(body) > 2900 else "")
+    return [
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": f"*Rewritten draft*\n{summary[:280]}"},
+        },
+        {"type": "divider"},
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": body_preview},
+        },
+        {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Approve & Schedule"},
+                    "style": "primary",
+                    "action_id": "approve_signal",
+                    "value": button_value,
+                },
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Rewrite"},
+                    "action_id": "rewrite_signal",
+                    "value": button_value,
+                },
+            ],
+        },
+        {"type": "divider"},
+        {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Reject"},
+                    "style": "danger",
+                    "action_id": "reject_signal",
+                    "value": button_value,
+                },
+            ],
+        },
+    ]
+
+
+def _load_draft_post(signal_id: str, variant_number: int) -> dict | None:
+    """Load a single DraftPost row by signal + variant. Returns None if not found."""
+    pool = get_sync_pool()
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, body, feedback
+                FROM draft_post
+                WHERE content_signal_id = %s::uuid
+                  AND variant_number = %s
+                """,
+                (signal_id, variant_number),
+            )
+            row = cur.fetchone()
+    finally:
+        pool.putconn(conn)
+
+    if row is None:
+        return None
+    return {"id": str(row[0]), "body": row[1], "feedback": row[2]}
+
+
+def _load_slack_card_coords(signal_id: str) -> tuple[str, str] | None:
+    """Return (slack_message_ts, slack_channel_id) for the existing approval card.
+
+    Finds the first DraftPost row for this signal that has both fields set.
+    Returns None if the card was never posted (shouldn't happen in normal flow).
+    """
+    pool = get_sync_pool()
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT slack_message_ts, slack_channel_id
+                FROM draft_post
+                WHERE content_signal_id = %s::uuid
+                  AND slack_message_ts IS NOT NULL
+                  AND slack_channel_id IS NOT NULL
+                LIMIT 1
+                """,
+                (signal_id,),
+            )
+            row = cur.fetchone()
+    finally:
+        pool.putconn(conn)
+
+    if row is None:
+        return None
+    return row[0], row[1]
+
+
+def _update_draft_post_body(signal_id: str, variant_number: int, new_body: str) -> None:
+    """Overwrite DraftPost.body for a specific variant."""
+    pool = get_sync_pool()
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE draft_post
+                SET body = %s
+                WHERE content_signal_id = %s::uuid
+                  AND variant_number = %s
+                """,
+                (new_body, signal_id, variant_number),
+            )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        pool.putconn(conn)
+
+
+@celery_app.task(
+    name="app.workers.draft_pipeline.rewrite_draft",
+    queue=Queue.DRAFT_PIPELINE,
+    bind=True,
+    max_retries=3,
+    default_retry_delay=60,
+)
+def rewrite_draft(self, signal_id: str, variant_number: int) -> str:
+    """Revise a single draft variant using reviewer feedback and signal context.
+
+    Unlike generate_draft, this edits one specific variant in-place rather
+    than regenerating all variants from scratch. After updating the body, the
+    existing Slack approval card is updated in-place so the reviewer sees the
+    revised content with fresh action buttons on the same message.
+
+    Steps:
+    1. Load signal row and workspace settings.
+    2. Load the target DraftPost (has .feedback set by handle_rewrite).
+    3. Call GPT-4o run_rewrite with existing body + feedback + signal context.
+    4. Update DraftPost.body for the target variant.
+    5. Update the existing Slack card in-place via chat.update.
+    6. Status -> in_review (reset so card actions are active again).
+    """
+    logger.info("rewrite_draft: signal_id=%s variant=%s", signal_id, variant_number)
+
+    from app.services.slack_client import SlackClientError, get_workspace_client, update_message
+
+    row = _load_signal_row(signal_id)
+    if row is None:
+        logger.error("rewrite_draft: signal %s not found -- dropping", signal_id)
+        return signal_id
+
+    draft = _load_draft_post(signal_id, variant_number)
+    if draft is None:
+        logger.error(
+            "rewrite_draft: DraftPost not found for signal=%s variant=%s -- dropping",
+            signal_id, variant_number,
+        )
+        return signal_id
+
+    workspace_id = row["workspace_id"]
+    context_summary = (row["metadata_"].get("enrichment") or {}).get("context_summary")
+    raw_messages: list[dict] = row["raw_payload"].get("messages", [])
+    source_messages = [
+        {"ts": m["ts"], "channel_id": m["channel_id"], "text": m.get("text", "")}
+        for m in raw_messages
+        if m.get("ts") and m.get("channel_id") and m.get("text", "").strip()
+    ]
+
+    try:
+        revised_body = asyncio.run(run_rewrite(
+            existing_body=draft["body"],
+            feedback=draft["feedback"] or "",
+            summary=row["summary"] or "",
+            context_summary=context_summary,
+            source_messages=source_messages or None,
+        ))
+    except Exception as exc:
+        logger.exception("rewrite_draft: LLM failed for signal=%s variant=%s", signal_id, variant_number)
+        raise self.retry(exc=exc)
+
+    try:
+        _update_draft_post_body(signal_id, variant_number, revised_body)
+    except Exception as exc:
+        logger.exception("rewrite_draft: body update failed for signal=%s", signal_id)
+        raise self.retry(exc=exc)
+
+    coords = _load_slack_card_coords(signal_id)
+    if coords is None:
+        logger.warning(
+            "rewrite_draft: no card coords found for signal=%s — skipping Slack update",
+            signal_id,
+        )
+    else:
+        card_ts, card_channel = coords
+        try:
+            slack_client = get_workspace_client(workspace_id)
+            blocks = _build_rewrite_card(
+                row["summary"] or "", revised_body, signal_id, variant_number
+            )
+            update_message(slack_client, card_channel, card_ts, blocks)
+        except SlackClientError as exc:
+            logger.exception("rewrite_draft: Slack update failed for signal=%s", signal_id)
+            raise self.retry(exc=exc)
+
+    try:
+        _update_signal_status(signal_id, SignalStatus.IN_REVIEW)
+    except Exception as exc:
+        logger.exception("rewrite_draft: status update failed for signal=%s", signal_id)
+        raise self.retry(exc=exc)
+
+    logger.info(
+        "rewrite_draft: signal=%s variant=%s rewritten -> in_review (card updated in-place)",
+        signal_id, variant_number,
     )
     return signal_id

@@ -26,7 +26,7 @@ from app.services.schemas import GenerateDraftResponse, RedactResult
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["RedactError", "run_enrich_agent", "run_redact", "run_generate"]
+__all__ = ["RedactError", "run_enrich_agent", "run_redact", "run_generate", "run_rewrite"]
 
 
 class RedactError(Exception):
@@ -487,3 +487,98 @@ No bullet lists unless the content is genuinely list-shaped (e.g. a step-by-step
         variants.append(variants[0])
 
     return variants
+
+
+async def run_rewrite(
+    existing_body: str,
+    feedback: str,
+    summary: str,
+    context_summary: str | None,
+    source_messages: list[dict] | None = None,
+) -> str:
+    """Call GPT-4o to revise an existing LinkedIn post draft based on user feedback.
+
+    Unlike run_generate, this edits a specific variant rather than generating
+    from scratch. The full signal context is included so the LLM can honour
+    feedback that requires re-engaging with the source material (e.g. "be more
+    specific about the outcome").
+
+    Args:
+        existing_body:   The current draft text to be revised.
+        feedback:        The reviewer's change request (may be empty string).
+        summary:         Original signal summary from batch_classify.
+        context_summary: Enrichment agent output; None falls back to summary.
+        source_messages: Optional list of {ts, channel_id, text} dicts — raw
+                         Slack messages forming the signal.
+
+    Returns:
+        Revised post body as a plain string.
+
+    Raises:
+        Exception: On API failure or empty response.
+    """
+    truncated_context = (context_summary or summary)[:_CONTEXT_SUMMARY_MAX_CHARS]
+
+    source_block = ""
+    if source_messages:
+        lines = [
+            m.get("text", "").strip()
+            for m in source_messages[:10]
+            if m.get("text", "").strip()
+        ]
+        if lines:
+            source_block = "\n\nSource messages (raw Slack text):\n" + "\n\n".join(
+                f"  {line}" for line in lines
+            )
+
+    system_prompt = """\
+You are a LinkedIn ghostwriter editing an existing draft on behalf of a B2B startup founder.
+
+You will be given:
+- The original signal context (summary + background + source messages)
+- The current draft text
+- Feedback from the reviewer describing what should change
+
+Your job is to revise the draft to address the feedback while preserving everything that works.
+Do not rewrite from scratch unless the feedback explicitly asks for it.
+
+## Editing rules
+- Apply only what the feedback asks for — do not change tone, length, or structure beyond that
+- Keep any specific numbers, quotes, or details from the original unless the feedback removes them
+- No hashtags, no sign-off lines, no filler phrases ("thrilled to", "excited to share")
+
+## Output format
+Return the revised post and nothing else.
+- No intro sentence ("Here is the revised post:", "Sure, here it is:", etc.)
+- No outro or commentary after the post
+- No quotation marks wrapping the post
+- No markdown headers or labels
+- Plain text only — exactly what would be published on LinkedIn\
+"""
+
+    user_prompt = (
+        f"Signal summary: {summary}\n\n"
+        f"Context:\n{truncated_context}"
+        f"{source_block}\n\n"
+        f"Current draft:\n{existing_body}\n\n"
+        f"Reviewer feedback: {feedback or '(no specific feedback — improve overall quality)'}\n\n"
+        "Return the revised post."
+    )
+
+    try:
+        response = await get_openai_client().chat.completions.create(
+            model=settings.model_generate,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.7,
+        )
+    except APIError as exc:
+        raise Exception(f"OpenAI API error during rewrite: {exc}") from exc
+
+    revised = (response.choices[0].message.content or "").strip()
+    if not revised:
+        raise Exception("LLM returned empty response during rewrite")
+
+    return revised
