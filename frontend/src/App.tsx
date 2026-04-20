@@ -1,7 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { ROUTES } from '@/lib/constants'
 import { AppLayout } from '@/components/layout/AppLayout'
-import { RequireAuth } from '@/components/auth/RequireAuth'
 import Landing from '@/pages/Landing'
 import PrivacyPolicy from '@/pages/PrivacyPolicy'
 import TermsOfService from '@/pages/TermsOfService'
@@ -29,14 +28,8 @@ export default function App() {
       {/* <Route path={ROUTES.LOGIN} element={<Login />} />
       <Route path={ROUTES.AUTH_CALLBACK} element={<OAuthCallback />} /> */}
 
-      {/* Protected — wrapped in layout */}
-      <Route
-        element={
-          <RequireAuth>
-            <AppLayout />
-          </RequireAuth>
-        }
-      >
+      {/* Protected — wrapped in layout (auth bypassed for frontend dev) */}
+      <Route element={<AppLayout />}>
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
         <Route path={ROUTES.QUEUE} element={<Queue />} />
