@@ -298,7 +298,7 @@
 }
 
 .status-badge--in_review {
-  background: oklch(72% 0.14 75 / 0.15);
+  background: var(--color-accent-muted);
   color: var(--color-accent);
 }
 .status-badge--in_review .status-badge__dot { background: var(--color-accent); }
@@ -328,7 +328,7 @@
 .status-badge--failed .status-badge__dot { background: var(--color-danger); }
 
 .status-badge--default {
-  background: oklch(28% 0.01 260 / 0.5);
+  background: var(--color-surface-raised);
   color: var(--color-text-muted);
 }
 .status-badge--default .status-badge__dot { background: var(--color-text-disabled); }

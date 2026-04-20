@@ -1,21 +1,30 @@
-import { NAV_ITEMS } from '@/lib/constants'
+import { Link } from 'react-router-dom'
+import { NAV_ITEMS, ROUTES } from '@/lib/constants'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { useLogout } from '@/hooks/useLogout'
 import { SidebarNavItem } from './SidebarNavItem'
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const { data: user } = useCurrentUser()
   const logout = useLogout()
 
   const initial = user?.email?.[0]?.toUpperCase() ?? '?'
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${isOpen ? ' sidebar--open' : ''}`}>
       <div className="sidebar__brand">
-        <span className="sidebar__brand-name">Vesper</span>
+        <Link to={ROUTES.DASHBOARD} onClick={onClose} aria-label="Go to dashboard">
+          <img src="/logo.svg" alt="Vesper" className="sidebar__brand-logo" />
+        </Link>
       </div>
 
-      <nav className="sidebar__nav" aria-label="Main navigation">
+      <nav className="sidebar__nav" onClick={onClose} aria-label="Main navigation">
+        <span className="sidebar__nav-label">Workspace</span>
         {NAV_ITEMS.map((item) => (
           <SidebarNavItem key={item.route} {...item} />
         ))}
@@ -39,7 +48,7 @@ export function Sidebar() {
             disabled={logout.isPending}
             aria-label="Log out"
           >
-            {logout.isPending ? '…' : 'Out'}
+            {logout.isPending ? '…' : 'Sign out'}
           </button>
         </div>
       )}
