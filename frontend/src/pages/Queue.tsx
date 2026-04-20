@@ -39,8 +39,6 @@ export default function Queue() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: 'var(--space-6)' }}>Queue</h1>
-
       {/* Filter tabs */}
       <div className="queue-filters">
         {FILTER_TABS.map(tab => (
