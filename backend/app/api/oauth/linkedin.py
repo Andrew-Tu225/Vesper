@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 from app.config import settings
 from app.database import get_db
+from app.models.oauth_token import OAuthToken
 from app.models.user import User
 from app.models.workspace import Workspace
 from app.models.workspace_member import WorkspaceMember
@@ -118,3 +119,33 @@ async def linkedin_callback(
         url=f"{settings.app_frontend_url}/onboarding?step=channels_setup",
         status_code=status.HTTP_302_FOUND,
     )
+
+
+@router.get("/status")
+async def linkedin_status(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """Return LinkedIn connection status for the user's workspace."""
+    ws_result = await db.execute(
+        select(Workspace)
+        .join(WorkspaceMember, WorkspaceMember.workspace_id == Workspace.id)
+        .where(WorkspaceMember.user_id == user.id)
+        .order_by(Workspace.created_at.asc())
+        .limit(1)
+    )
+    workspace = ws_result.scalar_one_or_none()
+    if workspace is None:
+        return {"connected": False}
+
+    token_result = await db.execute(
+        select(OAuthToken).where(
+            OAuthToken.workspace_id == workspace.id,
+            OAuthToken.provider == "linkedin_company",
+            OAuthToken.token_type == "access",
+        )
+    )
+    if token_result.scalar_one_or_none() is None:
+        return {"connected": False}
+
+    return {"connected": True}

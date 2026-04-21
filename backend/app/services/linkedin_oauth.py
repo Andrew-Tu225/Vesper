@@ -24,12 +24,10 @@ from app.models.workspace import Workspace
 _LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
 _LINKEDIN_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
 
-# Scopes for company-page reads and posting (Phase 2+)
-# openid/profile/email — for identity at install time
-# r_organization_social — read company page posts
-# w_organization_social — post to company page
-# w_member_social       — post to personal profile (post-MVP, but harmless to request now)
-_SCOPES = "openid profile email r_organization_social w_organization_social w_member_social"
+# Scopes available on Default + Standard tiers (no Marketing Developer Platform required)
+# openid/profile/email — identity at install time (OpenID Connect)
+# w_member_social       — post to personal profile (Share on LinkedIn)
+_SCOPES = "openid profile email w_member_social"
 
 # Fallback expiry values when LinkedIn omits them in the response body
 _DEFAULT_ACCESS_EXPIRES_SECONDS = 5_183_944   # ~60 days
