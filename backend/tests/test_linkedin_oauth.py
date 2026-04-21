@@ -561,6 +561,87 @@ async def test_refresh_token_returns_false_on_decryption_failure():
     assert result is False
 
 
+# ── GET /api/oauth/linkedin/status ───────────────────────────────────────────
+
+
+def _seed_status_session(mock_redis, mock_db, user, workspace, token):
+    """Seed mocks for status endpoint: session → user → workspace → token."""
+    import json as _json
+
+    session_data = _json.dumps({"user_id": str(user.id)})
+    mock_redis.get = AsyncMock(return_value=session_data)
+
+    user_result = MagicMock()
+    user_result.scalar_one_or_none.return_value = user
+    ws_result = MagicMock()
+    ws_result.scalar_one_or_none.return_value = workspace
+    token_result = MagicMock()
+    token_result.scalar_one_or_none.return_value = token
+
+    mock_db.execute = AsyncMock(side_effect=[user_result, ws_result, token_result])
+
+
+async def test_linkedin_status_requires_auth(client):
+    resp = await client.get("/api/oauth/linkedin/status")
+
+    assert resp.status_code == 401
+
+
+async def test_linkedin_status_not_connected_when_no_workspace(client, mock_redis, mock_db):
+    import json as _json
+
+    user = _make_user()
+    mock_redis.get = AsyncMock(return_value=_json.dumps({"user_id": str(user.id)}))
+
+    user_result = MagicMock()
+    user_result.scalar_one_or_none.return_value = user
+    ws_result = MagicMock()
+    ws_result.scalar_one_or_none.return_value = None
+
+    mock_db.execute = AsyncMock(side_effect=[user_result, ws_result])
+
+    resp = await client.get(
+        "/api/oauth/linkedin/status", cookies={"vesper_session": "sid"}
+    )
+
+    assert resp.status_code == 200
+    assert resp.json() == {"connected": False}
+
+
+async def test_linkedin_status_not_connected_when_no_token(client, mock_redis, mock_db):
+    user = _make_user()
+    workspace = _make_workspace(owner_user_id=user.id)
+    _seed_status_session(mock_redis, mock_db, user, workspace, token=None)
+
+    resp = await client.get(
+        "/api/oauth/linkedin/status", cookies={"vesper_session": "sid"}
+    )
+
+    assert resp.status_code == 200
+    assert resp.json() == {"connected": False}
+
+
+async def test_linkedin_status_connected(client, mock_redis, mock_db):
+    user = _make_user()
+    workspace = _make_workspace(owner_user_id=user.id)
+
+    token = OAuthToken(
+        id=uuid4(), workspace_id=workspace.id, provider="linkedin_company",
+        token_type="access", encrypted_token=b"x", nonce=b"\x00" * 12, tag=b"\x00" * 16,
+    )
+    _seed_status_session(mock_redis, mock_db, user, workspace, token)
+
+    resp = await client.get(
+        "/api/oauth/linkedin/status", cookies={"vesper_session": "sid"}
+    )
+
+    assert resp.status_code == 200
+    assert resp.json() == {"connected": True}
+
+
+# ── exchange_code (fallback expiry) ───────────────────────────────────────────
+
+
 async def test_exchange_code_uses_fallback_expiry_when_omitted():
     from app.services.linkedin_oauth import (
         _DEFAULT_ACCESS_EXPIRES_SECONDS,
