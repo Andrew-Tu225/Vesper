@@ -66,7 +66,7 @@ async def linkedin_callback(
     # Handle user-denied before consuming the state key
     if error:
         return RedirectResponse(
-            url=f"{settings.app_frontend_url}/onboarding?step=connect_linkedin&error=access_denied",
+            url=f"{settings.app_frontend_url}/dashboard?error=access_denied",
             status_code=status.HTTP_302_FOUND,
         )
 
@@ -116,7 +116,7 @@ async def linkedin_callback(
     await upsert_tokens(db, workspace, user.id, install_data)
 
     return RedirectResponse(
-        url=f"{settings.app_frontend_url}/onboarding?step=channels_setup",
+        url=f"{settings.app_frontend_url}/dashboard",
         status_code=status.HTTP_302_FOUND,
     )
 
