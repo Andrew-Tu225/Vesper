@@ -32,11 +32,15 @@ class GoogleUserInfo:
     avatar_url: str | None
 
 
+def _callback_uri() -> str:
+    return settings.google_redirect_uri or f"{settings.app_base_url}/api/auth/google/callback"
+
+
 def build_auth_url(state: str) -> str:
     """Return the Google authorization URL the browser should be redirected to."""
     params = {
         "client_id": settings.google_client_id,
-        "redirect_uri": f"{settings.app_base_url}/api/auth/google/callback",
+        "redirect_uri": _callback_uri(),
         "response_type": "code",
         "scope": _SCOPES,
         "state": state,
@@ -62,7 +66,7 @@ async def exchange_code(code: str) -> GoogleUserInfo:
                 "code": code,
                 "client_id": settings.google_client_id,
                 "client_secret": settings.google_client_secret,
-                "redirect_uri": f"{settings.app_base_url}/api/auth/google/callback",
+                "redirect_uri": _callback_uri(),
                 "grant_type": "authorization_code",
             },
         )
