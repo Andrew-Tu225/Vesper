@@ -1,5 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { useSlackStatus } from '@/hooks/useSlackStatus'
+import { useLinkedInStatus } from '@/hooks/useLinkedInStatus'
 import '@/components/ui/ui.css'
 import './dashboard.css'
 
@@ -30,6 +32,13 @@ export default function Dashboard() {
   const { data: user } = useCurrentUser()
   const [params] = useSearchParams()
   const error = params.get('error')
+
+  const { data: slack } = useSlackStatus()
+  const { data: linkedin } = useLinkedInStatus()
+
+  const slackConnected = slack?.connected ?? false
+  const slackChannelsOk = slack?.channels_configured ?? false
+  const linkedinConnected = linkedin?.connected ?? false
 
   const firstName = user?.display_name?.split(' ')[0] ?? 'there'
 
@@ -80,37 +89,74 @@ export default function Dashboard() {
             </p>
           </div>
 
+          {/* Step 1 — Slack */}
           <div className="onboarding-step">
-            <div className="onboarding-step__indicator onboarding-step__indicator--active">1</div>
+            <div className={`onboarding-step__indicator${slackConnected ? ' onboarding-step__indicator--done' : ' onboarding-step__indicator--active'}`}>
+              {slackConnected ? <CheckIcon /> : '1'}
+            </div>
             <div className="onboarding-step__body">
               <p className="onboarding-step__title">Connect your Slack workspace</p>
-              <p className="onboarding-step__sub">Choose which channels Vesper should monitor for content signals.</p>
+              <p className="onboarding-step__sub">
+                {slackConnected
+                  ? `Connected to ${slack?.workspace_name}${slackChannelsOk ? ` · ${slack?.channel_count} channel${(slack?.channel_count ?? 0) !== 1 ? 's' : ''} monitored` : ' · no channels configured yet'}`
+                  : 'Choose which channels Vesper should monitor for content signals.'}
+              </p>
             </div>
-            <a href="/settings" className="onboarding-step__cta">
-              Connect <ArrowRight />
-            </a>
+            {slackConnected ? (
+              <a href="/settings" className="onboarding-step__cta onboarding-step__cta--secondary">
+                Manage <ArrowRight />
+              </a>
+            ) : (
+              <a href="/api/oauth/slack/install" className="onboarding-step__cta">
+                Connect <ArrowRight />
+              </a>
+            )}
           </div>
 
+          {/* Step 2 — LinkedIn */}
           <div className="onboarding-step">
-            <div className="onboarding-step__indicator">2</div>
+            <div className={`onboarding-step__indicator${linkedinConnected ? ' onboarding-step__indicator--done' : ''}`}>
+              {linkedinConnected ? <CheckIcon /> : '2'}
+            </div>
             <div className="onboarding-step__body">
               <p className="onboarding-step__title">Connect LinkedIn</p>
-              <p className="onboarding-step__sub">Authorize posting to your company page so approved drafts can publish automatically.</p>
+              <p className="onboarding-step__sub">
+                {linkedinConnected
+                  ? 'LinkedIn connected — drafts can be published automatically.'
+                  : 'Authorize posting to your company page so approved drafts can publish automatically.'}
+              </p>
             </div>
-            <a href="/settings" className="onboarding-step__cta onboarding-step__cta--secondary">
-              Connect <ArrowRight />
-            </a>
+            {linkedinConnected ? (
+              <span className="onboarding-step__cta onboarding-step__cta--done">
+                Connected <CheckIcon />
+              </span>
+            ) : slackConnected ? (
+              <a href="/api/oauth/linkedin/install" className="onboarding-step__cta onboarding-step__cta--secondary">
+                Connect <ArrowRight />
+              </a>
+            ) : (
+              <span className="onboarding-step__cta onboarding-step__cta--disabled" aria-disabled="true">
+                Connect <ArrowRight />
+              </span>
+            )}
           </div>
 
+          {/* Step 3 — Style library */}
           <div className="onboarding-step">
             <div className="onboarding-step__indicator">3</div>
             <div className="onboarding-step__body">
               <p className="onboarding-step__title">Seed your style library</p>
               <p className="onboarding-step__sub">Add 5 of your best past posts so Vesper can match your brand voice.</p>
             </div>
-            <a href="/style-library" className="onboarding-step__cta onboarding-step__cta--disabled" aria-disabled="true">
-              Add posts <ArrowRight />
-            </a>
+            {linkedinConnected ? (
+              <a href="/style-library" className="onboarding-step__cta onboarding-step__cta--secondary">
+                Add posts <ArrowRight />
+              </a>
+            ) : (
+              <span className="onboarding-step__cta onboarding-step__cta--disabled" aria-disabled="true">
+                Add posts <ArrowRight />
+              </span>
+            )}
           </div>
         </div>
       </section>
