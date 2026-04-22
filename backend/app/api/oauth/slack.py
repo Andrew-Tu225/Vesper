@@ -85,7 +85,7 @@ async def slack_callback(
     await upsert_workspace_and_token(db, user, install_data)
 
     return RedirectResponse(
-        url=f"{settings.app_frontend_url}/onboarding?step=connect_linkedin",
+        url=f"{settings.app_frontend_url}/dashboard",
         status_code=status.HTTP_302_FOUND,
     )
 
