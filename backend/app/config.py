@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     # Google / Gmail
     google_client_id: str = ""
     google_client_secret: str = ""
+    # Override when APP_BASE_URL points to a public tunnel (e.g. ngrok for Slack).
+    # Google allows localhost redirect URIs, so set this to
+    # http://localhost:8000/api/auth/google/callback and register the same URI in
+    # Google Cloud Console to keep the session cookie on localhost.
+    google_redirect_uri: str = ""
 
     # LinkedIn
     linkedin_client_id: str = ""
