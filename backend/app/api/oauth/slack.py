@@ -12,10 +12,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 from app.config import settings
 from app.database import get_db
+from app.models.oauth_token import OAuthToken
 from app.models.user import User
+from app.models.workspace import Workspace
+from app.models.workspace_member import WorkspaceMember
 from app.redis import get_redis
 from app.services.slack_oauth import (
-    SlackOAuthError,
     build_install_url,
     exchange_code,
     upsert_workspace_and_token,
@@ -83,6 +85,42 @@ async def slack_callback(
     await upsert_workspace_and_token(db, user, install_data)
 
     return RedirectResponse(
-        url=f"{settings.app_frontend_url}/onboarding?step=connect_linkedin",
+        url=f"{settings.app_frontend_url}/dashboard",
         status_code=status.HTTP_302_FOUND,
     )
+
+
+@router.get("/status")
+async def slack_status(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """Return Slack connection status for the user's workspace."""
+    ws_result = await db.execute(
+        select(Workspace)
+        .join(WorkspaceMember, WorkspaceMember.workspace_id == Workspace.id)
+        .where(WorkspaceMember.user_id == user.id)
+        .order_by(Workspace.created_at.asc())
+        .limit(1)
+    )
+    workspace = ws_result.scalar_one_or_none()
+    if workspace is None:
+        return {"connected": False}
+
+    token_result = await db.execute(
+        select(OAuthToken).where(
+            OAuthToken.workspace_id == workspace.id,
+            OAuthToken.provider == "slack",
+            OAuthToken.token_type == "bot",
+        )
+    )
+    if token_result.scalar_one_or_none() is None:
+        return {"connected": False}
+
+    channels: list = workspace.settings.get("enrichment_channels", [])
+    return {
+        "connected": True,
+        "workspace_name": workspace.name,
+        "channels_configured": len(channels) > 0,
+        "channel_count": len(channels),
+    }
