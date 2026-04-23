@@ -8,6 +8,7 @@ import TermsOfService from '@/pages/TermsOfService'
 import Login from '@/pages/Login'
 import OAuthCallback from '@/pages/OAuthCallback'
 import Dashboard from '@/pages/Dashboard'
+import ChannelSetup from '@/pages/ChannelSetup'
 import Onboarding from '@/pages/Onboarding'
 import Queue from '@/pages/Queue'
 import Calendar from '@/pages/Calendar'
@@ -28,6 +29,7 @@ export default function App() {
       {/* Protected — wrapped in layout + auth guard */}
       <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+        <Route path={ROUTES.CHANNEL_SETUP} element={<ChannelSetup />} />
         <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
         <Route path={ROUTES.QUEUE} element={<Queue />} />
         <Route path={ROUTES.CALENDAR} element={<Calendar />} />

@@ -1,4 +1,5 @@
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { ROUTES } from '@/lib/constants'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { useSlackStatus } from '@/hooks/useSlackStatus'
 import { useLinkedInStatus } from '@/hooks/useLinkedInStatus'
@@ -141,20 +142,30 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Step 3 — Style library */}
+          {/* Step 3 — Channel setup */}
           <div className="onboarding-step">
-            <div className="onboarding-step__indicator">3</div>
-            <div className="onboarding-step__body">
-              <p className="onboarding-step__title">Seed your style library</p>
-              <p className="onboarding-step__sub">Add 5 of your best past posts so Vesper can match your brand voice.</p>
+            <div className={`onboarding-step__indicator${slackChannelsOk ? ' onboarding-step__indicator--done' : slackConnected ? ' onboarding-step__indicator--active' : ''}`}>
+              {slackChannelsOk ? <CheckIcon /> : '3'}
             </div>
-            {linkedinConnected ? (
-              <a href="/style-library" className="onboarding-step__cta onboarding-step__cta--secondary">
-                Add posts <ArrowRight />
+            <div className="onboarding-step__body">
+              <p className="onboarding-step__title">Slack Channels Setup</p>
+              <p className="onboarding-step__sub">
+                {slackChannelsOk
+                  ? `${slack?.channel_count} channel${(slack?.channel_count ?? 0) !== 1 ? 's' : ''} monitored`
+                  : 'Pick which Slack channels Vesper should monitor for content signals.'}
+              </p>
+            </div>
+            {slackChannelsOk ? (
+              <a href="/settings" className="onboarding-step__cta onboarding-step__cta--secondary">
+                Manage <ArrowRight />
               </a>
+            ) : slackConnected ? (
+              <Link to={ROUTES.CHANNEL_SETUP} className="onboarding-step__cta">
+                Set up <ArrowRight />
+              </Link>
             ) : (
               <span className="onboarding-step__cta onboarding-step__cta--disabled" aria-disabled="true">
-                Add posts <ArrowRight />
+                Set up <ArrowRight />
               </span>
             )}
           </div>

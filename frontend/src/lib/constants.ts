@@ -6,6 +6,7 @@ export const ROUTES = {
   QUEUE: '/queue',
   CALENDAR: '/calendar',
   STYLE_LIBRARY: '/style-library',
+  CHANNEL_SETUP: '/channel-setup',
   SETTINGS: '/settings',
 } as const
 
