@@ -24,6 +24,7 @@ Usage
 
 import os
 from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 
 import psycopg2.pool
 
