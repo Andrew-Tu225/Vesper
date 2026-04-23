@@ -22,8 +22,6 @@ Usage
         pool.putconn(conn)
 """
 
-import os
-from urllib.parse import urlparse, urlunparse
 from urllib.parse import urlparse, urlunparse
 
 import psycopg2.pool
@@ -33,7 +31,9 @@ _db_pool: psycopg2.pool.ThreadedConnectionPool | None = None
 
 def make_sync_dsn() -> str:
     """Convert DATABASE_URL (asyncpg DSN) to a psycopg2-compatible DSN."""
-    raw = os.environ["DATABASE_URL"]
+    from app.config import settings  # deferred to avoid circular import at module load
+
+    raw = settings.database_url
     parsed = urlparse(raw)
     if parsed.scheme not in (
         "postgresql+asyncpg",
