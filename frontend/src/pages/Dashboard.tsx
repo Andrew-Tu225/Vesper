@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ROUTES } from '@/lib/constants'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
@@ -6,12 +7,23 @@ import { useLinkedInStatus } from '@/hooks/useLinkedInStatus'
 import '@/components/ui/ui.css'
 import './dashboard.css'
 
+const BANNER_KEY_INCOMPLETE = 'vesper_setup_incomplete_banner_dismissed'
+const BANNER_KEY_COMPLETE = 'vesper_setup_complete_banner_dismissed'
+
 const TODAY = new Date().toLocaleDateString('en-US', {
   weekday: 'long',
   month: 'long',
   day: 'numeric',
   year: 'numeric',
 })
+
+function XIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  )
+}
 
 function CheckIcon() {
   return (
@@ -41,6 +53,25 @@ export default function Dashboard() {
   const slackChannelsOk = slack?.channels_configured ?? false
   const linkedinConnected = linkedin?.connected ?? false
 
+  const setupComplete = slackConnected && linkedinConnected && slackChannelsOk
+
+  const [incompleteDismissed, setIncompleteDismissed] = useState(
+    () => localStorage.getItem(BANNER_KEY_INCOMPLETE) === 'true'
+  )
+  const [completeDismissed, setCompleteDismissed] = useState(
+    () => localStorage.getItem(BANNER_KEY_COMPLETE) === 'true'
+  )
+
+  function dismissIncomplete() {
+    localStorage.setItem(BANNER_KEY_INCOMPLETE, 'true')
+    setIncompleteDismissed(true)
+  }
+
+  function dismissComplete() {
+    localStorage.setItem(BANNER_KEY_COMPLETE, 'true')
+    setCompleteDismissed(true)
+  }
+
   const firstName = user?.display_name?.split(' ')[0] ?? 'there'
 
   return (
@@ -48,6 +79,28 @@ export default function Dashboard() {
       {error && (
         <div className="error-banner">
           Authentication error: {error}
+        </div>
+      )}
+
+      {!setupComplete && !incompleteDismissed && (
+        <div className="setup-banner setup-banner--incomplete" role="alert">
+          <span className="setup-banner__text">
+            Your pipeline setup isn't complete yet. Finish all three steps to start capturing signals.
+          </span>
+          <button className="setup-banner__close" onClick={dismissIncomplete} aria-label="Dismiss">
+            <XIcon />
+          </button>
+        </div>
+      )}
+
+      {setupComplete && !completeDismissed && (
+        <div className="setup-banner setup-banner--complete" role="status">
+          <span className="setup-banner__text">
+            Setup complete — your pipeline is live and ready to capture content signals.
+          </span>
+          <button className="setup-banner__close" onClick={dismissComplete} aria-label="Dismiss">
+            <XIcon />
+          </button>
         </div>
       )}
 
