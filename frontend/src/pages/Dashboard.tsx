@@ -127,11 +127,11 @@ export default function Dashboard() {
               </p>
             </div>
             {linkedinConnected ? (
-              <span className="onboarding-step__cta onboarding-step__cta--done">
-                Connected <CheckIcon />
-              </span>
+              <a href="/settings" className="onboarding-step__cta onboarding-step__cta--secondary">
+                Manage <ArrowRight />
+              </a>
             ) : slackConnected ? (
-              <a href="/api/oauth/linkedin/install" className="onboarding-step__cta onboarding-step__cta--secondary">
+              <a href="/api/oauth/linkedin/install" className="onboarding-step__cta">
                 Connect <ArrowRight />
               </a>
             ) : (
