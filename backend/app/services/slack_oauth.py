@@ -24,7 +24,7 @@ _SLACK_AUTH_URL = "https://slack.com/oauth/v2/authorize"
 _SLACK_TOKEN_URL = "https://slack.com/api/oauth.v2.access"
 
 # Bot scopes required for Phase 2: channel monitoring + approval card posting
-_BOT_SCOPES = "channels:history,channels:read,chat:write,commands"
+_BOT_SCOPES = "channels:history,channels:read,groups:history,groups:read,chat:write,commands"
 
 
 class SlackOAuthError(Exception):
