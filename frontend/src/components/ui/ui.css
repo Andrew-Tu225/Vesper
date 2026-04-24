@@ -1,3 +1,4 @@
+/* ── Buttons ─────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -10,9 +11,11 @@
   font-family: var(--font-body);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out),
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
     color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
     opacity var(--duration-fast) var(--ease-out);
   text-decoration: none;
 }
@@ -24,24 +27,27 @@
 
 .btn--primary {
   background: var(--color-accent);
-  color: oklch(12% 0.01 260);
+  color: #ffffff;
   border-color: var(--color-accent);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
 }
 
 .btn--primary:hover:not(:disabled) {
   background: var(--color-accent-hover);
   border-color: var(--color-accent-hover);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.32);
+  transform: translateY(-1px);
 }
 
 .btn--secondary {
-  background: var(--color-surface-raised);
+  background: var(--color-surface);
   color: var(--color-text);
   border-color: var(--color-border);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: var(--color-surface);
-  border-color: var(--color-border);
+  background: var(--color-surface-raised);
+  border-color: rgba(15, 13, 26, 0.15);
 }
 
 .btn--ghost {
@@ -55,7 +61,7 @@
   background: var(--color-surface-raised);
 }
 
-/* ---- Surface card ---- */
+/* ── Surface card ───────────────────────────────────────── */
 .surface-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -64,7 +70,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* ---- Spinner ---- */
+/* ── Spinner ────────────────────────────────────────────── */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -84,17 +90,17 @@
   border-width: 3px;
 }
 
-/* ---- Error banner ---- */
+/* ── Error banner ───────────────────────────────────────── */
 .error-banner {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-base);
   background: var(--color-danger-muted);
-  border: 1px solid var(--color-danger);
+  border: 1px solid rgba(220, 38, 38, 0.25);
   color: var(--color-danger);
   font-size: var(--text-sm);
 }
 
-/* ---- Full-screen loading ---- */
+/* ── Full-screen loading ─────────────────────────────────── */
 .full-loading {
   min-height: 100dvh;
   display: flex;

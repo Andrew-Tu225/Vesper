@@ -85,7 +85,7 @@ def dispatch_intake_scans(self) -> None:
 def refresh_oauth_tokens(self) -> None:
     """Proactively refresh LinkedIn OAuth tokens expiring within 7 days.
 
-    Queries all linkedin_company refresh tokens expiring within the refresh
+    Queries all linkedin_personal refresh tokens expiring within the refresh
     window, calls LinkedIn's token refresh endpoint for each, and re-encrypts
     the updated tokens. Writes an AuditLog entry on success and failure.
 
@@ -112,7 +112,7 @@ async def _refresh_oauth_tokens_async() -> None:
         # renewal that requires user re-authorization, which we cannot automate.
         expiring_access = await db.execute(
             select(OAuthToken).where(
-                OAuthToken.provider == "linkedin_company",
+                OAuthToken.provider == "linkedin_personal",
                 OAuthToken.token_type == "access",
                 OAuthToken.expires_at > datetime.now(tz=timezone.utc),
                 OAuthToken.expires_at < refresh_window,
@@ -133,9 +133,9 @@ async def _refresh_oauth_tokens_async() -> None:
             refresh_result = await db.execute(
                 select(OAuthToken).where(
                     OAuthToken.workspace_id == access_row.workspace_id,
-                    OAuthToken.provider == "linkedin_company",
+                    OAuthToken.provider == "linkedin_personal",
                     OAuthToken.token_type == "refresh",
-                    OAuthToken.user_id == None,  # noqa: E711
+                    OAuthToken.user_id == access_row.user_id,
                 )
             )
             refresh_row = refresh_result.scalar_one_or_none()
@@ -157,7 +157,7 @@ async def _refresh_oauth_tokens_async() -> None:
                         entity_id=refresh_row.id,
                         action="token_refreshed",
                         actor="celery",
-                        new_value={"provider": "linkedin_company", "token_type": "refresh"},
+                        new_value={"provider": "linkedin_personal", "token_type": "refresh"},
                     )
                 )
                 logger.info(
@@ -172,7 +172,7 @@ async def _refresh_oauth_tokens_async() -> None:
                         entity_id=refresh_row.id,
                         action="token_refresh_failed",
                         actor="celery",
-                        new_value={"provider": "linkedin_company", "token_type": "refresh"},
+                        new_value={"provider": "linkedin_personal", "token_type": "refresh"},
                     )
                 )
                 logger.warning(

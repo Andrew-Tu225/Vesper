@@ -28,7 +28,20 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     throw new FetchError(response.status, message)
   }
 
-  return response.json() as Promise<T>
+  const json = (await response.json()) as unknown
+  if (
+    json !== null &&
+    typeof json === 'object' &&
+    'success' in json &&
+    'data' in json
+  ) {
+    const envelope = json as { success: boolean; data: unknown; error: string | null }
+    if (!envelope.success) {
+      throw new FetchError(response.status, envelope.error ?? 'Unknown error')
+    }
+    return envelope.data as T
+  }
+  return json as T
 }
 
 export function getParam(

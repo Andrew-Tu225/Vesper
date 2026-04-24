@@ -1,0 +1,185 @@
+/* ═══════════════════════════════════════════════════════
+   Channel Setup — onboarding channel picker
+   ═══════════════════════════════════════════════════════ */
+
+.channel-setup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  max-width: 600px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.channel-setup__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-3);
+}
+
+.channel-setup__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  line-height: 1.2;
+  margin-bottom: var(--space-3);
+}
+
+.channel-setup__sub {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.75;
+  max-width: 52ch;
+}
+
+/* ── Card ───────────────────────────────────────────────── */
+.channel-setup__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── States ─────────────────────────────────────────────── */
+.channel-setup__state {
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.channel-setup__state--error {
+  color: var(--color-danger, #dc2626);
+}
+
+/* ── Channel list ───────────────────────────────────────── */
+.channel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.channel-item {
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.channel-item:last-child {
+  border-bottom: none;
+}
+
+.channel-item:hover {
+  background: var(--color-bg);
+}
+
+.channel-item__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  cursor: pointer;
+  width: 100%;
+}
+
+.channel-item__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.channel-item__name {
+  flex: 1;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.channel-item__count {
+  font-size: var(--text-xs);
+  color: var(--color-text-disabled);
+  white-space: nowrap;
+}
+
+/* ── Error ──────────────────────────────────────────────── */
+.channel-setup__error {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-danger, #dc2626);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ── Actions ────────────────────────────────────────────── */
+.channel-setup__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.channel-setup__cancel {
+  padding: 0.4375rem var(--space-4);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.channel-setup__cancel:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+
+.channel-setup__submit {
+  padding: 0.4375rem var(--space-5);
+  background: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-base);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.channel-setup__submit:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+.channel-setup__submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .channel-item__label {
+    padding: var(--space-4) var(--space-4);
+  }
+
+  .channel-setup__actions {
+    padding: var(--space-4) var(--space-4);
+    flex-direction: column-reverse;
+  }
+
+  .channel-setup__cancel,
+  .channel-setup__submit {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -41,6 +41,7 @@ frontend/dist/
 frontend/.vite/
 frontend/build/
 *.local
+*.tsbuildinfo
 
 # IDE
 .vscode/
