@@ -10,6 +10,8 @@ from dataclasses import dataclass
 from urllib.parse import urlencode
 
 import httpx
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -103,6 +105,7 @@ async def upsert_workspace_and_token(
             name=data.team_name,
             owner_user_id=user.id,
             slack_team_id=data.team_id,
+            trial_ends_at=datetime.now(tz=timezone.utc) + timedelta(days=30),
         )
         db.add(workspace)
         await db.flush()  # populate workspace.id before FK references below
