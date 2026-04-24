@@ -141,8 +141,9 @@ async def linkedin_status(
     token_result = await db.execute(
         select(OAuthToken).where(
             OAuthToken.workspace_id == workspace.id,
-            OAuthToken.provider == "linkedin_company",
+            OAuthToken.provider == "linkedin_personal",
             OAuthToken.token_type == "access",
+            OAuthToken.user_id == user.id,
         )
     )
     if token_result.scalar_one_or_none() is None:

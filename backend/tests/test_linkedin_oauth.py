@@ -306,7 +306,7 @@ async def test_upsert_tokens_updates_existing_rows():
     existing_access = OAuthToken(
         id=uuid4(),
         workspace_id=workspace.id,
-        provider="linkedin_company",
+        provider="linkedin_personal",
         token_type="access",
         encrypted_token=b"old-access",
         nonce=b"\x00" * 12,
@@ -316,7 +316,7 @@ async def test_upsert_tokens_updates_existing_rows():
     existing_refresh = OAuthToken(
         id=uuid4(),
         workspace_id=workspace.id,
-        provider="linkedin_company",
+        provider="linkedin_personal",
         token_type="refresh",
         encrypted_token=b"old-refresh",
         nonce=b"\x00" * 12,
@@ -439,12 +439,12 @@ def _make_refresh_token_row(workspace_id=None) -> OAuthToken:
     return OAuthToken(
         id=uuid4(),
         workspace_id=workspace_id or uuid4(),
-        provider="linkedin_company",
+        provider="linkedin_personal",
         token_type="refresh",
         encrypted_token=encrypted.ciphertext,
         nonce=encrypted.nonce,
         tag=encrypted.tag,
-        scopes="openid profile email w_organization_social",
+        scopes="openid profile email w_member_social",
         expires_at=datetime.now(tz=timezone.utc) + timedelta(days=5),
     )
 
@@ -461,7 +461,7 @@ async def test_refresh_token_returns_true_and_updates_rows():
     existing_access = OAuthToken(
         id=uuid4(),
         workspace_id=workspace_id,
-        provider="linkedin_company",
+        provider="linkedin_personal",
         token_type="access",
         encrypted_token=b"old-access",
         nonce=b"\x00" * 12,
@@ -548,7 +548,7 @@ async def test_refresh_token_returns_false_on_decryption_failure():
     bad_row = OAuthToken(
         id=uuid4(),
         workspace_id=uuid4(),
-        provider="linkedin_company",
+        provider="linkedin_personal",
         token_type="refresh",
         encrypted_token=b"garbage-ct",
         nonce=b"\x00" * 12,
@@ -626,7 +626,7 @@ async def test_linkedin_status_connected(client, mock_redis, mock_db):
     workspace = _make_workspace(owner_user_id=user.id)
 
     token = OAuthToken(
-        id=uuid4(), workspace_id=workspace.id, provider="linkedin_company",
+        id=uuid4(), workspace_id=workspace.id, provider="linkedin_personal",
         token_type="access", encrypted_token=b"x", nonce=b"\x00" * 12, tag=b"\x00" * 16,
     )
     _seed_status_session(mock_redis, mock_db, user, workspace, token)

@@ -27,14 +27,14 @@ class OAuthToken(Base, TimestampMixin):
     workspace_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("workspace.id"), nullable=False
     )
-    # NULL  = workspace-level token (Slack bot, LinkedIn company page)
+    # NULL  = workspace-level token (Slack bot)
     # SET   = user-level token (LinkedIn personal profile)
     user_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
     )
     provider: Mapped[str] = mapped_column(
         String(32), nullable=False
-    )  # 'slack' | 'linkedin_company' | 'linkedin_personal'
+    )  # 'slack' | 'linkedin_personal'
     token_type: Mapped[str] = mapped_column(
         String(32), nullable=False
     )  # 'bot' | 'access' | 'refresh'

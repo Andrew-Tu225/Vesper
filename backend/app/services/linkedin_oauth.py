@@ -29,6 +29,8 @@ _LINKEDIN_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
 # w_member_social       — post to personal profile (Share on LinkedIn)
 _SCOPES = "openid profile email w_member_social"
 
+_PROVIDER = "linkedin_personal"
+
 # Fallback expiry values when LinkedIn omits them in the response body
 _DEFAULT_ACCESS_EXPIRES_SECONDS = 5_183_944   # ~60 days
 _DEFAULT_REFRESH_EXPIRES_SECONDS = 31_536_000  # ~365 days
@@ -104,10 +106,10 @@ async def upsert_tokens(
     user_id: UUID,
     data: LinkedInInstallData,
 ) -> None:
-    """Encrypt and store LinkedIn access + refresh tokens for the workspace.
+    """Encrypt and store LinkedIn personal access + refresh tokens for the workspace.
 
     - Inserts or updates two OAuthToken rows: token_type='access' and 'refresh'.
-    - Both rows use provider='linkedin_company' and user_id=NULL (workspace-level).
+    - Both rows use provider='linkedin_personal' and user_id=user.id (user-level).
     - Advances workspace.onboarding_step from 'connect_linkedin' → 'channels_setup'.
     - Writes an AuditLog entry for the connection event.
     """
@@ -119,9 +121,9 @@ async def upsert_tokens(
         result = await db.execute(
             select(OAuthToken).where(
                 OAuthToken.workspace_id == workspace.id,
-                OAuthToken.provider == "linkedin_company",
+                OAuthToken.provider == _PROVIDER,
                 OAuthToken.token_type == token_type,
-                OAuthToken.user_id == None,  # noqa: E711 — SQLAlchemy IS NULL comparison
+                OAuthToken.user_id == user_id,
             )
         )
         existing = result.scalar_one_or_none()
@@ -131,7 +133,8 @@ async def upsert_tokens(
             db.add(
                 OAuthToken(
                     workspace_id=workspace.id,
-                    provider="linkedin_company",
+                    user_id=user_id,
+                    provider=_PROVIDER,
                     token_type=token_type,
                     encrypted_token=encrypted.ciphertext,
                     nonce=encrypted.nonce,
@@ -219,9 +222,9 @@ async def refresh_token_for_workspace(
     access_result = await db.execute(
         select(OAuthToken).where(
             OAuthToken.workspace_id == refresh_token_row.workspace_id,
-            OAuthToken.provider == "linkedin_company",
+            OAuthToken.provider == _PROVIDER,
             OAuthToken.token_type == "access",
-            OAuthToken.user_id == None,  # noqa: E711
+            OAuthToken.user_id == refresh_token_row.user_id,
         )
     )
     access_row = access_result.scalar_one_or_none()
