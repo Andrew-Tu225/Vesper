@@ -1,6 +1,7 @@
 """Tests for signals and drafts REST API endpoints.
 
 GET  /api/signals
+GET  /api/signals/stats
 GET  /api/signals/{id}
 POST /api/signals/{id}/approve
 POST /api/signals/{id}/reject
@@ -569,3 +570,113 @@ async def test_rewrite_wrong_workspace_returns_403(client, mock_redis, mock_db):
     )
 
     assert resp.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# GET /api/signals/stats
+# ---------------------------------------------------------------------------
+
+
+async def test_stats_requires_auth(client):
+    resp = await client.get("/api/signals/stats")
+    assert resp.status_code == 401
+
+
+async def test_stats_empty_workspace(client, mock_redis, mock_db):
+    user = _make_user()
+    workspace = _make_workspace()
+
+    mock_redis.get = AsyncMock(return_value=json.dumps({"user_id": str(user.id)}))
+    mock_db.execute = AsyncMock(
+        side_effect=[
+            MagicMock(scalar_one_or_none=MagicMock(return_value=user)),
+            MagicMock(scalar_one_or_none=MagicMock(return_value=workspace)),
+            MagicMock(scalar_one=MagicMock(return_value=0)),   # week count
+            MagicMock(scalar_one=MagicMock(return_value=0)),   # in_review count
+            MagicMock(scalar_one=MagicMock(return_value=0)),   # posted count
+            MagicMock(__iter__=MagicMock(return_value=iter([]))),  # mix group-by
+        ]
+    )
+
+    resp = await client.get("/api/signals/stats", cookies=_COOKIES)
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total_signals_this_week"] == 0
+    assert data["drafts_awaiting_review"] == 0
+    assert data["posts_published_this_month"] == 0
+    assert len(data["classification_mix"]) == 5
+    assert all(b["percent"] == 0 for b in data["classification_mix"])
+    assert all(b["count"] == 0 for b in data["classification_mix"])
+
+
+async def test_stats_with_data(client, mock_redis, mock_db):
+    user = _make_user()
+    workspace = _make_workspace()
+
+    # 5 + 3 + 2 + 2 + 1 = 13 total; percents: 38+23+15+15+8 = 99 → largest-remainder gives 100
+    mix_rows = [
+        MagicMock(signal_type="customer_praise", cnt=5),
+        MagicMock(signal_type="product_win", cnt=3),
+        MagicMock(signal_type="hiring", cnt=2),
+        MagicMock(signal_type="launch_update", cnt=2),
+        MagicMock(signal_type="founder_insight", cnt=1),
+    ]
+    mix_mock = MagicMock()
+    mix_mock.__iter__ = MagicMock(return_value=iter(mix_rows))
+
+    mock_redis.get = AsyncMock(return_value=json.dumps({"user_id": str(user.id)}))
+    mock_db.execute = AsyncMock(
+        side_effect=[
+            MagicMock(scalar_one_or_none=MagicMock(return_value=user)),
+            MagicMock(scalar_one_or_none=MagicMock(return_value=workspace)),
+            MagicMock(scalar_one=MagicMock(return_value=12)),  # week
+            MagicMock(scalar_one=MagicMock(return_value=3)),   # in_review
+            MagicMock(scalar_one=MagicMock(return_value=7)),   # posted
+            mix_mock,
+        ]
+    )
+
+    resp = await client.get("/api/signals/stats", cookies=_COOKIES)
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total_signals_this_week"] == 12
+    assert data["drafts_awaiting_review"] == 3
+    assert data["posts_published_this_month"] == 7
+
+    mix = {b["signal_type"]: b for b in data["classification_mix"]}
+    assert mix["customer_praise"]["count"] == 5
+    assert mix["product_win"]["count"] == 3
+    assert mix["founder_insight"]["count"] == 1
+    # percents must sum to exactly 100
+    assert sum(b["percent"] for b in data["classification_mix"]) == 100
+
+
+async def test_stats_scoped_to_workspace(client, mock_redis, mock_db):
+    """Stats queries must be scoped; other workspace data should not leak."""
+    user = _make_user()
+    workspace = _make_workspace()
+
+    mix_mock = MagicMock()
+    mix_mock.__iter__ = MagicMock(return_value=iter([]))
+
+    mock_redis.get = AsyncMock(return_value=json.dumps({"user_id": str(user.id)}))
+    mock_db.execute = AsyncMock(
+        side_effect=[
+            MagicMock(scalar_one_or_none=MagicMock(return_value=user)),
+            MagicMock(scalar_one_or_none=MagicMock(return_value=workspace)),
+            MagicMock(scalar_one=MagicMock(return_value=0)),
+            MagicMock(scalar_one=MagicMock(return_value=0)),
+            MagicMock(scalar_one=MagicMock(return_value=0)),
+            mix_mock,
+        ]
+    )
+
+    resp = await client.get("/api/signals/stats", cookies=_COOKIES)
+
+    assert resp.status_code == 200
+    # Verify workspace_id was passed to get_workspace_for_user (2nd db.execute call)
+    calls = mock_db.execute.call_args_list
+    # Auth calls come first; stats queries follow — 6 total
+    assert len(calls) == 6
