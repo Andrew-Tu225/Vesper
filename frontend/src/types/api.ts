@@ -50,3 +50,16 @@ export class FetchError extends Error {
     this.name = 'FetchError'
   }
 }
+
+export interface ClassificationBucket {
+  signal_type: string
+  count: number
+  percent: number
+}
+
+export interface SignalStats {
+  total_signals_this_week: number
+  drafts_awaiting_review: number
+  posts_published_this_month: number
+  classification_mix: ClassificationBucket[]
+}

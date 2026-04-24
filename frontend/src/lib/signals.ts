@@ -1,5 +1,9 @@
 import { apiFetch } from '@/lib/api'
-import type { SignalListResponse, SignalDetail } from '@/types/api'
+import type { SignalListResponse, SignalDetail, SignalStats } from '@/types/api'
+
+export function fetchSignalStats(): Promise<SignalStats> {
+  return apiFetch<SignalStats>('/api/signals/stats')
+}
 
 export function fetchSignals(statusFilter?: string, page = 1, limit = 20): Promise<SignalListResponse> {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
