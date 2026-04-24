@@ -1,17 +1,19 @@
 """Signals REST API — read-only access to ContentSignal rows.
 
 GET /api/signals           paginated list, optional ?status= filter
+GET /api/signals/stats     aggregate stats for the dashboard
 GET /api/signals/{id}      signal detail with nested draft_posts
 """
 
 from __future__ import annotations
 
+import math
 from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -76,6 +78,46 @@ class SignalDetailResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ClassificationBucket(BaseModel):
+    signal_type: str
+    count: int
+    percent: int
+
+
+class SignalStatsResponse(BaseModel):
+    total_signals_this_week: int
+    drafts_awaiting_review: int
+    posts_published_this_month: int
+    classification_mix: list[ClassificationBucket]
+
+
+_CANONICAL_SIGNAL_TYPES = [
+    "customer_praise",
+    "product_win",
+    "hiring",
+    "launch_update",
+    "founder_insight",
+]
+
+
+def _largest_remainder_percents(counts: dict[str, int]) -> dict[str, int]:
+    """Convert raw counts to integers that sum to exactly 100 using largest-remainder."""
+    total = sum(counts.values())
+    if total == 0:
+        return {k: 0 for k in counts}
+
+    raw = {k: v / total * 100 for k, v in counts.items()}
+    floors = {k: math.floor(v) for k, v in raw.items()}
+    remainder = 100 - sum(floors.values())
+
+    # Distribute leftover points to types with largest fractional parts
+    by_remainder = sorted(counts.keys(), key=lambda k: raw[k] - floors[k], reverse=True)
+    for k in by_remainder[:remainder]:
+        floors[k] += 1
+
+    return floors
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
@@ -120,6 +162,70 @@ async def list_signals(
         total=total,
         page=page,
         limit=limit,
+    )
+
+
+@router.get("/signals/stats", response_model=SignalStatsResponse)
+async def get_signal_stats(
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> SignalStatsResponse:
+    """Return aggregate stats for the authenticated user's workspace."""
+    workspace_id = await get_workspace_for_user(user, db)
+
+    week_result = await db.execute(
+        select(func.count())
+        .select_from(ContentSignal)
+        .where(
+            ContentSignal.workspace_id == workspace_id,
+            ContentSignal.created_at >= func.now() - text("interval '7 days'"),
+        )
+    )
+    total_signals_this_week = week_result.scalar_one()
+
+    review_result = await db.execute(
+        select(func.count())
+        .select_from(ContentSignal)
+        .where(
+            ContentSignal.workspace_id == workspace_id,
+            ContentSignal.status == "in_review",
+        )
+    )
+    drafts_awaiting_review = review_result.scalar_one()
+
+    month_result = await db.execute(
+        select(func.count())
+        .select_from(ContentSignal)
+        .where(
+            ContentSignal.workspace_id == workspace_id,
+            ContentSignal.status == "posted",
+            ContentSignal.created_at >= func.now() - text("interval '30 days'"),
+        )
+    )
+    posts_published_this_month = month_result.scalar_one()
+
+    mix_result = await db.execute(
+        select(ContentSignal.signal_type, func.count().label("cnt"))
+        .where(
+            ContentSignal.workspace_id == workspace_id,
+            ContentSignal.signal_type.isnot(None),
+        )
+        .group_by(ContentSignal.signal_type)
+    )
+    raw_counts: dict[str, int] = {row.signal_type: row.cnt for row in mix_result}
+    counts = {t: raw_counts.get(t, 0) for t in _CANONICAL_SIGNAL_TYPES}
+    percents = _largest_remainder_percents(counts)
+
+    classification_mix = [
+        ClassificationBucket(signal_type=t, count=counts[t], percent=percents[t])
+        for t in _CANONICAL_SIGNAL_TYPES
+    ]
+
+    return SignalStatsResponse(
+        total_signals_this_week=total_signals_this_week,
+        drafts_awaiting_review=drafts_awaiting_review,
+        posts_published_this_month=posts_published_this_month,
+        classification_mix=classification_mix,
     )
 
 
