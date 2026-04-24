@@ -79,6 +79,13 @@ Unique index on `(workspace_id, channel_id, message_ts)`. IVFFlat index (`lists=
 
 **`oauth_token`** — all OAuth tokens encrypted with AES-256-GCM. Three-column layout: `encrypted_token`, `nonce`, `tag`. Nonce enforced unique at DB level (GCM security requirement).
 
+| `provider` | `user_id` | Description |
+|---|---|---|
+| `slack` | NULL | Workspace-level Slack bot token |
+| `linkedin_personal` | user.id | User-level LinkedIn personal profile token |
+
+LinkedIn tokens use `provider='linkedin_personal'` with `user_id` set (user-level). Scopes: `openid profile email w_member_social`. `workspace.linkedin_org_id` is reserved for future org-page posting (requires LinkedIn Marketing Developer Platform access) but is currently unused.
+
 ## Onboarding Step Progression
 
 ```
