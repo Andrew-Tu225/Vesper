@@ -12,7 +12,6 @@ import ChannelSetup from '@/pages/ChannelSetup'
 import Onboarding from '@/pages/Onboarding'
 import Queue from '@/pages/Queue'
 import Calendar from '@/pages/Calendar'
-import StyleLibrary from '@/pages/StyleLibrary'
 import Settings from '@/pages/Settings'
 import NotFound from '@/pages/NotFound'
 
@@ -33,7 +32,6 @@ export default function App() {
         <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
         <Route path={ROUTES.QUEUE} element={<Queue />} />
         <Route path={ROUTES.CALENDAR} element={<Calendar />} />
-        <Route path={ROUTES.STYLE_LIBRARY} element={<StyleLibrary />} />
         <Route path={ROUTES.SETTINGS} element={<Settings />} />
       </Route>
 

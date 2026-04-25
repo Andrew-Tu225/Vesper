@@ -3,7 +3,7 @@ import { getParam } from '@/lib/api'
 import { SurfaceCard } from '@/components/ui/SurfaceCard'
 import '@/components/ui/ui.css'
 
-type OnboardingStep = 'connect_slack' | 'connect_linkedin' | 'seed_style_library'
+type OnboardingStep = 'connect_slack' | 'connect_linkedin'
 
 const STEPS: Record<OnboardingStep, { title: string; description: string; action?: { label: string; href: string } }> = {
   connect_slack: {
@@ -16,15 +16,9 @@ const STEPS: Record<OnboardingStep, { title: string; description: string; action
     description: 'Grant Vesper permission to publish posts to your LinkedIn company page.',
     action: { label: 'Connect LinkedIn', href: '/api/oauth/linkedin/install' },
   },
-  seed_style_library: {
-    title: 'Seed Your Style Library',
-    description:
-      'Add at least 5 approved LinkedIn posts to teach Vesper your brand voice. You can do this from the Style Library page.',
-    action: { label: 'Go to Style Library', href: '/style-library' },
-  },
 }
 
-const STEP_ORDER: OnboardingStep[] = ['connect_slack', 'connect_linkedin', 'seed_style_library']
+const STEP_ORDER: OnboardingStep[] = ['connect_slack', 'connect_linkedin']
 
 function isValidStep(step: string): step is OnboardingStep {
   return STEP_ORDER.includes(step as OnboardingStep)
