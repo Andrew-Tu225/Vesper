@@ -4,8 +4,8 @@
 
 .landing {
   /* Design tokens */
-  --bg:           #fafaf8;
-  --bg-alt:       #f5f4f0;
+  --bg:           #f5f1ea;
+  --bg-alt:       #ede9e0;
   --white:        #ffffff;
   --accent:       #2563eb;
   --accent-mid:   #3b82f6;
@@ -21,6 +21,8 @@
   --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --radius-card:  18px;
 
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
@@ -70,7 +72,8 @@
 
 .gradientText {
   color: var(--accent);
-  font-style: italic;
+  font-style: normal;
+  font-family: inherit;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -79,13 +82,59 @@
 .nav {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 100;
-  background: rgba(250, 250, 248, 0.82);
+  width: 100%;
+  background: rgba(245, 241, 234, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  box-shadow: inset 0 -1px 0 rgba(15, 13, 26, 0.09);
+  transition:
+    width 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    top 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navScrolled {
+  top: 12px;
+  width: min(640px, calc(100vw - 32px));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 8px 32px rgba(15, 13, 26, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(15, 13, 26, 0.07);
+}
+
+.navScrolled .navInner {
+  padding: 0 1rem;
+  height: 48px;
+  gap: 0.75rem;
+}
+
+.navScrolled .navLinks {
+  display: flex;
+  gap: 1rem;
+}
+
+.navScrolled .navLogo img {
+  height: 28px;
+}
+
+.navScrolled .navLink {
+  font-size: 0.8125rem;
+}
+
+.navScrolled .navLogin {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8125rem;
+}
+
+.navScrolled .navHamburger {
+  display: none;
 }
 
 .navInner {
@@ -127,24 +176,27 @@
   color: var(--text);
 }
 
-.navCta {
-  padding: 0.5625rem 1.25rem;
-  font-size: 0.9rem;
+.navLogin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 150ms, transform 150ms, box-shadow 150ms;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid rgba(15, 13, 26, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
   white-space: nowrap;
   font-family: var(--font-body);
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
-.navCta:hover {
-  background: var(--accent-mid);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.18);
+.navLogin:hover {
+  color: var(--accent);
+  background: #ffffff;
+  border-color: rgba(37, 99, 235, 0.24);
 }
 
 /* ── Hamburger ─────────────────────────────────────────────────────── */
@@ -217,24 +269,6 @@
   color: var(--text);
 }
 
-.mobileMenuCta {
-  margin-top: 0.75rem;
-  padding: 0.8125rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 600;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: var(--font-body);
-  transition: background 150ms;
-}
-
-.mobileMenuCta:hover {
-  background: var(--accent-mid);
-}
-
 /* ═══════════════════════════════════════════════════════════════════
    SCROLL REVEAL SYSTEM
    ═══════════════════════════════════════════════════════════════════ */
@@ -270,7 +304,7 @@
   position: relative;
   padding: 8rem 1.5rem 5rem;
   overflow: hidden;
-  background: var(--white);
+  background: transparent;
   text-align: center;
   border-bottom: 1px solid var(--border);
 }
@@ -984,7 +1018,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 .problem {
   padding: clamp(5rem, 8vw, 8rem) 1.5rem;
-  background: #faf9f6;
+  background: rgba(250, 249, 246, 0.55);
   border-top: 1px solid var(--border);
 }
 
@@ -1047,7 +1081,8 @@
 }
 
 .problemInsight em {
-  font-style: italic;
+  font-style: normal;
+  font-family: inherit;
   color: var(--accent);
 }
 
@@ -1066,7 +1101,7 @@
   border-bottom: 1px solid var(--border);
   padding: 2.75rem 1.5rem;
   text-align: center;
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .trustLabel {
@@ -1122,7 +1157,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 .howItWorks {
   padding: clamp(5rem, 8vw, 8rem) 0;
-  background: var(--bg);
+  background: transparent;
 }
 
 .steps {
@@ -1892,110 +1927,98 @@
 /* ═══════════════════════════════════════════════════════════════════
    WAITLIST SECTION
    ═══════════════════════════════════════════════════════════════════ */
-.waitlistSection {
-  padding: clamp(6rem, 10vw, 10rem) 1.5rem;
-  background: #faf9f6;
+.pricingSection {
+  padding: clamp(6rem, 10vw, 9rem) 1.5rem;
+  background: rgba(250, 249, 246, 0.72);
   border-top: 1px solid var(--border);
-  text-align: center;
-  position: relative;
 }
 
-.waitlistInner {
-  max-width: 48rem;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
+.pricingGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 3rem;
 }
 
-.waitlistTitle {
+.pricingCard {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 13, 26, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: left;
+  box-shadow: 0 20px 48px -36px rgba(15, 13, 26, 0.2);
+}
+
+.pricingCardFeatured {
+  background: #ffffff;
+  border-color: rgba(37, 99, 235, 0.22);
+  box-shadow:
+    0 24px 56px -36px rgba(15, 13, 26, 0.24),
+    0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+
+.pricingCardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pricingName {
+  margin: 0 0 0.4rem;
   font-family: var(--font-display);
-  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.028em;
-  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  line-height: 1.1;
   color: var(--text);
 }
 
-.waitlistSub {
-  font-size: 1.0625rem;
+.pricingDescription {
+  margin: 0;
   color: var(--text-muted);
-  margin: 0 0 2.75rem;
+  font-size: 0.95rem;
   line-height: 1.65;
 }
 
-/* ─── Form ───────────────────────────────────────────────────────── */
-.inputGroup {
+.pricingAmount {
   display: flex;
-  gap: 0.75rem;
-  max-width: 36rem;
-  margin: 0 auto;
+  align-items: baseline;
+  gap: 0.3rem;
 }
 
-.input {
-  flex: 1;
-  padding: 0.9375rem 1.25rem;
-  font-size: 1rem;
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
+.pricingPrice {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  line-height: 1;
   color: var(--text);
-  font-family: var(--font-body);
-  transition: border-color 150ms, box-shadow 150ms;
 }
 
-.input::placeholder {
+.pricingCadence {
   color: var(--text-dim);
+  font-size: 0.95rem;
 }
 
-.input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+.pricingList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-.input:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+.pricingItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
-.button {
-  padding: 0.9375rem 1.875rem;
-  font-size: 1rem;
-  font-weight: 600;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  white-space: nowrap;
-  font-family: var(--font-body);
-  transition: background 150ms, transform 150ms, box-shadow 150ms;
-}
-
-.button:hover:not(:disabled) {
-  background: var(--accent-mid);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.32);
-}
-
-.button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.successMessage {
-  margin-top: 1.25rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: #16a34a;
-}
-
-.errorMessage {
-  margin-top: 1.25rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: #dc2626;
+.pricingItem svg {
+  color: var(--accent);
+  margin-top: 0.25rem;
+  flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -2004,7 +2027,7 @@
 .footer {
   padding: 2rem 1.5rem;
   border-top: 1px solid var(--border);
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.85);
 }
 
 .footerInner {
@@ -2076,6 +2099,39 @@
 }
 
 @media (max-width: 768px) {
+  .nav {
+    top: 12px;
+    width: min(calc(100vw - 20px), 34rem);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow:
+      0 10px 28px rgba(15, 13, 26, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 0 0 1px rgba(15, 13, 26, 0.07);
+  }
+
+  .navScrolled {
+    top: 12px;
+    width: min(calc(100vw - 20px), 34rem);
+    border-radius: 999px;
+  }
+
+  .navInner,
+  .navScrolled .navInner {
+    max-width: none;
+    height: 48px;
+    padding: 0 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.625rem;
+  }
+
+  .navLogo img,
+  .navScrolled .navLogo img {
+    height: 28px;
+  }
+
   .heroVisual {
     /* Switch to vertical stacking on mobile */
     grid-template-columns: 1fr;
@@ -2100,20 +2156,44 @@
   .bridgeStages { gap: 0.25rem; }
 
   .navLinks {
-    display: none;
+    display: flex;
+    gap: 0.75rem;
   }
 
-  .navCta {
-    display: none;
+  .navScrolled .navLinks {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .navLink,
+  .navScrolled .navLink {
+    font-size: 0.75rem;
+  }
+
+  .navLogin,
+  .navScrolled .navLogin {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    background: rgba(248, 245, 239, 0.9);
+    border-color: rgba(15, 13, 26, 0.08);
+    color: var(--text);
   }
 
   .navHamburger {
-    display: flex;
+    display: none;
+  }
+
+  .navScrolled .navHamburger {
+    display: none;
   }
 
   .step {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .pricingGrid {
+    grid-template-columns: 1fr;
   }
 
   .stepReverse {
@@ -2196,3 +2276,2162 @@
     justify-content: center;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO FLOATING CARDS
+   ═══════════════════════════════════════════════════════════════════ */
+.heroFloatingCards {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Base card */
+.floatingCard {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow:
+    0 24px 64px -12px rgba(15, 13, 26, 0.2),
+    0 0 0 1px rgba(15, 13, 26, 0.06);
+  overflow: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* LinkedIn post card — left side */
+.floatingCardLinkedIn {
+  width: 300px;
+  top: 12%;
+  left: -80px;
+  transform: rotate(-6deg);
+  opacity: 0.9;
+}
+
+/* Slack board card — right side */
+.floatingCardSlack {
+  width: 292px;
+  top: 8%;
+  right: -60px;
+  transform: rotate(5.5deg);
+  opacity: 0.88;
+}
+
+/* Approval card — bottom right */
+.floatingCardApproval {
+  width: 264px;
+  bottom: 10%;
+  right: 2%;
+  transform: rotate(-3.5deg);
+  opacity: 0.85;
+}
+
+/* Classify card — bottom left */
+.floatingCardClassify {
+  width: 256px;
+  bottom: 8%;
+  left: 1%;
+  transform: rotate(7deg);
+  opacity: 0.82;
+}
+
+/* ── LinkedIn card internals ── */
+.fcLiHeader {
+  padding: 12px 14px 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid rgba(15, 13, 26, 0.07);
+}
+
+.fcLiAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0077b5, #0099d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.fcLiMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.fcLiName {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0f0d1a;
+  line-height: 1.3;
+}
+
+.fcLiSub {
+  font-size: 0.625rem;
+  color: #9d98ad;
+  line-height: 1.3;
+}
+
+.fcLiBody {
+  padding: 10px 14px 12px;
+}
+
+.fcLiText {
+  font-size: 0.7rem;
+  color: #3d3a4a;
+  line-height: 1.55;
+  margin: 0 0 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  line-clamp: 4;
+  overflow: hidden;
+}
+
+.fcLiReactions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6rem;
+  color: #9d98ad;
+}
+
+/* ── Slack card internals ── */
+.fcSlackBar {
+  background: #3f0f40;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fcSlackBarDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.fcSlackChannel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  flex: 1;
+}
+
+.fcSlackBody {
+  padding: 10px 12px 12px;
+}
+
+.fcSlackMsg {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.fcSlackAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #4a154b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.fcSlackRight {
+  flex: 1;
+  min-width: 0;
+}
+
+.fcSlackName {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #0f0d1a;
+  line-height: 1.3;
+}
+
+.fcSlackAppTag {
+  display: inline-block;
+  font-size: 0.5rem;
+  font-weight: 600;
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.fcSlackText {
+  font-size: 0.6375rem;
+  color: #3d3a4a;
+  line-height: 1.5;
+  margin: 3px 0 6px;
+}
+
+.fcSlackDraft {
+  background: rgba(15, 13, 26, 0.04);
+  border-left: 3px solid #2563eb;
+  border-radius: 0 6px 6px 0;
+  padding: 5px 8px;
+  font-size: 0.6rem;
+  color: #5b5474;
+  line-height: 1.45;
+  margin-bottom: 7px;
+}
+
+.fcSlackActions {
+  display: flex;
+  gap: 4px;
+}
+
+.fcSlackBtn {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(15, 13, 26, 0.15);
+  background: #fff;
+  color: #0f0d1a;
+  cursor: default;
+}
+
+.fcSlackBtnApprove {
+  background: #16a34a;
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ── Approval card internals ── */
+.fcApprovalHeader {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.fcApprovalCheck {
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.fcApprovalTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.fcApprovalBody {
+  padding: 10px 14px 12px;
+}
+
+.fcApprovalPost {
+  font-size: 0.675rem;
+  color: #3d3a4a;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.fcApprovalMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fcApprovalBadge {
+  font-size: 0.575rem;
+  font-weight: 600;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: 100px;
+  padding: 2px 7px;
+}
+
+.fcApprovalTime {
+  font-size: 0.575rem;
+  color: #9d98ad;
+}
+
+/* ── Classify card internals ── */
+.fcClassifyHeader {
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid rgba(15, 13, 26, 0.07);
+}
+
+.fcClassifyLabel {
+  font-size: 0.575rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9d98ad;
+  margin-bottom: 4px;
+}
+
+.fcClassifyQuote {
+  font-size: 0.6375rem;
+  color: #3d3a4a;
+  line-height: 1.45;
+  font-style: italic;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.fcClassifyBody {
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fcClassifyRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.fcClassifyKey {
+  font-size: 0.575rem;
+  color: #5b5474;
+  font-weight: 500;
+  grid-column: 1;
+}
+
+.fcClassifyBarTrack {
+  height: 4px;
+  background: rgba(15, 13, 26, 0.07);
+  border-radius: 2px;
+  overflow: hidden;
+  grid-column: 1;
+}
+
+.fcClassifyBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  border-radius: 2px;
+}
+
+.fcClassifyPct {
+  font-size: 0.575rem;
+  font-weight: 700;
+  color: #2563eb;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
+/* Hide cards on small screens */
+@media (max-width: 1024px) {
+  .floatingCardClassify,
+  .floatingCardApproval {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroFloatingCards {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FEATURES BENTO
+   ═══════════════════════════════════════════════════════════════════ */
+.bentoSection {
+  padding: clamp(5rem, 8vw, 8rem) 1.5rem;
+  background: transparent;
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "linkedin linkedin slack"
+    "classify redact    slack";
+  gap: 1rem;
+  max-width: 72rem;
+  margin: 3.5rem auto 0;
+}
+
+.bentoTile {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  position: relative;
+  transition:
+    transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bentoTile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(15, 13, 26, 0.12);
+}
+
+/* Colored radial glow per tile */
+.bentoTile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bentoLinkedIn { grid-area: linkedin; }
+.bentoLinkedIn::before {
+  background: radial-gradient(ellipse at 90% 10%, rgba(10, 102, 194, 0.07), transparent 65%);
+}
+
+.bentoSlack { grid-area: slack; }
+.bentoSlack::before {
+  background: radial-gradient(ellipse at 15% 85%, rgba(74, 21, 75, 0.09), transparent 65%);
+}
+
+.bentoClassify { grid-area: classify; }
+.bentoClassify::before {
+  background: radial-gradient(ellipse at 85% 85%, rgba(22, 163, 74, 0.08), transparent 65%);
+}
+
+.bentoRedact { grid-area: redact; }
+.bentoRedact::before {
+  background: radial-gradient(ellipse at 15% 15%, rgba(245, 158, 11, 0.1), transparent 65%);
+}
+
+/* Shared tile inner layout */
+.bentoTileInner {
+  position: relative;
+  z-index: 1;
+  padding: 1.375rem 1.375rem 1.25rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.bentoTileHeading {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0 0 0.3rem;
+}
+
+.bentoTileDesc {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0 0 1.125rem;
+}
+
+.bentoMockup {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── LinkedIn mini mockup ─────────────────────────────────────────── */
+.liMiniHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.liMiniAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.liMiniMeta {
+  flex: 1;
+}
+
+.liMiniName {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.liMiniSub {
+  font-size: 0.625rem;
+  color: var(--text-dim);
+}
+
+.liMiniFollowBtn {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border: 1.5px solid #0a66c2;
+  border-radius: 100px;
+  background: transparent;
+  color: #0a66c2;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  flex-shrink: 0;
+}
+
+.liMiniText {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0 0 0.625rem;
+}
+
+.liMiniText strong { color: #0a66c2; }
+
+.liMiniStats {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.625rem;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+}
+
+.liMiniVariantRow {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.liMiniVariantPill {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.liMiniVariantPillActive {
+  background: var(--accent-light);
+  border-color: rgba(37, 99, 235, 0.25);
+  color: var(--accent);
+}
+
+/* ── Slack mini mockup ───────────────────────────────────────────── */
+.slackMiniBar {
+  background: #3f0e40;
+  padding: 0.375rem 0.75rem;
+  margin: -1.375rem -1.375rem 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.slackMiniChannel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+}
+
+.slackMiniMembers {
+  font-size: 0.5rem;
+  color: rgba(255,255,255,0.45);
+}
+
+.slackMiniMsg {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.slackMiniAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.slackMiniRight { flex: 1; min-width: 0; }
+
+.slackMiniMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.2rem;
+}
+
+.slackMiniMeta strong { font-size: 0.75rem; font-weight: 700; color: var(--text); }
+.slackMiniMeta span   { font-size: 0.5625rem; color: var(--text-dim); }
+
+.slackMiniAppTag {
+  font-size: 0.4375rem;
+  font-weight: 700;
+  padding: 0.1rem 0.275rem;
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 3px;
+}
+
+.slackMiniBotText {
+  font-size: 0.75rem;
+  color: var(--text);
+  margin: 0 0 0.5rem;
+}
+
+.slackMiniDraft {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.slackMiniActions {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.slackMiniApprove {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.slackMiniSchedule {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.slackMiniRewrite {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  background: var(--bg-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+/* ── Classify mini mockup ────────────────────────────────────────── */
+.classifyQuote {
+  background: var(--bg-alt);
+  border-left: 3px solid var(--accent);
+  padding: 0.375rem 0.625rem;
+  border-radius: 0 5px 5px 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0 0 0.875rem;
+  font-style: italic;
+}
+
+.classifyRow {
+  display: grid;
+  grid-template-columns: 7rem 1fr 2.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.classifyKey {
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.classifyBar {
+  height: 5px;
+  background: var(--bg-alt);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.classifyBarFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.classifyPct {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+/* ── Redact mini mockup ──────────────────────────────────────────── */
+.redactLabel {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 0.375rem;
+}
+
+.redactBefore {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0 0 0.625rem;
+}
+
+.redactArrow {
+  font-size: 0.875rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 0.625rem;
+}
+
+.redactAfter {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.redactToken {
+  display: inline-block;
+  padding: 0.05rem 0.35rem;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #b45309;
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+/* ── Bento responsive ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .bentoGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "linkedin linkedin"
+      "slack    classify"
+      "redact   redact";
+  }
+}
+
+@media (max-width: 600px) {
+  .bentoGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "linkedin"
+      "slack"
+      "classify"
+      "redact";
+  }
+}
+
+/* ==========================================================================
+   SHARED MOCKUPS + HERO CLUSTER OVERRIDES
+   ========================================================================== */
+
+.hero {
+  overflow: clip;
+}
+
+.heroMockupCluster {
+  max-width: 82rem;
+  margin: 3.5rem auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr) minmax(0, 18rem);
+  align-items: start;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.heroMockupStackLeft,
+.heroMockupStackRight {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.heroMockupStackLeft {
+  padding-top: 4rem;
+}
+
+.heroMockupStackRight {
+  padding-top: 1.25rem;
+}
+
+.heroMockupCenter {
+  min-width: 0;
+}
+
+.heroMockupCenter .heroVisual {
+  margin: 0;
+  max-width: 100%;
+}
+
+.heroMockupLinkedIn,
+.heroMockupSlack,
+.heroMockupApproval {
+  width: 100%;
+}
+
+.heroMockupSlack {
+  transform: rotate(2deg);
+}
+
+.heroMockupApproval {
+  transform: translateX(1rem);
+}
+
+.productMockup {
+  width: 100%;
+}
+
+.productMockupHero {
+  max-width: 20rem;
+}
+
+.productMockupTile {
+  max-width: none;
+}
+
+.productMockupShell {
+  background: #ffffff;
+  border: 1px solid rgba(15, 13, 26, 0.09);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 22px 50px -26px rgba(15, 13, 26, 0.26),
+    0 0 0 1px rgba(255, 255, 255, 0.65) inset;
+}
+
+.linkedinPostMockup {
+  color: #1f2937;
+}
+
+.linkedinPostHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.9rem 0.95rem 0.75rem;
+  border-bottom: 1px solid rgba(15, 13, 26, 0.07);
+}
+
+.linkedinPostAvatar {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.7rem;
+  background: linear-gradient(135deg, #0a66c2, #1d4ed8);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.linkedinPostMeta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.linkedinPostMeta strong {
+  font-size: 0.82rem;
+  color: #111827;
+}
+
+.linkedinPostMeta span {
+  font-size: 0.63rem;
+  color: #6b7280;
+  line-height: 1.25;
+}
+
+.linkedinFollowPill {
+  padding: 0.3rem 0.7rem;
+  border: 1.5px solid #0a66c2;
+  border-radius: 999px;
+  background: transparent;
+  color: #0a66c2;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+
+.linkedinPostBody {
+  padding: 0.85rem 0.95rem 0.7rem;
+}
+
+.linkedinPostBody p {
+  margin: 0 0 0.65rem;
+  font-size: 0.77rem;
+  line-height: 1.58;
+  color: #374151;
+}
+
+.linkedinPostBody p:last-child {
+  margin-bottom: 0;
+}
+
+.linkedinPostBody strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+.linkedinPostTags {
+  color: #0a66c2 !important;
+  font-weight: 600;
+}
+
+.linkedinPostStats {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0.95rem;
+  border-top: 1px solid rgba(15, 13, 26, 0.07);
+  color: #6b7280;
+  font-size: 0.63rem;
+}
+
+.linkedinEmojiRow {
+  display: inline-flex;
+  gap: 0.12rem;
+  margin-right: 0.2rem;
+}
+
+.linkedinPostActions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid rgba(15, 13, 26, 0.07);
+}
+
+.linkedinPostActions button {
+  padding: 0.7rem 0.5rem;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  color: #4b5563;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+}
+
+.linkedinPostActions svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+
+.slackChannelMockup,
+.slackApprovalMockup {
+  background: #f8f8fb;
+}
+
+.slackWindowBar {
+  height: 2rem;
+  background: #efe9f6;
+  border-bottom: 1px solid rgba(15, 13, 26, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+}
+
+.slackWindowDots {
+  display: flex;
+  gap: 0.28rem;
+}
+
+.slackWindowDots span {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 999px;
+}
+
+.slackWindowDots span:nth-child(1) { background: #ff5f57; }
+.slackWindowDots span:nth-child(2) { background: #febc2e; }
+.slackWindowDots span:nth-child(3) { background: #28c840; }
+
+.slackWindowLabel {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #6b5d7a;
+}
+
+.slackChannelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.8rem 0.95rem;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(15, 13, 26, 0.07);
+}
+
+.slackChannelHeader strong {
+  display: block;
+  color: #1f2937;
+  font-size: 0.8rem;
+  margin-bottom: 0.12rem;
+}
+
+.slackChannelHeader span {
+  font-size: 0.62rem;
+  color: #6b7280;
+}
+
+.slackChannelStatus {
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d !important;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.slackChannelMessages {
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.slackMessageRow {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.slackMessageRowApp {
+  padding-top: 0.15rem;
+}
+
+.slackMessageAvatar {
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 0.55rem;
+  background: #4a154b;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.slackMessageAvatarRose {
+  background: #e11d48;
+}
+
+.slackMessageAvatarBlue {
+  background: #2563eb;
+}
+
+.slackMessageContent {
+  min-width: 0;
+  flex: 1;
+}
+
+.slackMessageMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.16rem;
+}
+
+.slackMessageMeta strong {
+  font-size: 0.72rem;
+  color: #111827;
+}
+
+.slackMessageMeta span {
+  font-size: 0.58rem;
+  color: #6b7280;
+}
+
+.slackMessageContent p {
+  margin: 0;
+  color: #374151;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.slackAppBadge {
+  padding: 0.08rem 0.3rem;
+  border-radius: 0.25rem;
+  background: #ede9fe;
+  color: #6d28d9 !important;
+  font-weight: 700;
+}
+
+.slackInlineDraft {
+  margin-top: 0.28rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.6rem;
+  background: #f3f4f6;
+  border-left: 3px solid #7c3aed;
+  color: #4b5563;
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.approvalCard {
+  margin: 0.9rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 13, 26, 0.08);
+  border-radius: 0.9rem;
+  padding: 0.9rem;
+  box-shadow: 0 10px 24px -18px rgba(15, 13, 26, 0.35);
+}
+
+.approvalCardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
+}
+
+.approvalCardTitle {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.approvalCardBot {
+  width: 1.95rem;
+  height: 1.95rem;
+  border-radius: 0.65rem;
+  background: #4a154b;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.approvalCardTitle strong {
+  display: block;
+  font-size: 0.76rem;
+  color: #111827;
+  margin-bottom: 0.12rem;
+}
+
+.approvalCardTitle span {
+  font-size: 0.61rem;
+  color: #6b7280;
+}
+
+.approvalCardState {
+  padding: 0.24rem 0.5rem;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.approvalDraftBlock {
+  background: #f8fafc;
+  border: 1px solid rgba(15, 13, 26, 0.08);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+.approvalDraftBlock p {
+  margin: 0 0 0.6rem;
+  color: #334155;
+  font-size: 0.71rem;
+  line-height: 1.52;
+}
+
+.approvalDraftMeta {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.approvalDraftMeta span {
+  padding: 0.2rem 0.42rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 0.56rem;
+  font-weight: 700;
+}
+
+.approvalActions {
+  display: flex;
+  gap: 0.42rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
+.approvalActions button {
+  padding: 0.42rem 0.66rem;
+  border-radius: 0.55rem;
+  border: 1px solid rgba(15, 13, 26, 0.12);
+  background: #fff;
+  color: #374151;
+  font-size: 0.64rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+}
+
+.approvalActions .approvalPrimary {
+  background: #16a34a;
+  color: #fff;
+  border-color: #16a34a;
+}
+
+.secondaryMockup {
+  padding: 0.95rem;
+  background: #ffffff;
+}
+
+.secondaryMockupHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.secondaryMockupHeader strong {
+  font-size: 0.74rem;
+  color: #111827;
+}
+
+.secondaryMockupHeader span {
+  font-size: 0.58rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.secondaryQuote {
+  margin: 0 0 0.9rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  border-left: 3px solid #7c3aed;
+  font-size: 0.72rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.classifyList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.classifyListRow {
+  display: grid;
+  grid-template-columns: minmax(0, 7rem) minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.classifyListRow span,
+.classifyListRow strong {
+  font-size: 0.62rem;
+}
+
+.classifyListRow span {
+  color: #6b7280;
+}
+
+.classifyListRow strong {
+  color: #111827;
+}
+
+.classifyListBar {
+  height: 0.36rem;
+  background: #eef2f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.classifyListBarFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.redactionColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.redactionColumns label {
+  display: block;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.4rem;
+}
+
+.redactionColumns p {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.redactionColumns span {
+  display: inline-block;
+  padding: 0.08rem 0.32rem;
+  border-radius: 0.35rem;
+  background: rgba(245, 158, 11, 0.13);
+  color: #b45309;
+  font-weight: 700;
+}
+
+.bentoSection {
+  padding: clamp(5rem, 8vw, 8rem) 1.5rem;
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "linkedin linkedin slack"
+    "approval classify redact";
+  gap: 1rem;
+  max-width: 72rem;
+  margin: 3.5rem auto 0;
+}
+
+.bentoTile {
+  background: #f8fafc;
+  border: 1px solid rgba(15, 13, 26, 0.08);
+  border-radius: 1.35rem;
+  overflow: visible;
+  box-shadow: 0 20px 46px -34px rgba(15, 13, 26, 0.22);
+}
+
+.bentoTile::before {
+  display: none;
+}
+
+.bentoLinkedIn { grid-area: linkedin; }
+.bentoSlack { grid-area: slack; }
+.bentoApproval { grid-area: approval; }
+.bentoClassify { grid-area: classify; }
+.bentoRedact { grid-area: redact; }
+
+.bentoTileInner {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.bentoTileHeading {
+  margin: 0 0 0.3rem;
+}
+
+.bentoTileDesc {
+  margin: 0;
+  max-width: 30rem;
+}
+
+.bentoTile .productMockup {
+  margin-top: auto;
+}
+
+.bentoTileHero {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.bentoTileHero .bentoTileInner {
+  padding: 0;
+}
+
+.bentoTileHero .productMockup {
+  margin-top: 0;
+}
+
+.bentoOrbit {
+  position: absolute;
+  inset: 0;
+  width: min(calc(100% - 2rem), 110rem);
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bentoOrbitLinkedIn,
+.bentoOrbitSlack,
+.bentoOrbitApproval,
+.bentoOrbitClassify,
+.bentoOrbitRedact {
+  position: absolute;
+}
+
+.bentoOrbitLinkedIn {
+  top: 7.5rem;
+  left: 0.5rem;
+  width: 22.5rem;
+  transform: rotate(-4deg);
+}
+
+.bentoOrbitSlack {
+  top: 5rem;
+  right: 1rem;
+  width: 22.25rem;
+  transform: rotate(2.5deg);
+}
+
+.bentoOrbitApproval {
+  right: 0.5rem;
+  bottom: 10.5rem;
+  width: 21.5rem;
+  transform: rotate(-2deg);
+}
+
+.bentoOrbitClassify {
+  left: 3rem;
+  bottom: 13.5rem;
+  width: 15rem;
+  transform: rotate(6deg);
+}
+
+.bentoOrbitRedact {
+  left: 17rem;
+  bottom: 6rem;
+  width: 15rem;
+  transform: rotate(-5deg);
+}
+
+@media (max-width: 1320px) {
+  .bentoOrbit {
+    width: min(calc(100% - 2rem), 90rem);
+  }
+
+  .bentoOrbitLinkedIn,
+  .bentoOrbitSlack,
+  .bentoOrbitApproval {
+    width: 19rem;
+  }
+
+  .bentoOrbitClassify,
+  .bentoOrbitRedact {
+    width: 13rem;
+  }
+
+  .bentoOrbitRedact {
+    left: 13rem;
+  }
+}
+
+@media (max-width: 1180px) {
+  .bentoOrbit {
+    position: relative;
+    inset: auto;
+    left: auto;
+    transform: none;
+    width: min(calc(100% - 2rem), 54rem);
+    margin: 0 auto 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .bentoOrbitLinkedIn,
+  .bentoOrbitSlack,
+  .bentoOrbitApproval,
+  .bentoOrbitClassify,
+  .bentoOrbitRedact {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    transform: none;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+  }
+
+  .bentoOrbitLinkedIn {
+    grid-column: 1 / -1;
+  }
+
+  .heroMockupCluster {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr) minmax(0, 16rem);
+  }
+
+  .heroMockupCenter .heroVisual {
+    zoom: 0.9;
+  }
+}
+
+@media (max-width: 1024px) {
+  .heroMockupCluster {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "center center"
+      "left right";
+    max-width: 62rem;
+  }
+
+  .heroMockupCenter {
+    grid-area: center;
+  }
+
+  .heroMockupStackLeft {
+    grid-area: left;
+    padding-top: 0;
+  }
+
+  .heroMockupStackRight {
+    grid-area: right;
+    padding-top: 0;
+  }
+
+  .heroMockupSlack,
+  .heroMockupApproval {
+    transform: none;
+  }
+
+  .bentoGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "linkedin linkedin"
+      "slack approval"
+      "classify redact";
+  }
+}
+
+@media (max-width: 768px) {
+  .bentoOrbit {
+    grid-template-columns: 1fr;
+    width: min(calc(100% - 2rem), 26rem);
+  }
+
+  .heroMockupCluster {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "center"
+      "left"
+      "right";
+    margin-top: 2.5rem;
+  }
+
+  .heroMockupStackLeft,
+  .heroMockupStackRight {
+    gap: 0.85rem;
+  }
+
+  .heroMockupCenter .heroVisual {
+    zoom: 1;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .productMockupHero {
+    max-width: none;
+  }
+
+  .redactionColumns {
+    grid-template-columns: 1fr;
+  }
+
+  .bentoGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "linkedin"
+      "slack"
+      "approval"
+      "classify"
+      "redact";
+  }
+}
+
+/* ==========================================================================
+   HERO ORBIT REWORK
+   ========================================================================== */
+
+.hero {
+  min-height: 52rem;
+  overflow: hidden;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  max-width: 50rem;
+}
+
+.heroOrbit {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(calc(100% - 2rem), 104rem);
+  height: 100%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.heroOrbitLinkedIn,
+.heroOrbitSlack,
+.heroOrbitApproval {
+  position: absolute;
+}
+
+.heroOrbitLinkedIn {
+  top: 8.5rem;
+  left: 0;
+  width: 22.5rem;
+  transform: rotate(-4deg);
+}
+
+.heroOrbitSlack {
+  top: 4.75rem;
+  right: 1.5rem;
+  width: 22rem;
+  transform: rotate(2.5deg);
+}
+
+.heroOrbitApproval {
+  right: 0.75rem;
+  bottom: 2.5rem;
+  width: 22rem;
+  transform: rotate(-1.5deg);
+}
+
+.productMockupHero {
+  max-width: none;
+}
+
+.linkedinPostMockup .productMockupShell,
+.slackChannelMockup .productMockupShell,
+.slackApprovalMockup .productMockupShell {
+  backdrop-filter: none;
+}
+
+.linkedinPostMockup {
+  background: #fff;
+}
+
+.linkedinPostHeader {
+  padding: 0.9rem 1rem 0.75rem;
+}
+
+.linkedinPostBody p {
+  font-size: 0.81rem;
+  line-height: 1.6;
+}
+
+.linkedinPostStats {
+  gap: 0.4rem 0.55rem;
+}
+
+.linkedinPostActions button {
+  font-size: 0.75rem;
+}
+
+.slackDesktopShell {
+  display: grid;
+  grid-template-columns: 10rem minmax(0, 1fr);
+  min-height: 22rem;
+  background: #f8f8fb;
+}
+
+.slackSidebarMini {
+  background: #4a154b;
+  color: rgba(255, 255, 255, 0.78);
+  padding: 0.9rem 0.75rem;
+}
+
+.slackSidebarWorkspace {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.slackSidebarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.slackSidebarActive {
+  color: #fff;
+  font-weight: 700;
+}
+
+.slackChannelMain {
+  min-width: 0;
+  background: #ffffff;
+}
+
+.slackChannelToolbar {
+  height: 2rem;
+  background: #efe9f6;
+  border-bottom: 1px solid rgba(15, 13, 26, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+}
+
+.slackMessageRowReply {
+  margin-top: -0.15rem;
+}
+
+.slackChannelMessages {
+  gap: 0.95rem;
+}
+
+.slackMessageContent p {
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.slackInlineDraft {
+  background: #f5f3ff;
+  color: #4338ca;
+}
+
+.approvalCard {
+  margin: 0.85rem;
+}
+
+.approvalDraftBlock p {
+  font-size: 0.76rem;
+}
+
+.approvalActions {
+  justify-content: flex-start;
+}
+
+.approvalActions button {
+  min-width: 5.4rem;
+  background: #fff;
+}
+
+.approvalPrimary {
+  background: #16a34a !important;
+  color: #fff !important;
+  border-color: #16a34a !important;
+}
+
+@media (max-width: 1440px) {
+  .heroOrbit {
+    width: min(calc(100% - 2rem), 92rem);
+  }
+
+  .heroOrbitLinkedIn,
+  .heroOrbitSlack,
+  .heroOrbitApproval {
+    width: 20rem;
+  }
+}
+
+@media (max-width: 1180px) {
+  .hero {
+    min-height: auto;
+    padding-bottom: 5rem;
+  }
+
+  .heroOrbit {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: min(calc(100% - 2rem), 54rem);
+    height: auto;
+    margin: 2.5rem auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .heroOrbitLinkedIn,
+  .heroOrbitSlack,
+  .heroOrbitApproval {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    transform: none;
+  }
+
+  .heroOrbitLinkedIn {
+    grid-column: 1 / -1;
+    max-width: 28rem;
+    justify-self: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroOrbit {
+    grid-template-columns: 1fr;
+    width: min(calc(100% - 2rem), 26rem);
+  }
+
+  .heroOrbitLinkedIn {
+    max-width: none;
+  }
+
+  .slackDesktopShell {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+    .slackSidebarMini {
+      display: none;
+    }
+}
+
+/* Restore existing hero flow; feature mockups belong to the bento section only. */
+.heroOrbit {
+  display: none;
+}
+
+.hero {
+  min-height: auto;
+}
+
+.heroContent {
+  max-width: 56rem;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   DASHBOARD BACKDROP BENTO OVERRIDES
+   ========================================================================== */
+
+.bentoGrid {
+  grid-template-areas:
+    "linkedin linkedin slack"
+    ". approval .";
+}
+
+.bentoTileBackdrop {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.bentoTileBackdrop .bentoTileInner {
+  padding: 0;
+}
+
+.bentoTileBackdrop .productMockup {
+  margin-top: 0;
+}
+
+.bentoBackdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bentoBackdropLinkedIn,
+.bentoBackdropSlack,
+.bentoBackdropApproval {
+  position: absolute;
+}
+
+.bentoBackdropLinkedIn {
+  top: 0.25rem;
+  left: -2.5rem;
+  width: 18.5rem;
+  transform: rotate(-7deg);
+  opacity: 0.92;
+}
+
+.bentoBackdropSlack {
+  top: -0.75rem;
+  right: -2.75rem;
+  width: 33rem;
+  transform: rotate(1.5deg);
+  opacity: 0.98;
+}
+
+.bentoBackdropApproval {
+  right: -0.5rem;
+  bottom: 0.25rem;
+  width: 19rem;
+  transform: rotate(-1.5deg);
+  opacity: 0.96;
+}
+
+.slackDesktopShell {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  min-height: 24rem;
+  background: #f8f8fb;
+}
+
+.slackSidebarMini {
+  background: #4a154b;
+  color: rgba(255, 255, 255, 0.78);
+  padding: 0.85rem 0.8rem;
+}
+
+.slackSidebarTopRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.slackSidebarBadge {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.45rem;
+  background: #2563eb;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.slackSidebarWorkspace {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0;
+}
+
+.slackSidebarSection {
+  gap: 0.85rem;
+  font-size: 0.78rem;
+}
+
+.slackChannelHeader {
+  padding: 0.7rem 1rem;
+}
+
+.slackChannelMessages {
+  padding: 1rem 1rem 0.9rem;
+  gap: 0.95rem;
+}
+
+.slackMessageMeta strong {
+  font-size: 0.76rem;
+}
+
+.slackMessageMeta span {
+  font-size: 0.62rem;
+}
+
+.slackMessageContent p {
+  font-size: 0.8rem;
+  line-height: 1.58;
+}
+
+.slackReactionRow {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+}
+
+.slackReactionRow span {
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(15, 13, 26, 0.12);
+  background: #f3efe7;
+  color: #6b5d7a;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.slackChannelStatus {
+  display: none;
+}
+
+.slackInlineDraft {
+  background: #f5f3ff;
+  color: #4338ca;
+}
+
+.approvalCard {
+  margin: 0.85rem;
+}
+
+.approvalDraftBlock p {
+  font-size: 0.76rem;
+}
+
+.approvalActions {
+  justify-content: flex-start;
+}
+
+.approvalActions button {
+  min-width: 5.4rem;
+  background: #fff;
+}
+
+.approvalPrimary {
+  background: #16a34a !important;
+  color: #fff !important;
+  border-color: #16a34a !important;
+}
+
+@media (max-width: 1320px) {
+  .bentoBackdropLinkedIn {
+    width: 16rem;
+    left: -1rem;
+  }
+
+  .bentoBackdropSlack {
+    width: 28rem;
+    right: -1rem;
+  }
+
+  .bentoBackdropApproval {
+    width: 16.5rem;
+  }
+}
+
+@media (max-width: 1180px) {
+  .bentoBackdrop {
+    position: relative;
+    inset: auto;
+    margin: 0 auto 2rem;
+    width: min(calc(100% - 2rem), 64rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 1rem;
+  }
+
+  .bentoBackdropLinkedIn,
+  .bentoBackdropSlack,
+  .bentoBackdropApproval {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    transform: none;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+  }
+
+  .bentoBackdropLinkedIn {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .bentoBackdropSlack {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .bentoBackdropApproval {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .bentoBackdrop {
+    grid-template-columns: 1fr;
+    width: min(calc(100% - 2rem), 26rem);
+  }
+
+  .bentoBackdropLinkedIn,
+  .bentoBackdropSlack,
+  .bentoBackdropApproval {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .slackDesktopShell {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .slackSidebarMini {
+    display: none;
+  }
+}
+

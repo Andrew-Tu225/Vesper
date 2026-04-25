@@ -1,15 +1,10 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import styles from './landing.module.css'
+import { DashboardPreview } from '../components/landing/DashboardPreview'
+import { ROUTES } from '../lib/constants'
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
-function ArrowRight() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 function SparkleIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -341,11 +336,18 @@ function HeroVisual() {
 }
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
-function Navbar({ onCTA }: { onCTA: () => void }) {
+function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 80)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <nav className={styles.nav}>
+    <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
         <div className={styles.navLogo}>
           <a href="/">
@@ -355,11 +357,9 @@ function Navbar({ onCTA }: { onCTA: () => void }) {
         <div className={styles.navLinks}>
           <a href="#how-it-works" className={styles.navLink}>How it works</a>
           <a href="#features" className={styles.navLink}>Features</a>
-          <a href="#waitlist" className={styles.navLink}>Early access</a>
+          <a href="#pricing" className={styles.navLink}>Pricing</a>
         </div>
-        <button className={styles.navCta} onClick={onCTA}>
-          Join Waitlist
-        </button>
+        <Link to={ROUTES.LOGIN} className={styles.navLogin}>Login</Link>
         <button
           className={styles.navHamburger}
           onClick={() => setMenuOpen(o => !o)}
@@ -375,10 +375,8 @@ function Navbar({ onCTA }: { onCTA: () => void }) {
         <div className={styles.mobileMenu}>
           <a href="#how-it-works" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>How it works</a>
           <a href="#features" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Features</a>
-          <a href="#waitlist" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Early access</a>
-          <button className={styles.mobileMenuCta} onClick={() => { setMenuOpen(false); onCTA() }}>
-            Join Waitlist
-          </button>
+          <a href="#pricing" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Pricing</a>
+          <Link to={ROUTES.LOGIN} className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Login</Link>
         </div>
       )}
     </nav>
@@ -386,10 +384,9 @@ function Navbar({ onCTA }: { onCTA: () => void }) {
 }
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
-function HeroSection({ onCTA }: { onCTA: () => void }) {
+function HeroSection() {
   return (
     <section className={styles.hero}>
-      {/* Centered copy block */}
       <div className={styles.heroContent}>
         <div className={styles.heroBadge}>
           <span className={styles.heroBadgePulse} />
@@ -405,15 +402,6 @@ function HeroSection({ onCTA }: { onCTA: () => void }) {
           A complete workflow that monitors your workspace, classifies what's worth sharing,
           and routes AI-drafted posts through your approval queue automatically.
         </p>
-
-        <div className={styles.heroCtas}>
-          <button className={styles.heroCta} onClick={onCTA}>
-            Join Waitlist<ArrowRight />
-          </button>
-          <a href="#how-it-works" className={styles.heroSecondary}>
-            See how it works
-          </a>
-        </div>
 
         <div className={styles.heroProof}>
           <span className={styles.heroProofItem}><CheckIcon /> Try one month for free</span>
@@ -815,97 +803,107 @@ function PipelineSection() {
 
 
 // ─── Landing (main export) ───────────────────────────────────────────────────
+function PricingSection() {
+  const plans = [
+    {
+      name: 'Starter',
+      price: '$79',
+      cadence: '/month',
+      description: 'For founder-led teams building a consistent posting rhythm from a few key channels.',
+      features: [
+        '1 Slack workspace',
+        'Up to 3 monitored channels',
+        'Review queue with rewrites',
+        'LinkedIn scheduling',
+      ],
+    },
+    {
+      name: 'Growth',
+      price: '$199',
+      cadence: '/month',
+      description: 'For growing teams turning customer praise, product updates, and launches into a system.',
+      features: [
+        'Unlimited monitored channels',
+        'Shared team review workflow',
+        'Brand voice variants',
+        'Calendar and approval history',
+      ],
+      featured: true,
+    },
+    {
+      name: 'Custom',
+      price: 'Custom',
+      cadence: '',
+      description: 'For larger teams with multiple brands, special workflows, or higher publishing volume.',
+      features: [
+        'Multi-workspace setup',
+        'Custom approval paths',
+        'Priority onboarding',
+        'Dedicated support',
+      ],
+    },
+  ]
+
+  return (
+    <section id="pricing" className={styles.pricingSection}>
+      <div className={styles.sectionInner}>
+        <p className={styles.sectionEyebrow} data-reveal>Pricing</p>
+        <h2 className={styles.sectionTitle} data-reveal data-delay="1">
+          Pricing that scales with your publishing system
+        </h2>
+        <p className={styles.sectionSub} data-reveal data-delay="2">
+          Start with one workflow, then expand as your team monitors more channels and publishes more often.
+        </p>
+
+        <div className={styles.pricingGrid}>
+          {plans.map((plan, i) => (
+            <article
+              key={plan.name}
+              className={`${styles.pricingCard}${plan.featured ? ` ${styles.pricingCardFeatured}` : ''}`}
+              data-reveal
+              data-delay={String(i + 1)}
+            >
+              <div className={styles.pricingCardTop}>
+                <div>
+                  <h3 className={styles.pricingName}>{plan.name}</h3>
+                  <p className={styles.pricingDescription}>{plan.description}</p>
+                </div>
+                <div className={styles.pricingAmount}>
+                  <span className={styles.pricingPrice}>{plan.price}</span>
+                  {plan.cadence && <span className={styles.pricingCadence}>{plan.cadence}</span>}
+                </div>
+              </div>
+
+              <ul className={styles.pricingList}>
+                {plan.features.map((feature) => (
+                  <li key={feature} className={styles.pricingItem}>
+                    <CheckIcon />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function Landing() {
   useScrollReveal()
 
-  const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
-  const waitlistRef = useRef<HTMLElement>(null)
-
-  const scrollToWaitlist = useCallback(() => {
-    waitlistRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setStatus('loading')
-    setErrorMessage('')
-    try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type') ?? ''
-        let message = 'Failed to join waitlist'
-        if (contentType.includes('application/json')) {
-          const data = await response.json() as { error?: string }
-          message = data.error ?? message
-        }
-        throw new Error(message)
-      }
-      setStatus('success')
-      setEmail('')
-      setTimeout(() => setStatus('idle'), 5000)
-    } catch (error) {
-      setStatus('error')
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Something went wrong. Please try again.'
-      )
-    }
-  }
-
   return (
     <div className={styles.landing}>
-      <Navbar onCTA={scrollToWaitlist} />
-      <HeroSection onCTA={scrollToWaitlist} />
+      <Navbar />
+      <HeroSection />
+      <DashboardPreview />
       <ProblemSection />
       <TrustStrip />
       <HowItWorksSection />
-      <FeaturesSection />
       <PipelineSection />
 
-      {/* Waitlist */}
-      <section ref={waitlistRef as React.RefObject<HTMLElement>} id="waitlist" className={styles.waitlistSection}>
-        <div className={styles.waitlistInner}>
-          <p className={styles.sectionEyebrow} data-reveal>Request early access</p>
-          <h2 className={styles.waitlistTitle} data-reveal data-delay="1">
-            Your internal signals are your{' '}
-            <em className={styles.gradientText}>competitive advantage.</em>
-          </h2>
-          <p className={styles.waitlistSub} data-reveal data-delay="2">
-            Most companies are sitting on months of publishable content — buried in Slack
-            threads and email chains. Vesper gives your team the infrastructure to surface,
-            draft, and publish it systematically. Join the early access list and be first to ship.
-          </p>
-
-          <form onSubmit={handleSubmit}>
-            <div className={styles.inputGroup}>
-              <input
-                type="email"
-                placeholder="your@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={status === 'loading'}
-                className={styles.input}
-                aria-label="Work email address"
-              />
-              <button type="submit" disabled={status === 'loading'} className={styles.button}>
-                {status === 'loading' ? 'Joining...' : 'Join Waitlist'}
-              </button>
-            </div>
-            {status === 'success' && (
-              <p className={styles.successMessage}>✓ You're on the list — we'll be in touch soon!</p>
-            )}
-            {status === 'error' && (
-              <p className={styles.errorMessage}>✗ Failed! Please try again{errorMessage}</p>
-            )}
-          </form>
-        </div>
-      </section>
+      <PricingSection />
 
       {/* Footer */}
       <footer className={styles.footer}>
@@ -913,7 +911,7 @@ export default function Landing() {
           <div className={styles.footerLogo}>
             <img src="/logo.svg" alt="Vesper" height="40" />
           </div>
-          <p className={styles.footerCopy}>© {new Date().getFullYear()} Vesper. All rights reserved.</p>
+          <p className={styles.footerCopy}>� {new Date().getFullYear()} Vesper. All rights reserved.</p>
           <div className={styles.footerLinks}>
             <a href="mailto:andrewt.tu@mail.utoronto.ca">Contact Us</a>
             <a href="/privacy">Privacy Policy</a>
@@ -924,3 +922,6 @@ export default function Landing() {
     </div>
   )
 }
+
+
+
