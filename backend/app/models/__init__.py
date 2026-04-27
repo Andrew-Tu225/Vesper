@@ -3,7 +3,6 @@ from app.models.content_signal import ContentSignal
 from app.models.draft_post import DraftPost
 from app.models.oauth_token import OAuthToken
 from app.models.slack_message_embedding import SlackMessageEmbedding
-from app.models.style_entry import StyleEntry
 from app.models.user import User
 from app.models.workspace import Workspace
 from app.models.workspace_member import WorkspaceMember
@@ -14,7 +13,6 @@ __all__ = [
     "DraftPost",
     "OAuthToken",
     "SlackMessageEmbedding",
-    "StyleEntry",
     "User",
     "Workspace",
     "WorkspaceMember",

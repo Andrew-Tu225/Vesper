@@ -3,9 +3,8 @@ Celery application factory for Vesper.
 
 Queues
 ------
-draft_pipeline  – sequential classify → enrich_context → redact → generate pipeline
-style_library   – style-entry embedding and pgvector upserts (background, async)
-intake          – scheduled batch scans of Slack channels + Gmail inbox (2–3x/day via Celery Beat)
+draft_pipeline  – sequential classify → enrich_context → generate pipeline
+intake          – scheduled batch scans of Slack channels(2–3x/day via Celery Beat)
 publishing      – LinkedIn post delivery
 maintenance     – token refresh (Celery Beat), stale-record cleanup
 
@@ -43,7 +42,6 @@ default_exchange = Exchange("default", type="direct")
 
 TASK_QUEUES = (
     Queue(Q.DRAFT_PIPELINE, default_exchange, routing_key=Q.DRAFT_PIPELINE),
-    Queue(Q.STYLE_LIBRARY, default_exchange, routing_key=Q.STYLE_LIBRARY),
     Queue(Q.INTAKE, default_exchange, routing_key=Q.INTAKE),
     Queue(Q.PUBLISHING, default_exchange, routing_key=Q.PUBLISHING),
     Queue(Q.MAINTENANCE, default_exchange, routing_key=Q.MAINTENANCE),
@@ -62,7 +60,6 @@ celery_app.conf.update(
     # Routing: map each task module to its queue
     task_routes={
         "app.workers.draft_pipeline.*": {"queue": Q.DRAFT_PIPELINE},
-        "app.workers.style_library.*": {"queue": Q.STYLE_LIBRARY},
         "app.workers.intake.*": {"queue": Q.INTAKE},
         "app.workers.publishing.*": {"queue": Q.PUBLISHING},
         "app.workers.maintenance.*": {"queue": Q.MAINTENANCE},
@@ -93,7 +90,7 @@ celery_app.conf.update(
             "task": "app.workers.maintenance.refresh_oauth_tokens",
             "schedule": crontab(minute=0, hour=2),
         },
-        # Purge stale Slack message embeddings — daily at 03:00 UTC
+        # slack message embedding cleanup after 30 days — daily at 03:00 UTC
         "purge-slack-message-embeddings": {
             "task": "app.workers.maintenance.purge_slack_message_embeddings",
             "schedule": crontab(minute=0, hour=3),
@@ -106,7 +103,6 @@ celery_app.conf.update(
 celery_app.autodiscover_tasks(
     [
         "app.workers.draft_pipeline",
-        "app.workers.style_library",
         "app.workers.intake",
         "app.workers.publishing",
         "app.workers.maintenance",

@@ -60,7 +60,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
-    command: celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,style_library,intake,publishing,maintenance
+    command: celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,intake,publishing,maintenance
 
   beat:
     build:

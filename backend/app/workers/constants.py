@@ -43,7 +43,6 @@ class Sensitivity(StrEnum):
 
 class Queue(StrEnum):
     DRAFT_PIPELINE = "draft_pipeline"   # classify → enrich_context → redact → generate
-    STYLE_LIBRARY = "style_library"     # style-entry embedding and pgvector upserts
     INTAKE = "intake"                   # scheduled batch scans: Slack channels + Gmail inbox (2–3x/day)
     PUBLISHING = "publishing"           # LinkedIn post delivery
     MAINTENANCE = "maintenance"         # token refresh (Celery Beat), cleanup

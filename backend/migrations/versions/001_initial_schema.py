@@ -166,25 +166,6 @@ def upgrade() -> None:
         "WHERE is_selected = TRUE AND published_at IS NULL"
     )
 
-    # ── style_entry ────────────────────────────────────────────────────────────
-    op.execute("""
-        CREATE TABLE style_entry (
-            id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-            workspace_id UUID NOT NULL REFERENCES workspace(id),
-            draft_post_id UUID REFERENCES draft_post(id),
-            content TEXT NOT NULL,
-            embedding vector(1536) NOT NULL,
-            is_seed BOOLEAN NOT NULL DEFAULT false,
-            created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-        )
-    """)
-    op.create_index("ix_style_entry_workspace_id", "style_entry", ["workspace_id"])
-    op.execute(
-        "CREATE INDEX ix_style_entry_embedding_ivfflat "
-        "ON style_entry USING ivfflat (embedding vector_cosine_ops) "
-        "WITH (lists = 10)"
-    )
-
     # ── audit_log ──────────────────────────────────────────────────────────────
     op.create_table(
         "audit_log",
@@ -217,7 +198,6 @@ def downgrade() -> None:
     op.execute("DROP FUNCTION IF EXISTS set_updated_at")
 
     op.drop_table("audit_log")
-    op.drop_table("style_entry")
     op.drop_table("draft_post")
     op.drop_table("content_signal")
     op.drop_table("oauth_token")

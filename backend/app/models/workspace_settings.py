@@ -67,9 +67,6 @@ class WorkspaceSettings(BaseModel):
     # Slack channel where approval cards are posted (default: #vesper-ai)
     social_queue_channel: str = "vesper-ai"
 
-    # Minimum number of style-library entries required before drafting is enabled
-    style_library_min_entries: int = 5
-
     # Maximum number of draft variants to generate per signal
     draft_variant_count: int = 3
 
