@@ -24,7 +24,7 @@ vesper/
 │   └── tests/
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/        # Onboarding, Queue, Calendar, Settings, Style Library
+│   │   ├── pages/        # Onboarding, Queue, Calendar, Settings
 │   │   └── components/
 │   └── tests/
 └── CLAUDE.md
@@ -41,25 +41,12 @@ Unified model for candidates from Slack or email:
 - `sensitivity`: redaction flag
 - `status`: `detected` → `drafted` → `in_review` → `approved` → `scheduled` → `posted`
 
-### Style Library
-- Approved + published posts stored as pgvector embeddings (`text-embedding-3-small`)
-- Cosine similarity search retrieves top 2–3 examples at draft time (few-shot injection)
-- Auto-updated on every approved + published post
-
 ## AI Pipeline
 
 1. **Classify** — cheap model (GPT-4o-mini or Gemini Flash-Lite) determines content-worthy vs noise + signal type
 2. **Redact** — same cheap model removes sensitive details before drafting
-3. **Retrieve** — cosine similarity against style library → top 2–3 past posts as few-shot examples
-4. **Generate** — stronger model (GPT-4o or Gemini Pro) writes 2–3 LinkedIn post variants using the prompt:
-   ```
-   Here are examples of how [Company] writes LinkedIn posts:
-   [Example 1]
-   [Example 2]
-   Now write a post about: [signal summary]
-   Match the tone, length, and structure of the examples above.
-   ```
-5. **Route** — draft cards posted to Slack `#social-queue` with Approve / Reject / Rewrite / Schedule actions
+3. **Generate** — stronger model (GPT-4o or Gemini Pro) writes 2–3 LinkedIn post variants (zero-shot for MVP)
+4. **Route** — draft cards posted to Slack `#social-queue` with Approve / Reject / Rewrite / Schedule actions
 
 ## Integration Details
 
@@ -88,8 +75,7 @@ Unified model for candidates from Slack or email:
 | 1 — Foundation | Repo, FastAPI skeleton, PostgreSQL schema + pgvector, React shell, Slack + LinkedIn OAuth |
 | 2 — Slack Pipeline | Channel monitoring, message action → content_signal, AI classify + draft, approval cards |
 | 3 — Email Pipeline | Gmail OAuth, folder config, periodic fetch + classify, push to Slack review |
-| 4 — Brand-Voice Memory | Style library UI, embedding pipeline, retrieval wired into draft generation, auto-add on publish |
-| 5 — Publishing & Calendar | LinkedIn posting, scheduling, queue + calendar views, failure handling + retries |
+| 4 — Publishing & Calendar | LinkedIn posting, scheduling, queue + calendar views, failure handling + retries |
 | 6 — Safety & Polish | Redaction pass, prompt tuning, error handling, token expiry flows, logging |
 
 ## Out of Scope (MVP)
@@ -103,9 +89,8 @@ Unified model for candidates from Slack or email:
 
 ## Key Constraints
 
-- No fine-tuning — RAG-style prompt injection only
+- No fine-tuning — zero-shot generation for MVP
 - One brand voice per workspace
-- Minimum 5 seed posts to initialize style library
 - All posts require human approval before going live
 - Target AI cost: ~$5–15/month for a small pilot
 

@@ -14,7 +14,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Use raw SQL for the vector column — same pattern as style_entry in 001.
+    # Use raw SQL for the vector column — same pattern as vector columns in 001.
     op.execute("""
         CREATE TABLE slack_message_embedding (
             id           UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),

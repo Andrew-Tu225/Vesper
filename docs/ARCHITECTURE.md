@@ -15,7 +15,7 @@ Phase 2.2 added:
 - `models/slack_message_embedding.py` + migration `002` — stores embedded Slack messages for cross-day enrichment context (30-day TTL, IVFFlat index for cosine search)
 - `app/db_sync.py` — shared psycopg2 `ThreadedConnectionPool` for all Celery workers
 - `workers/maintenance.purge_slack_message_embeddings` — Beat task deletes rows older than 30 days (daily 03:00 UTC)
-- Onboarding step `seed_style_library` replaced with `channels_setup`
+- Onboarding step updated to `channels_setup`
 
 ## Stack
 
@@ -44,8 +44,7 @@ users
         └── audit_log (workspace_id)
 ```
 
-> **Not in MVP:** `style_entry` (brand-voice style library) is deferred post-MVP.
-> `generate_draft` uses zero-shot GPT-4o until the style library is built out.
+> **MVP:** `generate_draft` uses zero-shot GPT-4o. Brand-voice style library is out of scope.
 
 ### Key tables
 
@@ -259,6 +258,5 @@ b64_to_token(packed) → EncryptedToken  # unpack
 | 2.7 — Approval Service | approve/reject/rewrite/schedule handlers | Planned |
 | 2.8–2.10 — REST API + Frontend + Tests | Signals/drafts API, Queue page, integration tests | Planned |
 | 3 — Email Pipeline | Gmail OAuth, folder config, periodic fetch | Planned |
-| 4 — Brand-Voice Memory | Style library UI, embedding pipeline, retrieval wired into generation | Post-MVP |
-| 5 — Publishing & Calendar | LinkedIn posting, scheduling, queue + calendar views | Planned |
-| 6 — Safety & Polish | Redaction tuning, error handling, Slack token expiry warnings | Planned |
+| 4 — Publishing & Calendar | LinkedIn posting, scheduling, queue + calendar views | Planned |
+| 5 — Safety & Polish | Redaction tuning, error handling, Slack token expiry warnings | Planned |

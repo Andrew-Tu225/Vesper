@@ -25,6 +25,6 @@ def publish_post(self, draft_post_id: str) -> None:
     """Deliver an approved DraftPost to LinkedIn.
 
     Phase 5: call LinkedIn Marketing API, update DraftPost + ContentSignal
-    status to 'posted', trigger embed_style_entry on the style_library queue.
+    status to 'posted'.
     """
     logger.info("publish_post: draft_post_id=%s (stub)", draft_post_id)
