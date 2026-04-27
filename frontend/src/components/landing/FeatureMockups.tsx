@@ -220,13 +220,13 @@ export function SlackApprovalMockup({ tone = 'tile', className }: SharedProps) {
 
           <div className={styles.approvalDraftBlock}>
             <p>
-              "Style Library v2 is live. The system now learns from every approved post and
-              suggested hooks are noticeably tighter after a week of usage..."
+              "TechFlow hit a milestone this week — new hires fully productive in week one.
+              60% faster onboarding than before. They reached out unprompted to tell us..."
             </p>
             <div className={styles.approvalDraftMeta}>
               <span>LinkedIn</span>
-              <span>product_update</span>
-              <span>214 words</span>
+              <span>customer_praise</span>
+              <span>198 words</span>
             </div>
           </div>
 

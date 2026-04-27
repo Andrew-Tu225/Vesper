@@ -18,15 +18,6 @@ function CalIcon() {
   )
 }
 
-function StyleIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-      <path d="M2 12L6 4l4 8M4 9h4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M10.5 4c0 2.5 3.5 2.5 3.5 5a2 2 0 01-4 0" strokeLinecap="round" />
-    </svg>
-  )
-}
-
 function SettingsIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
@@ -399,9 +390,6 @@ export function DashboardPreview() {
                       <CalIcon /> Calendar
                     </div>
                     <div className={styles.navItem}>
-                      <StyleIcon /> Style Library
-                    </div>
-                    <div className={styles.navItem}>
                       <SettingsIcon /> Settings
                     </div>
                   </div>
@@ -499,8 +487,6 @@ export function DashboardPreview() {
           <span>Approval queue</span>
           <span className={styles.labelDot}>·</span>
           <span>Content calendar</span>
-          <span className={styles.labelDot}>·</span>
-          <span>Style library</span>
           <span className={styles.labelDot}>·</span>
           <span>Channel monitoring</span>
         </div>
