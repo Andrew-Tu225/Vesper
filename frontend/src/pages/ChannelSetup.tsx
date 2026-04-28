@@ -75,6 +75,16 @@ export default function ChannelSetup() {
         </p>
       </header>
 
+      <div className="channel-setup__notice">
+        <span className="channel-setup__notice-icon">💬</span>
+        <p className="channel-setup__notice-body">
+          <strong>Before continuing:</strong> create a channel called{' '}
+          <code>#vesper-ai</code> in your Slack workspace, then run{' '}
+          <code>/invite @Vesper</code> inside it. Vesper will send LinkedIn
+          drafts there for your team to review and approve.
+        </p>
+      </div>
+
       <div className="channel-setup__card">
         {isLoading && (
           <div className="channel-setup__state">Loading channels…</div>
