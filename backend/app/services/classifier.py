@@ -4,7 +4,9 @@ Batch classifier service — single GPT-4o-mini call for a channel scan window.
 Design
 ------
 - Input:  flat chronological list of SlackMessage objects from the scan window
-- Output: list[ContentSignalCandidate] — worthy signals only (noise excluded)
+- Output: BatchClassifyResponse
+            • candidates: list[ContentSignalCandidate] — worthy signals only (noise excluded)
+            • embed_message_ids: list[str] — message ids worth storing for semantic retrieval
 - One LLM call per scan, regardless of message count
 - A signal can span multiple messages (thread + replies, related messages)
 - summary and signal_type are extracted in the same pass — no separate LLM call later
@@ -73,7 +75,9 @@ async def batch_classify(messages: list[SlackMessage]) -> BatchClassifyResponse:
                   May include messages from multiple channels and threads.
 
     Returns:
-        List of ContentSignalCandidate. Empty list if nothing is worthy.
+        BatchClassifyResponse with:
+        - candidates: ContentSignalCandidate list (empty if nothing qualifies).
+        - embed_message_ids: flat list of message ids worth storing for semantic retrieval.
 
     Raises:
         ClassifierError: On API failure. Caller is responsible for retry.
@@ -164,9 +168,9 @@ signal-worthy messages are always worth storing as context.
 Return a single JSON object with two fields:
 
   candidates        List of content signals from Task 1. For each signal:
-    source_ids        All message ids that form this signal (root + relevant replies).
+    source_ids        All message ids that form this signal (root + relevant messages and replies).
     signal_type       One of: customer_praise, product_win, launch_update, hiring, founder_insight.
-    summary           1–2 sentences as a brief for a copywriter. Be specific — include the \
+    summary           2-3 sentences as a brief for a copywriter. Be specific — include the \
 outcome, customer name if mentioned, or metric. Used as the starting point for draft generation.
     reason            One sentence on why this is post-worthy. Internal logging only.
 
