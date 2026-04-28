@@ -9,7 +9,6 @@ Public API
 run_enrich_agent   — GPT-4o-mini agent loop (max 5 iterations) with 2 tools:
                        get_slack_thread  — fetch Slack thread replies
                        search_context    — pgvector cosine search (30-day window)
-run_redact         — GPT-4o-mini structured output; returns RedactResult
 run_generate       — GPT-4o structured output; returns list[str] of post bodies
 """
 
@@ -22,15 +21,11 @@ from openai import APIError
 
 from app.config import settings
 from app.services.openai_client import get_openai_client
-from app.services.schemas import GenerateDraftResponse, RedactResult
+from app.services.schemas import GenerateDraftResponse
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["RedactError", "run_enrich_agent", "run_redact", "run_generate", "run_rewrite"]
-
-
-class RedactError(Exception):
-    """Raised when the redaction LLM call fails after retries."""
+__all__ = ["run_enrich_agent", "run_generate", "run_rewrite"]
 
 # ---------------------------------------------------------------------------
 # Enrichment agent constants
@@ -293,77 +288,6 @@ Be concrete. Do not pad. Do not repeat the summary verbatim.\
                 break
 
     return context_summary, iterations
-
-
-async def run_redact(original_text: str) -> RedactResult:
-    """Call GPT-4o-mini to strip PII and sensitive details.
-
-    Returns:
-        RedactResult with redacted_text and sensitivity (low | medium | high)
-
-    Raises:
-        RedactError: On API failure or empty parsed response.
-    """
-    system_prompt = """\
-You are a privacy and confidentiality reviewer for a B2B startup preparing internal Slack \
-messages for use in LinkedIn post drafts.
-
-## What to redact
-Replace only content that would be genuinely harmful or inappropriate to make public:
-
-- Full names of specific individuals (employees, customers, prospects) → [Person]
-- Customer or partner company names (they haven't consented to being named) → [Customer]
-- Specific financial figures that are internal-only: runway, burn rate, salaries, \
-undisclosed deal dollar amounts → [Amount]
-- Personal contact details: email addresses, phone numbers → [Contact]
-- Internal project codenames not yet publicly announced → [Project]
-
-## What to preserve
-Do NOT redact content that is safe and valuable for a LinkedIn post:
-
-- Metrics and outcomes: user counts, performance numbers, growth percentages, \
-time savings — these are the substance of the post
-- Product or feature names that are publicly available
-- Role titles without names ("our CEO", "a customer", "the engineering team")
-- General timeline references ("last month", "this quarter", "after six months")
-- Industry context and general market observations
-- Sentiment and outcomes, even if they mention the customer's reaction — \
-just replace the company name if it appears
-
-## Sensitivity rating
-Set sensitivity based on what you found:
-- low: No meaningful redactions needed; the text is safe as-is
-- medium: Some names or specifics replaced, but the substance is fully intact
-- high: Significant confidential content removed — financial figures, \
-multiple customer names, or internal-only operational details
-
-## Rules
-- Keep the substance, tone, and all factual outcomes intact
-- Use the smallest redaction that removes the risk — do not over-redact
-- Do not rephrase, summarise, or add information not in the original\
-"""
-    user_prompt = (
-        f"Review and redact the following internal message:\n\n{original_text}"
-    )
-
-    try:
-        response = await get_openai_client().beta.chat.completions.parse(
-            model=settings.model_classify,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            response_format=RedactResult,
-            temperature=0,
-        )
-    except APIError as exc:
-        raise RedactError(f"OpenAI API error during redaction: {exc}") from exc
-
-    result = response.choices[0].message.parsed
-    if result is None:
-        raise RedactError("LLM returned no parsed result during redaction")
-
-    return result
 
 
 async def run_generate(
