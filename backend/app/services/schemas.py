@@ -80,24 +80,6 @@ class BatchClassifyResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Draft pipeline — redaction
-# ---------------------------------------------------------------------------
-
-class RedactResult(BaseModel):
-    """Output of the redaction step in the draft pipeline."""
-
-    redacted_text: str = Field(
-        description=(
-            "The signal text with PII, customer names, and internal specifics replaced "
-            "by generic placeholders, e.g. '[Customer]', '[Internal team]', '[Product name]'."
-        )
-    )
-    sensitivity: str = Field(
-        description="Overall sensitivity level assessed during redaction: low | medium | high"
-    )
-
-
-# ---------------------------------------------------------------------------
 # Draft pipeline — generation
 # ---------------------------------------------------------------------------
 

@@ -257,11 +257,10 @@ def _build_approval_card(
 
     for i, body in enumerate(variants, start=1):
         button_value = json.dumps({"signal_id": signal_id, "variant_number": i})
-        body_preview = body[:2900] + ("..." if len(body) > 2900 else "")
 
         blocks.append({
             "type": "section",
-            "text": {"type": "mrkdwn", "text": f"*Variant {i}*\n{body_preview}"},
+            "text": {"type": "mrkdwn", "text": f"*Variant {i}*\n{body}"},
         })
         blocks.append({
             "type": "actions",
@@ -572,7 +571,6 @@ def _build_rewrite_card(
     without being distracted by the original variants that are no longer relevant.
     """
     button_value = json.dumps({"signal_id": signal_id, "variant_number": variant_number})
-    body_preview = body[:2900] + ("..." if len(body) > 2900 else "")
     return [
         {
             "type": "section",
@@ -581,7 +579,7 @@ def _build_rewrite_card(
         {"type": "divider"},
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": body_preview},
+            "text": {"type": "mrkdwn", "text": body},
         },
         {
             "type": "actions",
