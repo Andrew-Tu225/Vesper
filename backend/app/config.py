@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     linkedin_client_id: str = ""
     linkedin_client_secret: str = ""
 
+    # Stripe
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_price_id: str = ""
+    stripe_publishable_key: str = ""
+
     # OpenAI
     openai_api_key: str = ""
 
