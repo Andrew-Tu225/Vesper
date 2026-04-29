@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => {
   // so RESEND_API_KEY and RESEND_AUDIENCE_ID are available server-side
   const env = loadEnv(mode, process.cwd(), '')
 
+  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8001'
+
   return {
     plugins: [
       react(),
@@ -93,11 +95,11 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         '/api': {
-          target: 'http://localhost:8000',
+          target: apiProxyTarget,
           changeOrigin: true,
           secure: false,
           // Cookies (vesper_session) flow through automatically when using
-          // relative /api/... paths. Never use absolute http://localhost:8000 URLs.
+          // relative /api/... paths. Never use absolute http://localhost:8001 URLs.
         },
       },
     },

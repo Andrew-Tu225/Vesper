@@ -3,7 +3,7 @@ import { FetchError } from '@/types/api'
 /**
  * Typed fetch wrapper. Always uses relative /api/... paths so the Vite proxy
  * can forward requests to the backend while preserving the vesper_session cookie.
- * Never pass absolute http://localhost:8000 URLs — they break cookie forwarding.
+ * Never pass absolute http://localhost:8001 URLs — they break cookie forwarding.
  */
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const url = path.startsWith('/api') ? path : `/api${path}`

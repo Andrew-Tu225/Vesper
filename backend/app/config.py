@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     google_client_secret: str = ""
     # Override when APP_BASE_URL points to a public tunnel (e.g. ngrok for Slack).
     # Google allows localhost redirect URIs, so set this to
-    # http://localhost:8000/api/auth/google/callback and register the same URI in
+    # http://localhost:8001/api/auth/google/callback and register the same URI in
     # Google Cloud Console to keep the session cookie on localhost.
     google_redirect_uri: str = ""
 
@@ -38,7 +38,7 @@ class Settings(BaseSettings):
 
     # App
     app_secret_key: str  # required — 64-char hex string (32 random bytes); generate: openssl rand -hex 32
-    app_base_url: str = "http://localhost:8000"
+    app_base_url: str = "http://localhost:8001"
     app_frontend_url: str = "http://localhost:5173"
     app_env: str = "development"
 
