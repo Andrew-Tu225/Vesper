@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { EventCard } from '@/components/calendar/EventCard'
 import { EventModal } from '@/components/calendar/EventModal'
+import { UpgradeNotice } from '@/components/billing/UpgradeNotice'
 import {
   getWeekRange,
   shiftWeek,
@@ -80,6 +81,8 @@ export default function Calendar() {
           Schedule post
         </button>
       </header>
+
+      <UpgradeNotice />
 
       <div className="calendar-surface">
 

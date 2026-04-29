@@ -249,6 +249,37 @@
   box-shadow: none;
 }
 
+/* ── Upgrade Notice ─────────────────────────────────────── */
+.upgrade-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-5);
+}
+
+.upgrade-notice__text {
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .upgrade-notice {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .upgrade-notice .btn--billing-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
   .trial-banner {
