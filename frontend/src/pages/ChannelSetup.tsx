@@ -85,6 +85,16 @@ export default function ChannelSetup() {
         </p>
       </div>
 
+      <div className="channel-setup__notice">
+        <span className="channel-setup__notice-icon">⚠️</span>
+        <p className="channel-setup__notice-body">
+          <strong>Important:</strong> Vesper needs to be a member of every
+          channel you select below. In each channel you want to monitor, run{' '}
+          <code>/invite @Vesper</code> before saving. Channels the bot hasn't
+          joined will be silently skipped during scanning.
+        </p>
+      </div>
+
       <div className="channel-setup__card">
         {isLoading && (
           <div className="channel-setup__state">Loading channels…</div>
