@@ -207,6 +207,8 @@ function SignalCard({
   const activeVariant =
     signal.variants.find((variant) => variant.id === activeVariantId) ?? signal.variants[0]
 
+  if (!activeVariant) return null
+
   return (
     <div className={`${styles.signalCard}${expanded ? ` ${styles.signalCardExpanded}` : ''}`}>
       <div
