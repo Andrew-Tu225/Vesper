@@ -9,7 +9,6 @@ import Login from '@/pages/Login'
 import OAuthCallback from '@/pages/OAuthCallback'
 import Dashboard from '@/pages/Dashboard'
 import ChannelSetup from '@/pages/ChannelSetup'
-import Onboarding from '@/pages/Onboarding'
 import Queue from '@/pages/Queue'
 import Calendar from '@/pages/Calendar'
 import Settings from '@/pages/Settings'
@@ -29,7 +28,6 @@ export default function App() {
       <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={ROUTES.CHANNEL_SETUP} element={<ChannelSetup />} />
-        <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
         <Route path={ROUTES.QUEUE} element={<Queue />} />
         <Route path={ROUTES.CALENDAR} element={<Calendar />} />
         <Route path={ROUTES.SETTINGS} element={<Settings />} />

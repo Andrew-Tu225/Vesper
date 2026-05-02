@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import styles from './landing.module.css'
 import { DashboardPreview } from '../components/landing/DashboardPreview'
 import { ROUTES } from '../lib/constants'
+import { usePricingPlans, formatPrice } from '../hooks/usePricingPlans'
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
 function SparkleIcon() {
@@ -402,6 +403,12 @@ function HeroSection() {
           A complete workflow that monitors your workspace, classifies what's worth sharing,
           and routes AI-drafted posts through your approval queue automatically.
         </p>
+
+        <div className={styles.heroCtas}>
+          <a href="/api/auth/google/login" className={styles.heroCta}>
+            Start your free trial
+          </a>
+        </div>
 
         <div className={styles.heroProof}>
           <span className={styles.heroProofItem}><CheckIcon /> Try one month for free</span>
@@ -803,65 +810,40 @@ function PipelineSection() {
 
 
 // ─── Landing (main export) ───────────────────────────────────────────────────
+
+const CUSTOM_PLAN = {
+  name: 'Custom',
+  description: 'For larger teams with multiple brands, special workflows, or higher publishing volume.',
+  features: [
+    'Multi-workspace setup',
+    'Custom approval paths',
+    'Priority onboarding',
+    'Dedicated support',
+  ],
+} as const
+
 function PricingSection() {
-  const plans = [
-    {
-      name: 'Starter',
-      price: '$79',
-      cadence: '/month',
-      description: 'For founder-led teams building a consistent posting rhythm from a few key channels.',
-      features: [
-        '1 Slack workspace',
-        'Up to 3 monitored channels',
-        'Review queue with rewrites',
-        'LinkedIn scheduling',
-      ],
-    },
-    {
-      name: 'Growth',
-      price: '$199',
-      cadence: '/month',
-      description: 'For growing teams turning customer praise, product updates, and launches into a system.',
-      features: [
-        'Unlimited monitored channels',
-        'Shared team review workflow',
-        'Brand voice variants',
-        'Calendar and approval history',
-      ],
-      featured: true,
-    },
-    {
-      name: 'Custom',
-      price: 'Custom',
-      cadence: '',
-      description: 'For larger teams with multiple brands, special workflows, or higher publishing volume.',
-      features: [
-        'Multi-workspace setup',
-        'Custom approval paths',
-        'Priority onboarding',
-        'Dedicated support',
-      ],
-    },
-  ]
+  const { data, isLoading } = usePricingPlans()
 
   return (
     <section id="pricing" className={styles.pricingSection}>
       <div className={styles.sectionInner}>
         <p className={styles.sectionEyebrow} data-reveal>Pricing</p>
         <h2 className={styles.sectionTitle} data-reveal data-delay="1">
-          Pricing that scales with your publishing system
+          Simple pricing, powerful workflow
         </h2>
         <p className={styles.sectionSub} data-reveal data-delay="2">
-          Start with one workflow, then expand as your team monitors more channels and publishes more often.
+          Start with a 30-day free trial. No credit card required.
         </p>
 
         <div className={styles.pricingGrid}>
-          {plans.map((plan, i) => (
+          {/* Pro plan — fetched from Stripe */}
+          {isLoading ? (
+            <article className={`${styles.pricingCard} ${styles.pricingCardFeatured} ${styles.pricingCardSkeleton}`} />
+          ) : (data?.plans ?? []).map((plan, i) => (
             <article
-              key={plan.name}
+              key={plan.id}
               className={`${styles.pricingCard}${plan.featured ? ` ${styles.pricingCardFeatured}` : ''}`}
-              data-reveal
-              data-delay={String(i + 1)}
             >
               <div className={styles.pricingCardTop}>
                 <div>
@@ -869,8 +851,8 @@ function PricingSection() {
                   <p className={styles.pricingDescription}>{plan.description}</p>
                 </div>
                 <div className={styles.pricingAmount}>
-                  <span className={styles.pricingPrice}>{plan.price}</span>
-                  {plan.cadence && <span className={styles.pricingCadence}>{plan.cadence}</span>}
+                  <span className={styles.pricingPrice}>{formatPrice(plan.unit_amount, plan.currency)}</span>
+                  {plan.unit_amount !== null && <span className={styles.pricingCadence}>/{plan.interval}</span>}
                 </div>
               </div>
 
@@ -882,8 +864,47 @@ function PricingSection() {
                   </li>
                 ))}
               </ul>
+
+              <div className={styles.pricingCtaGroup}>
+                <a
+                  href="/api/auth/google/login"
+                  className={`${styles.pricingCta}${plan.featured ? ` ${styles.pricingCtaFeatured}` : ''}`}
+                >
+                  Start free trial
+                </a>
+                <p className={styles.pricingCtaNote}>No credit card required</p>
+              </div>
             </article>
           ))}
+
+          {/* Custom / enterprise tile — always static */}
+          <article className={styles.pricingCard} data-reveal data-delay="2">
+            <div className={styles.pricingCardTop}>
+              <div>
+                <h3 className={styles.pricingName}>{CUSTOM_PLAN.name}</h3>
+                <p className={styles.pricingDescription}>{CUSTOM_PLAN.description}</p>
+              </div>
+              <div className={styles.pricingAmount}>
+                <span className={styles.pricingPrice}>Let's talk</span>
+              </div>
+            </div>
+
+            <ul className={styles.pricingList}>
+              {CUSTOM_PLAN.features.map((feature) => (
+                <li key={feature} className={styles.pricingItem}>
+                  <CheckIcon />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className={styles.pricingCtaGroup}>
+              <a href="mailto:hello@vesper.app" className={styles.pricingCta}>
+                Contact us
+              </a>
+              <p className={styles.pricingCtaNote}>&nbsp;</p>
+            </div>
+          </article>
         </div>
       </div>
     </section>

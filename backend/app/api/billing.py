@@ -26,6 +26,52 @@ stripe.api_key = settings.stripe_secret_key
 
 router = APIRouter(tags=["billing"])
 
+# ---------------------------------------------------------------------------
+# Plans — public, no auth required
+# ---------------------------------------------------------------------------
+
+_PRO_PLAN_FEATURES = [
+    "1 Slack workspace",
+    "Up to 10 monitored channels",
+    "AI-generated LinkedIn post drafts",
+    "Review queue with rewrites",
+    "LinkedIn scheduling",
+    "30-day free trial included",
+]
+
+_FALLBACK_PLAN: dict = {
+    "id": "pro",
+    "name": "Pro",
+    "unit_amount": None,
+    "currency": "usd",
+    "interval": "month",
+    "featured": True,
+    "features": _PRO_PLAN_FEATURES,
+    "description": "For teams turning internal signals into a consistent publishing system.",
+}
+
+
+@router.get("/plans")
+async def billing_plans() -> dict:
+    """Return available subscription plans for the landing page. No auth required.
+
+    Fetches the live unit_amount from Stripe so price changes propagate without
+    a redeploy. Falls back to ``unit_amount: null`` if Stripe is unreachable or
+    not yet configured so the landing page never breaks.
+    """
+    plan = dict(_FALLBACK_PLAN)
+    try:
+        if settings.stripe_price_id:
+            price = stripe.Price.retrieve(settings.stripe_price_id)
+            plan["unit_amount"] = price.unit_amount
+            plan["currency"] = price.currency
+            if price.recurring:
+                plan["interval"] = price.recurring.interval
+    except Exception:
+        pass
+    return {"plans": [plan]}
+
+
 # Stripe subscription status → Vesper subscription_status
 _STRIPE_STATUS_MAP: dict[str, str] = {
     "active": "active",

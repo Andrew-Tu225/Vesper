@@ -1935,9 +1935,12 @@
 
 .pricingGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 3rem;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .pricingCard {
@@ -1947,6 +1950,8 @@
   padding: 1.5rem;
   text-align: left;
   box-shadow: 0 20px 48px -36px rgba(15, 13, 26, 0.2);
+  display: flex;
+  flex-direction: column;
 }
 
 .pricingCardFeatured {
@@ -2019,6 +2024,65 @@
   color: var(--accent);
   margin-top: 0.25rem;
   flex-shrink: 0;
+}
+
+.pricingCtaGroup {
+  margin-top: auto;
+  padding-top: 1.75rem;
+}
+
+.pricingCtaNote {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.pricingCta {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+  padding: 0.8125rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1.5px solid rgba(15, 13, 26, 0.14);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-body);
+  transition: background 150ms, color 150ms, border-color 150ms, transform 150ms;
+}
+
+.pricingCta:hover {
+  background: rgba(15, 13, 26, 0.04);
+  transform: translateY(-1px);
+}
+
+.pricingCtaFeatured {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.22);
+}
+
+.pricingCtaFeatured:hover {
+  background: var(--accent-mid);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.32);
+}
+
+.pricingCardSkeleton {
+  min-height: 360px;
+  background: linear-gradient(90deg, rgba(15, 13, 26, 0.04) 25%, rgba(15, 13, 26, 0.08) 50%, rgba(15, 13, 26, 0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════

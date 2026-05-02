@@ -2,7 +2,6 @@ export const ROUTES = {
   LOGIN: '/login',
   AUTH_CALLBACK: '/auth/callback',
   DASHBOARD: '/dashboard',
-  ONBOARDING: '/onboarding',
   QUEUE: '/queue',
   CALENDAR: '/calendar',
   CHANNEL_SETUP: '/channel-setup',
