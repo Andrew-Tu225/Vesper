@@ -7,6 +7,8 @@ import PrivacyPolicy from '@/pages/PrivacyPolicy'
 import TermsOfService from '@/pages/TermsOfService'
 import Login from '@/pages/Login'
 import OAuthCallback from '@/pages/OAuthCallback'
+import BlogIndex from '@/pages/BlogIndex'
+import BlogPost from '@/pages/BlogPost'
 import Dashboard from '@/pages/Dashboard'
 import ChannelSetup from '@/pages/ChannelSetup'
 import Queue from '@/pages/Queue'
@@ -21,6 +23,8 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/terms" element={<TermsOfService />} />
+      <Route path={ROUTES.BLOG_INDEX} element={<BlogIndex />} />
+      <Route path={ROUTES.BLOG_POST} element={<BlogPost />} />
       <Route path={ROUTES.LOGIN} element={<Login />} />
       <Route path={ROUTES.AUTH_CALLBACK} element={<OAuthCallback />} />
 

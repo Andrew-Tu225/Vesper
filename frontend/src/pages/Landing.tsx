@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
 import styles from './landing.module.css'
 import { DashboardPreview } from '../components/landing/DashboardPreview'
-import { ROUTES } from '../lib/constants'
+import { PublicNav } from '../components/layout/PublicNav'
 import { usePricingPlans, formatPrice } from '../hooks/usePricingPlans'
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
@@ -333,54 +332,6 @@ function HeroVisual() {
         </div>
       </div>
     </div>
-  )
-}
-
-// ─── Navbar ───────────────────────────────────────────────────────────────────
-function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 80)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  return (
-    <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
-      <div className={styles.navInner}>
-        <div className={styles.navLogo}>
-          <a href="/">
-            <img src="/logo.svg" alt="Vesper" height="56" />
-          </a>
-        </div>
-        <div className={styles.navLinks}>
-          <a href="#how-it-works" className={styles.navLink}>How it works</a>
-          <a href="#features" className={styles.navLink}>Features</a>
-          <a href="#pricing" className={styles.navLink}>Pricing</a>
-        </div>
-        <Link to={ROUTES.LOGIN} className={styles.navLogin}>Login</Link>
-        <button
-          className={styles.navHamburger}
-          onClick={() => setMenuOpen(o => !o)}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-        >
-          <span className={`${styles.hamburgerLine} ${menuOpen ? styles.hamburgerLineTopOpen : ''}`} />
-          <span className={`${styles.hamburgerLine} ${menuOpen ? styles.hamburgerLineMidOpen : ''}`} />
-          <span className={`${styles.hamburgerLine} ${menuOpen ? styles.hamburgerLineBotOpen : ''}`} />
-        </button>
-      </div>
-      {menuOpen && (
-        <div className={styles.mobileMenu}>
-          <a href="#how-it-works" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>How it works</a>
-          <a href="#features" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Features</a>
-          <a href="#pricing" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Pricing</a>
-          <Link to={ROUTES.LOGIN} className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Login</Link>
-        </div>
-      )}
-    </nav>
   )
 }
 
@@ -916,7 +867,7 @@ export default function Landing() {
 
   return (
     <div className={styles.landing}>
-      <Navbar />
+      <PublicNav />
       <HeroSection />
       <DashboardPreview />
       <ProblemSection />

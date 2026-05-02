@@ -6,7 +6,13 @@ export const ROUTES = {
   CALENDAR: '/calendar',
   CHANNEL_SETUP: '/channel-setup',
   SETTINGS: '/settings',
+  BLOG_INDEX: '/blog',
+  BLOG_POST: '/blog/:slug',
 } as const
+
+export function blogPostHref(slug: string): string {
+  return `/blog/${slug}`
+}
 
 export const NAV_ITEMS = [
   { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'home' },
