@@ -108,7 +108,13 @@ Use this exact value in all output — never invent or approximate.
 ## Task 1 — Identify Content Signals
 Read the message stream and identify clusters worth turning into a LinkedIn post. \
 A cluster is one or more related messages (a thread, a back-and-forth exchange) that \
-together form a single publishable moment.
+together contain material a copywriter could turn into a compelling post.
+
+The test is not "did something happen?" but "does the substance of these messages \
+contain something worth sharing with a LinkedIn audience?" A founder articulating what \
+their product does, who it helps, and why it matters — even inside a planning or \
+brainstorming conversation — contains post-worthy substance. Extract the signal from \
+the context it was said in.
 
 Only classify a cluster as a signal if it clearly fits one of these types:
 
@@ -123,24 +129,36 @@ achievement. Must include a specific outcome. \
 Example: "We crossed 1,000 paying customers" or "Search latency is now under 50ms."
 
   launch_update
-    A product, feature, integration, or service going live or being announced externally. \
-Must be something released or actively shipping. \
-Example: "API v2 is live for all customers today."
+    A product, feature, integration, or service that is live, being announced, or \
+imminently shipping. Includes pre-launch readiness discussions where the team is \
+describing what the product does and the problem it solves in preparation for going \
+public — even if it has not shipped yet. \
+Examples: "API v2 is live for all customers today." \
+"Our MVP is almost ready — it solves X by doing Y, and people only need 10 mins a week."
 
   hiring
     An open role, team growth announcement, or culture highlight compelling to a general \
 LinkedIn audience. Example: "We're hiring our first ML engineer."
 
   founder_insight
-    A founder or senior leader sharing a genuine lesson, contrarian opinion, strategic \
-decision, or reflection on building the company. Must be substantive — not logistics. \
+    A founder or senior leader sharing a genuine personal lesson, contrarian opinion, or \
+reflection on building the company — something rooted in lived experience rather than \
+a product announcement. Must be substantive — not logistics or task coordination. \
+Not the right type for product positioning tied to a launch; use launch_update for that. \
 Example: "We almost killed this feature three times. Here's what made us keep it."
 
 Selection rules:
 - Group related messages (thread + replies, back-and-forth) into one signal. \
 Include all contributing ids in source_ids.
+- Classify the cluster by its dominant signal. One message containing task language \
+("we need to add X", "let's update Y") does not disqualify a cluster if the surrounding \
+conversation contains substantive product description, outcome, or positioning.
+- Ask: would this cluster make compelling LinkedIn content if written up well? \
+A cluster that clearly articulates what a product does, who it helps, and why it matters \
+is post-worthy even if no milestone has shipped yet. The signal is the insight or \
+story, not the presence of a completed outcome.
 - Be selective. Exclude internal ops, vague celebrations without specifics, \
-work-in-progress with no outcome, and one-word or emoji-only reactions.
+and one-word or emoji-only reactions.
 - High reaction counts increase the likelihood a cluster is post-worthy.
 - If nothing qualifies, return an empty candidates list. Do not force signals.
 
@@ -160,6 +178,11 @@ Exclude messages with no informational value:
 - Reactions and acknowledgements: "sounds good", "ok", "noted", "thanks", "+1", emoji-only
 - Scheduling and logistics with no context attached: "call at 3pm", "brb", "out today"
 - Messages that are only a bare URL with no surrounding explanation
+- Pure task assignments with no surrounding context: "fix the X bug", "deploy by Friday", \
+"add the blog post" — only exclude if the message is solely a directive with no product \
+thinking, rationale, or outcome attached. A message that mixes task language with product \
+positioning or launch intent is still worth storing.
+- Backlog and feature request messages with no surrounding strategic rationale
 
 Always include all source_ids from Task 1 candidates in this list — \
 signal-worthy messages are always worth storing as context.
@@ -201,6 +224,7 @@ outcome, customer name if mentioned, or metric. Used as the starting point for d
     result = response.choices[0].message.parsed
     if result is None:
         raise ClassifierError("LLM returned no parsed content — possible refusal or malformed response")
+
 
     # Validate signal_type values — drop any the LLM hallucinated
     valid: list[ContentSignalCandidate] = []
