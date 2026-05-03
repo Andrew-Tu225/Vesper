@@ -285,13 +285,12 @@ def post_message(
     channel: str,
     blocks: list[dict],
     text: str,
-) -> str:
-    """Post a Block Kit message and return its message_ts.
+) -> tuple[str, str]:
+    """Post a Block Kit message and return (message_ts, channel_id).
 
     Called by workers/draft_pipeline.generate_draft to post the approval card
     to workspace.settings.social_queue_channel after draft variants are created.
-    The returned message_ts is stored on DraftPost.slack_message_ts so the card
-    can be updated by the approval service.
+    Both values are stored on DraftPost so the card can be updated later.
 
     Args:
         client:  WebClient from get_workspace_client().
@@ -300,7 +299,8 @@ def post_message(
         text:    Plain-text fallback shown in notifications and accessibility contexts.
 
     Returns:
-        message_ts of the posted message (e.g. "1712500000.000001").
+        (message_ts, channel_id) — channel_id is the resolved ID from Slack's
+        response, which chat.update requires (channel names are not accepted).
 
     Raises:
         SlackClientError: On Slack API failure.
@@ -314,7 +314,7 @@ def post_message(
     except SlackApiError as exc:
         _handle_api_error("chat.postMessage", channel, exc)
 
-    return response["ts"]
+    return response["ts"], response["channel"]
 
 
 def update_message(

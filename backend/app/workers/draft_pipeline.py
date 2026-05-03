@@ -536,13 +536,13 @@ def generate_draft(self, signal_id: str) -> str:
         slack_client = get_workspace_client(workspace_id)
         blocks = _build_approval_card(row["summary"] or "", variants, signal_id)
         fallback_text = f"New content signal: {(row['summary'] or '')[:100]}"
-        message_ts = post_message(slack_client, social_queue_channel, blocks, fallback_text)
+        message_ts, posted_channel_id = post_message(slack_client, social_queue_channel, blocks, fallback_text)
     except SlackClientError as exc:
         logger.exception("generate_draft: Slack post failed for %s", signal_id)
         raise self.retry(exc=exc)
 
     try:
-        _update_draft_posts_slack_ts(post_ids, message_ts, social_queue_channel)
+        _update_draft_posts_slack_ts(post_ids, message_ts, posted_channel_id)
         _update_signal_status(signal_id, SignalStatus.IN_REVIEW)
     except Exception as exc:
         logger.exception("generate_draft: post-Slack DB update failed for %s", signal_id)

@@ -16,12 +16,11 @@ content worthiness. Real-time Slack webhooks are used only for the manual
 "Create LinkedIn draft" message action.
 """
 
-import os
-
 from celery import Celery
 from celery.schedules import crontab
 from kombu import Exchange, Queue
 
+from app.config import settings
 from app.workers.constants import Queue as Q
 
 # ---------------------------------------------------------------------------
@@ -30,8 +29,8 @@ from app.workers.constants import Queue as Q
 
 celery_app = Celery(
     "vesper",
-    broker=os.environ["REDIS_URL"],
-    backend=os.environ["REDIS_URL"],
+    broker=settings.redis_url,
+    backend=settings.redis_url,
 )
 
 # ---------------------------------------------------------------------------
