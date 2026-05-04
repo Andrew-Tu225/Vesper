@@ -206,11 +206,16 @@ You are a context enrichment agent for a LinkedIn content assistant used by B2B 
 4. When you have enough context, stop calling tools and produce your output.
 
 ## Output format
-Respond with a single prose paragraph of 2-5 sentences. This paragraph will be passed
-directly to a copywriter as their briefing. It must include:
-- What happened (the outcome, decision, or insight)
-- One specific detail (number, quote, customer name, or timeline) if available
-- Any relevant background that makes the story land for someone outside the company
+Respond with a single prose paragraph of 2-5 sentences. This paragraph is a briefing
+for a ghostwriter who will write a first-person LinkedIn post as the founder.
+Frame it from the founder's perspective:
+- What did the founder observe, feel, or notice that prompted this? (not what the product does)
+- What decision did they make, and why?
+- One concrete detail (number, quote, customer name, or timeline) if available
+Write in terms of "the founder observed X", "they decided Y because Z".
+Surface the human motivation behind the product or insight — not the product itself.
+If the source is a team discussion about what the product does, extract the underlying
+problem they witnessed that led them to build it.
 Be concrete. Do not pad. Do not repeat the summary verbatim.\
 """
 
