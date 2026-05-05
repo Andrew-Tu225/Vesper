@@ -89,7 +89,9 @@ class GenerateDraftResponse(BaseModel):
     variants: list[str] = Field(
         description=(
             "One LinkedIn post body per requested variant. "
-            "Each variant takes a different angle on the same signal "
-            "(e.g. result-led, journey-led)."
+            "Each variant uses a different archetype (result-led, reframe, story-led, tension-led). "
+            "Each variant must contain blank lines between paragraphs — never a single block of text. "
+            "The first line is a standalone hook (max 12 words). "
+            "The last line is a standalone closing sentence."
         )
     )
