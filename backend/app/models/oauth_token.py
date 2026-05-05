@@ -43,6 +43,9 @@ class OAuthToken(Base, TimestampMixin):
     tag: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)  # 16B GCM auth tag
     scopes: Mapped[str | None] = mapped_column(Text)
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Provider-side user identifier (e.g. LinkedIn OpenID Connect `sub`).
+    # Required to build author URNs for UGC post API calls.
+    provider_user_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
 
     # Relationships
     workspace: Mapped[Workspace] = relationship(

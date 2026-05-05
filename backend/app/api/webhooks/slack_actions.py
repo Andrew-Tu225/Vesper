@@ -194,9 +194,12 @@ async def _handle_view_submission(payload: dict, db: AsyncSession) -> None:
             .get("value", "")
             or ""
         )
+        slack_team_id = payload.get("team", {}).get("id", "")
+        publisher_user_id = await _resolve_publisher_user_id(slack_team_id, db)
         await approval.handle_approve(
             signal_id, variant_number, scheduled_at, actor, db,
             body_override=edited_body or None,
+            user_id=publisher_user_id,
         )
 
     elif callback_id == CALLBACK_REWRITE_FEEDBACK:
@@ -213,6 +216,17 @@ async def _handle_view_submission(payload: dict, db: AsyncSession) -> None:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+async def _resolve_publisher_user_id(slack_team_id: str, db: AsyncSession) -> UUID | None:
+    """Return the workspace owner's user_id for a Slack team ID, or None if not found."""
+    if not slack_team_id:
+        return None
+    result = await db.execute(
+        select(Workspace).where(Workspace.slack_team_id == slack_team_id)
+    )
+    workspace = result.scalar_one_or_none()
+    return workspace.owner_user_id if workspace else None
 
 
 async def _fetch_draft_body(

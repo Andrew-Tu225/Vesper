@@ -94,6 +94,11 @@ celery_app.conf.update(
             "task": "app.workers.maintenance.purge_slack_message_embeddings",
             "schedule": crontab(minute=0, hour=3),
         },
+        # Dispatch approved posts whose scheduled_at has passed — every 5 min
+        "dispatch-due-posts": {
+            "task": "app.workers.maintenance.dispatch_due_posts",
+            "schedule": crontab(minute="*/5"),
+        },
     },
 )
 
