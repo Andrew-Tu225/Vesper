@@ -115,6 +115,7 @@ async def approve_signal(
         actor=user.email,
         db=db,
         body_override=body.body_override,
+        user_id=user.id,
     )
     return {"status": "ok"}
 
