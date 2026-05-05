@@ -23,6 +23,7 @@ from app.models.workspace import Workspace
 
 _LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
 _LINKEDIN_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
+_LINKEDIN_USERINFO_URL = "https://api.linkedin.com/v2/userinfo"
 
 # Scopes available on Default + Standard tiers (no Marketing Developer Platform required)
 # openid/profile/email — identity at install time (OpenID Connect)
@@ -47,6 +48,7 @@ class LinkedInInstallData:
     refresh_token: str
     refresh_token_expires_at: datetime
     scopes: str
+    person_id: str  # LinkedIn OpenID Connect `sub` — needed for UGC post author URN
 
 
 def build_install_url(state: str) -> str:
@@ -64,13 +66,16 @@ def build_install_url(state: str) -> str:
 async def exchange_code(code: str) -> LinkedInInstallData:
     """Exchange a LinkedIn authorization code for access + refresh tokens.
 
-    Raises LinkedInOAuthError if the response is missing the access_token field.
+    Also calls /v2/userinfo to retrieve the OpenID Connect `sub` (person ID),
+    which is stored as provider_user_id and used later to build UGC post author URNs.
+
+    Raises LinkedInOAuthError if the response is missing required fields.
     Raises httpx.HTTPStatusError on non-2xx HTTP response.
     """
     now = datetime.now(tz=timezone.utc)
 
     async with httpx.AsyncClient() as client:
-        resp = await client.post(
+        token_resp = await client.post(
             _LINKEDIN_TOKEN_URL,
             data={
                 "grant_type": "authorization_code",
@@ -80,11 +85,22 @@ async def exchange_code(code: str) -> LinkedInInstallData:
                 "redirect_uri": f"{settings.app_base_url}/api/oauth/linkedin/callback",
             },
         )
-        resp.raise_for_status()
+        token_resp.raise_for_status()
 
-    body = resp.json()
-    if "access_token" not in body:
-        raise LinkedInOAuthError(body.get("error", "missing_access_token"))
+        body = token_resp.json()
+        if "access_token" not in body:
+            raise LinkedInOAuthError(body.get("error", "missing_access_token"))
+
+        userinfo_resp = await client.get(
+            _LINKEDIN_USERINFO_URL,
+            headers={"Authorization": f"Bearer {body['access_token']}"},
+        )
+        userinfo_resp.raise_for_status()
+
+    userinfo = userinfo_resp.json()
+    person_id: str = userinfo.get("sub", "")
+    if not person_id:
+        raise LinkedInOAuthError("userinfo_missing_sub")
 
     access_expires_in: int = body.get("expires_in", _DEFAULT_ACCESS_EXPIRES_SECONDS)
     refresh_expires_in: int = body.get(
@@ -97,6 +113,7 @@ async def exchange_code(code: str) -> LinkedInInstallData:
         refresh_token=body.get("refresh_token", ""),
         refresh_token_expires_at=now + timedelta(seconds=refresh_expires_in),
         scopes=body.get("scope", _SCOPES),
+        person_id=person_id,
     )
 
 
@@ -141,6 +158,7 @@ async def upsert_tokens(
                     tag=encrypted.tag,
                     scopes=data.scopes,
                     expires_at=expires_at,
+                    provider_user_id=data.person_id,
                 )
             )
         else:
@@ -149,6 +167,7 @@ async def upsert_tokens(
             existing.tag = encrypted.tag
             existing.scopes = data.scopes
             existing.expires_at = expires_at
+            existing.provider_user_id = data.person_id
 
     if workspace.onboarding_step == "connect_linkedin":
         workspace.onboarding_step = "channels_setup"

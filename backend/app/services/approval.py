@@ -142,6 +142,19 @@ def _max_rewrites_blocks(summary: str, actor: str) -> list[dict]:
     ]
 
 
+def _posted_blocks(linkedin_post_id: str) -> list[dict]:
+    post_url = f"https://www.linkedin.com/feed/update/{linkedin_post_id}/"
+    return [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f":rocket: *Posted to LinkedIn* — <{post_url}|View post>",
+            },
+        },
+    ]
+
+
 # ---------------------------------------------------------------------------
 # Public handlers
 # ---------------------------------------------------------------------------
@@ -153,6 +166,7 @@ async def handle_approve(
     actor: str,
     db: AsyncSession,
     body_override: str | None = None,
+    user_id: UUID | None = None,
 ) -> None:
     """Approve a draft variant and schedule it for posting.
 
@@ -161,6 +175,8 @@ async def handle_approve(
     If body_override is provided (user made edits in the approve modal),
     saves the edited text to DraftPost.body before scheduling.
     Updates the Slack approval card to a resolved state.
+    If user_id is provided, sets publisher_user_id so the publish worker
+    knows whose LinkedIn token to use.
     """
     signal = await _load_signal(signal_id, db)
     if signal is None:
@@ -172,6 +188,8 @@ async def handle_approve(
             dp.scheduled_at = scheduled_at
             if body_override:
                 dp.body = body_override
+            if user_id is not None:
+                dp.publisher_user_id = user_id
 
     signal.status = "scheduled"
     await db.commit()

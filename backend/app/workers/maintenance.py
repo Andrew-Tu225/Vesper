@@ -185,6 +185,56 @@ async def _refresh_oauth_tokens_async() -> None:
 
 
 @celery_app.task(
+    name="app.workers.maintenance.dispatch_due_posts",
+    queue=Queue.MAINTENANCE,
+    bind=True,
+    max_retries=2,
+    default_retry_delay=60,
+)
+def dispatch_due_posts(self) -> None:
+    """Fan-out publish_post for every approved post whose scheduled_at has passed.
+
+    Runs every 5 minutes via Celery Beat. Selects up to 100 posts per tick to
+    keep each Beat invocation fast; the next tick will pick up any remainder.
+
+    Eligibility:
+    - is_selected = TRUE    (approved by a human)
+    - published_at IS NULL  (not yet delivered)
+    - scheduled_at <= now() (due or overdue)
+    """
+    from app.db_sync import get_sync_pool
+    from app.workers.publishing import publish_post
+
+    pool = get_sync_pool()
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id::text FROM draft_post
+                WHERE is_selected = TRUE
+                  AND published_at IS NULL
+                  AND scheduled_at <= now()
+                ORDER BY scheduled_at
+                LIMIT 100
+                """
+            )
+            rows = cur.fetchall()
+    except Exception as exc:
+        logger.error("dispatch_due_posts: failed to query due posts: %s", exc)
+        raise self.retry(exc=exc)
+    finally:
+        pool.putconn(conn)
+
+    if not rows:
+        return
+
+    logger.info("dispatch_due_posts: dispatching %d post(s)", len(rows))
+    for (draft_post_id,) in rows:
+        publish_post.delay(draft_post_id)
+
+
+@celery_app.task(
     name="app.workers.maintenance.cleanup_stale_signals",
     queue=Queue.MAINTENANCE,
     bind=True,
