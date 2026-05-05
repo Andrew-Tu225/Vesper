@@ -142,6 +142,19 @@ def _max_rewrites_blocks(summary: str, actor: str) -> list[dict]:
     ]
 
 
+def _posted_blocks(linkedin_post_id: str) -> list[dict]:
+    post_url = f"https://www.linkedin.com/feed/update/{linkedin_post_id}/"
+    return [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f":rocket: *Posted to LinkedIn* — <{post_url}|View post>",
+            },
+        },
+    ]
+
+
 # ---------------------------------------------------------------------------
 # Public handlers
 # ---------------------------------------------------------------------------
