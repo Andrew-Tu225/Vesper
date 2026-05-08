@@ -103,7 +103,7 @@ export function useSEO({ title, description, canonical, ogType = 'website', ogIm
     }
 
     return () => {
-      document.title = 'Vesper — Turn content signal Into LinkedIn Posts'
+      document.title = 'Vesper | Turn Slack Updates Into LinkedIn Posts'
       removeJsonLd()
     }
   }, [title, description, canonical, ogType, ogImage, article, jsonLd])

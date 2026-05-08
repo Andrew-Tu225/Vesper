@@ -4,25 +4,132 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/logo-icon.svg" type="image/svg+xml" />
-    <title>Vesper — Turn content signal Into LinkedIn Posts</title>
-    <meta name="description" content="Vesper monitors your team's Slack and email, surfaces the moments worth sharing, and writes polished LinkedIn posts — delivered to your Slack for one-click approval." />
+
+    <title>Vesper | Turn Slack Updates Into LinkedIn Posts</title>
+    <meta
+      name="description"
+      content="Vesper is an AI content assistant that turns Slack messages, launch updates, customer wins, and internal announcements into ready-to-publish LinkedIn posts — reviewed and approved by your team in Slack."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="keywords" content="Slack to LinkedIn, AI LinkedIn post generator, content automation, founder thought leadership, employee advocacy, B2B social content" />
+
+    <link rel="canonical" href="https://tryvesper.vercel.app/" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Vesper — Turn content signal Into LinkedIn Posts" />
-    <meta property="og:description" content="AI-powered content assistant. Your team's best moments, automatically turned into LinkedIn posts." />
+    <meta property="og:title" content="Vesper | Turn Slack Updates Into LinkedIn Posts" />
+    <meta
+      property="og:description"
+      content="AI content assistant for founders and startup teams. Turn Slack messages and internal updates into LinkedIn posts, with one-click approval in Slack."
+    />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://tryvesper.vercel.app/" />
     <meta property="og:image" content="https://tryvesper.vercel.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Vesper" />
 
     <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Vesper — Turn content signal Into LinkedIn Posts" />
-    <meta name="twitter:description" content="AI-powered content assistant. Your team's best moments, automatically turned into LinkedIn posts." />
+    <meta name="twitter:title" content="Vesper | Turn Slack Updates Into LinkedIn Posts" />
+    <meta
+      name="twitter:description"
+      content="AI content assistant for founders and startup teams. Turn Slack messages and internal updates into LinkedIn posts."
+    />
     <meta name="twitter:image" content="https://tryvesper.vercel.app/og-image.png" />
 
     <meta name="theme-color" content="#06060f" />
+
+    <!-- JSON-LD: SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Vesper",
+      "description": "Vesper is an AI content assistant that turns Slack messages into LinkedIn posts. Built for founders and startup marketing teams who want to publish consistently without manually collecting updates from across the team.",
+      "url": "https://tryvesper.vercel.app/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "description": "30-day free trial, no credit card required"
+      },
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Founders, startup marketing teams, GTM teams, employee advocacy programs"
+      }
+    }
+    </script>
+
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Vesper",
+      "url": "https://tryvesper.vercel.app/",
+      "logo": "https://tryvesper.vercel.app/logo.svg"
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage (mirrors visible FAQ section added in Step 7) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does Vesper do?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vesper is an AI content assistant that monitors your team's Slack channels, classifies messages worth amplifying — like customer wins, product launches, hiring news, and founder insights — and drafts LinkedIn posts your team can approve in Slack."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can Vesper turn Slack messages into LinkedIn posts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Vesper connects to selected Slack channels, classifies each message, and turns content-worthy moments into LinkedIn post drafts delivered to a dedicated #social-queue channel for review."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who is Vesper for?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vesper is built for founders building a personal brand, startup marketing teams collecting company updates, and GTM or employee advocacy teams turning launches and customer wins into LinkedIn content."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How is Vesper different from a generic AI writing tool?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Generic AI writers start from a blank prompt. Vesper starts from real internal signals — Slack messages, customer feedback, launch updates — and drafts posts grounded in actual team context, then routes them through a Slack approval workflow."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can Vesper help founders post consistently on LinkedIn?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Vesper removes the bottleneck of remembering to write — it watches your communication workspace, surfaces moments worth sharing, and delivers ready-to-approve drafts so founders can post regularly without a content backlog."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can marketing teams use Vesper for employee advocacy and launch content?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Marketing teams use Vesper to capture launches, customer stories, and hiring announcements as they happen, then approve and schedule LinkedIn posts directly from Slack."
+          }
+        }
+      ]
+    }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,7 +140,66 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!--
+        Static crawler-visible fallback. React hydrates over this on load.
+        Until prerendering is added (Step 8), this is what Googlebot, Bing,
+        and LLM fetchers see when they do not execute JS. Remove hidden attr
+        and data-static-seo once prerendering is confirmed working.
+      -->
+      <main hidden aria-hidden="true" data-static-seo="true">
+        <h1>Turn Slack updates into ready-to-post LinkedIn content</h1>
+        <p>
+          Vesper is an AI content assistant for founders and startup teams. It monitors your Slack workspace, classifies launches, customer wins, hiring news, and founder insights, and drafts LinkedIn posts your team can approve in Slack — without leaving the tools you already use.
+        </p>
+
+        <h2>What Vesper does</h2>
+        <p>
+          Vesper turns Slack messages into ready-to-publish LinkedIn posts. Every signal is classified across five categories: customer praise, product wins, launch updates, hiring announcements, and founder insights. Drafts are delivered to a dedicated Slack channel for one-click review.
+        </p>
+
+        <h2>Who Vesper is for</h2>
+        <ul>
+          <li>Founders building a personal brand on LinkedIn</li>
+          <li>Startup marketing teams collecting company updates</li>
+          <li>GTM teams turning launches and customer wins into social proof</li>
+          <li>Employee advocacy and team content workflows</li>
+        </ul>
+
+        <h2>How Vesper works</h2>
+        <ol>
+          <li>Connect Slack channels.</li>
+          <li>Vesper classifies every message and filters operational noise.</li>
+          <li>Content-worthy signals are drafted into 2–3 LinkedIn post variants.</li>
+          <li>Drafts arrive in your #social-queue Slack channel for approval, edits, or rewrite.</li>
+          <li>Approved posts publish to LinkedIn on schedule, with retry on failure.</li>
+        </ol>
+
+        <h2>Use cases</h2>
+        <ul>
+          <li>Slack to LinkedIn post generator for founders</li>
+          <li>AI thought leadership drafts grounded in real team signals</li>
+          <li>Employee advocacy content automation for startup marketing</li>
+          <li>Repurposing internal product updates into social content</li>
+          <li>Capturing customer wins and turning them into case-study posts</li>
+        </ul>
+
+        <h2>Why Vesper, not a generic AI writer</h2>
+        <p>
+          Generic AI writers start from a blank prompt. Vesper starts from real internal signals — Slack messages, customer feedback, launch updates — and drafts posts grounded in actual team context. Every post is approval-gated, so nothing publishes without explicit human sign-off.
+        </p>
+
+        <h2>Frequently asked questions</h2>
+        <h3>What does Vesper do?</h3>
+        <p>Vesper is an AI content assistant that monitors your team's Slack channels, classifies messages worth amplifying, and drafts LinkedIn posts your team can approve in Slack.</p>
+        <h3>Can Vesper turn Slack messages into LinkedIn posts?</h3>
+        <p>Yes. Vesper connects to selected Slack channels, classifies each message, and turns content-worthy moments into LinkedIn drafts.</p>
+        <h3>Who is Vesper for?</h3>
+        <p>Founders, startup marketing teams, GTM teams, and employee advocacy programs.</p>
+        <h3>How is Vesper different from a generic AI writing tool?</h3>
+        <p>Vesper drafts from real internal signals and routes through a Slack approval workflow, instead of starting from a blank prompt.</p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

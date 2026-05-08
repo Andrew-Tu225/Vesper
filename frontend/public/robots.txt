@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /app/
+Disallow: /auth/
+Disallow: /dashboard/
+
+Sitemap: https://tryvesper.vercel.app/sitemap.xml

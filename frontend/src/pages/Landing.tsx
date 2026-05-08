@@ -3,6 +3,7 @@ import styles from './landing.module.css'
 import { DashboardPreview } from '../components/landing/DashboardPreview'
 import { PublicNav } from '../components/layout/PublicNav'
 import { usePricingPlans, formatPrice } from '../hooks/usePricingPlans'
+import { useSEO } from '../hooks/useSEO'
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
 function SparkleIcon() {
@@ -79,11 +80,11 @@ function IconRefresh() {
 
 // ─── Typewriter hero component ────────────────────────────────────────────────
 const TYPEWRITER_PHRASES = [
-  'customer feedback',
-  'product updates',
-  'company milestones',
+  'Slack messages',
+  'launch updates',
+  'customer wins',
+  'hiring announcements',
   'founder insights',
-  'team achievements',
 ]
 
 function TypewriterWord() {
@@ -346,13 +347,13 @@ function HeroSection() {
         </div>
 
         <h1 className={styles.heroTitle}>
-          Transform <TypewriterWord /><br />
-          into LinkedIn Stories
+          Turn <TypewriterWord /><br />
+          into LinkedIn stories
         </h1>
 
         <p className={styles.heroSub}>
-          A complete workflow that monitors your workspace, classifies what's worth sharing,
-          and routes AI-drafted posts through your approval queue automatically.
+          Vesper monitors your Slack channels, classifies launches, customer wins, and founder insights,
+          then delivers LinkedIn post drafts to your team for one-click approval.
         </p>
 
         <div className={styles.heroCtas}>
@@ -863,6 +864,23 @@ function PricingSection() {
 }
 
 export default function Landing() {
+  useSEO({
+    title: 'Turn Slack Updates Into LinkedIn Posts',
+    description:
+      'Vesper is an AI content assistant that turns Slack messages, launch updates, customer wins, and internal announcements into ready-to-publish LinkedIn posts — reviewed and approved by your team in Slack.',
+    canonical: '/',
+    ogType: 'website',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Vesper',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: 'https://tryvesper.vercel.app/',
+      description:
+        'AI content assistant that turns Slack messages into LinkedIn posts for founders and startup teams.',
+    },
+  })
   useScrollReveal()
 
   return (
