@@ -45,8 +45,15 @@ export default function BlogIndex() {
   })
 
   const featured = getFeaturedPost()
-  const posts = activeCategory === 'all' ? getAllPosts() : getPostsByCategory(activeCategory)
-  const recentPosts = posts.filter(p => p.slug !== featured?.slug)
+  const showFeatured = activeCategory === 'all' && !!featured
+
+  // When a category is active, show ALL matching posts in the list (including
+  // the featured post). When "All" is active, the featured post gets its own
+  // hero section and is excluded from the list below.
+  const filteredPosts = activeCategory === 'all' ? getAllPosts() : getPostsByCategory(activeCategory)
+  const listPosts = showFeatured
+    ? filteredPosts.filter(p => p.slug !== featured!.slug)
+    : filteredPosts
 
   function handleCategoryChange(value: BlogCategory | 'all') {
     if (value === 'all') {
@@ -82,23 +89,24 @@ export default function BlogIndex() {
           ))}
         </div>
 
-        {featured && activeCategory === 'all' && (
+        {showFeatured && (
           <section className={styles.featuredSection} aria-label="Featured post">
-            <BlogCard post={featured} variant="featured" />
+            <BlogCard post={featured!} variant="featured" />
           </section>
         )}
 
-        {recentPosts.length > 0 && (
+        {listPosts.length > 0 && (
           <section className={styles.recentSection} aria-label="Recent posts">
-            <div className={styles.postGrid}>
-              {recentPosts.map(post => (
+            {showFeatured && <p className={styles.listLabel}>All posts</p>}
+            <div className={styles.postList}>
+              {listPosts.map(post => (
                 <BlogCard key={post.slug} post={post} />
               ))}
             </div>
           </section>
         )}
 
-        {posts.length === 0 && (
+        {filteredPosts.length === 0 && (
           <p className={styles.emptyState}>No posts in this category yet.</p>
         )}
       </div>
