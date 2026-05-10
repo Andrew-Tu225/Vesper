@@ -1,8 +1,25 @@
 import { defineConfig } from 'vitest/config'
 import { loadEnv } from 'vite'
+import type { PluginOption } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
+
+// Loaded dynamically so the normal `build` script never pulls in puppeteer
+// unless PRERENDER=true is set. Run `npm run build:prerender` to generate
+// static HTML for /, /privacy, and /terms.
+let prerenderPlugin: PluginOption = false
+if (process.env.PRERENDER === 'true') {
+  const { default: prerender } = await import('vite-plugin-prerender')
+  prerenderPlugin = prerender({
+    staticDir: path.join(path.dirname(new URL(import.meta.url).pathname), 'dist'),
+    routes: [
+      '/',
+      '/privacy',
+      '/terms',
+    ],
+  }) as PluginOption
+}
 
 export default defineConfig(({ mode }) => {
   // loadEnv with prefix '' loads ALL .env vars (not just VITE_-prefixed ones)
@@ -85,6 +102,7 @@ export default defineConfig(({ mode }) => {
           )
         },
       },
+      prerenderPlugin,
     ],
     resolve: {
       alias: {

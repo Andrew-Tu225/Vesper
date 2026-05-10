@@ -1,0 +1,42 @@
+# Vesper
+
+Vesper is an AI content assistant that turns Slack messages into ready-to-publish LinkedIn posts.
+
+## What it does
+- Monitors selected Slack channels continuously.
+- Classifies messages across five signal types: customer praise, product wins, launch updates, hiring news, and founder insights.
+- Generates 2-3 LinkedIn post variants per signal.
+- Delivers drafts to a #vesper-ai Slack channel for one-click approval, edit, rewrite, or schedule.
+- Publishes approved posts to LinkedIn on schedule, with retry on failure.
+
+## Who it is for
+- Founders building a personal brand on LinkedIn.
+- Startup marketing teams collecting company updates from across the org.
+- GTM teams turning launches and customer wins into social proof.
+- Employee advocacy and team content workflows.
+
+## Why teams use it
+- Stop losing customer wins, launches, and milestones in Slack noise.
+- Publish to LinkedIn consistently without a content agency.
+- Keep human approval in the loop on every post.
+
+## Inputs
+Slack channels
+
+## Outputs
+LinkedIn post drafts, scheduled or published with approval.
+
+## Differentiator vs. generic AI writers
+Vesper drafts from real internal company signals (Slack messages), not from blank prompts. Every post is approval-gated — nothing publishes without explicit human sign-off.
+
+## Use cases
+- Slack to LinkedIn post generator for startup teams.
+- AI thought leadership for founders building a personal brand.
+- Employee advocacy content automation for GTM and marketing teams.
+- Repurposing internal product updates, launch notes, and customer wins into social content.
+
+## URL
+https://tryvesper.vercel.app/
+
+## Contact
+andrewt.tu@mail.utoronto.ca

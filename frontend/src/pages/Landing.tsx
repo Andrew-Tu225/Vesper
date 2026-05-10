@@ -3,6 +3,7 @@ import styles from './landing.module.css'
 import { DashboardPreview } from '../components/landing/DashboardPreview'
 import { PublicNav } from '../components/layout/PublicNav'
 import { usePricingPlans, formatPrice } from '../hooks/usePricingPlans'
+import { useSEO } from '../hooks/useSEO'
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
 function SparkleIcon() {
@@ -79,11 +80,11 @@ function IconRefresh() {
 
 // ─── Typewriter hero component ────────────────────────────────────────────────
 const TYPEWRITER_PHRASES = [
-  'customer feedback',
-  'product updates',
-  'company milestones',
+  'Slack messages',
+  'launch updates',
+  'customer wins',
+  'hiring announcements',
   'founder insights',
-  'team achievements',
 ]
 
 function TypewriterWord() {
@@ -346,13 +347,13 @@ function HeroSection() {
         </div>
 
         <h1 className={styles.heroTitle}>
-          Transform <TypewriterWord /><br />
-          into LinkedIn Stories
+          Turn <TypewriterWord /><br />
+          into LinkedIn stories
         </h1>
 
         <p className={styles.heroSub}>
-          A complete workflow that monitors your workspace, classifies what's worth sharing,
-          and routes AI-drafted posts through your approval queue automatically.
+          Vesper monitors your Slack channels, classifies launches, customer wins, and founder insights,
+          then delivers LinkedIn post drafts to your team for one-click approval.
         </p>
 
         <div className={styles.heroCtas}>
@@ -707,6 +708,59 @@ function FeaturesSection() {
   )
 }
 
+// ─── Use Cases / ICP section ─────────────────────────────────────────────────
+function UseCasesSection() {
+  const useCases = [
+    {
+      eyebrow: 'Founder brand',
+      heading: 'Post consistently from real company wins',
+      desc: 'Stop losing the moments that matter in Slack noise. Vesper surfaces your customer wins, product milestones, and founder insights — and drafts LinkedIn posts without the blank-page tax.',
+      icon: '🚀',
+    },
+    {
+      eyebrow: 'Startup marketing',
+      heading: 'Capture launches and milestones as they happen',
+      desc: 'Your team generates content-worthy signals every week. Vesper turns product updates, hiring news, and company milestones into LinkedIn drafts your team can approve and publish on cadence.',
+      icon: '📣',
+    },
+    {
+      eyebrow: 'GTM & employee advocacy',
+      heading: 'Turn team momentum into amplified content',
+      desc: 'Multiply your reach without a content agency. Vesper helps GTM teams turn customer stories and launch wins into LinkedIn posts across founders and team members — all approval-gated.',
+      icon: '🎯',
+    },
+  ]
+
+  return (
+    <section className={styles.useCasesSection}>
+      <div className={styles.sectionInner}>
+        <p className={styles.sectionEyebrow} data-reveal>Who it's for</p>
+        <h2 className={styles.sectionTitle} data-reveal data-delay="1">
+          Built for the teams creating content every day
+        </h2>
+        <p className={styles.sectionSub} data-reveal data-delay="2">
+          Whether you're a founder building a personal brand or a marketing team publishing company content — Vesper fits into how you already work.
+        </p>
+        <div className={styles.useCasesGrid}>
+          {useCases.map((uc, i) => (
+            <div
+              key={i}
+              className={styles.useCaseCard}
+              data-reveal
+              data-delay={String(i + 1)}
+            >
+              <span className={styles.useCaseIcon}>{uc.icon}</span>
+              <p className={styles.useCaseEyebrow}>{uc.eyebrow}</p>
+              <h3 className={styles.useCaseHeading}>{uc.heading}</h3>
+              <p className={styles.useCaseDesc}>{uc.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ─── Pipeline ─────────────────────────────────────────────────────────────────
 function PipelineSection() {
   const stages = [
@@ -759,6 +813,55 @@ function PipelineSection() {
   )
 }
 
+
+// ─── FAQ Section ─────────────────────────────────────────────────────────────
+function FAQSection() {
+  const faqs = [
+    {
+      q: 'What does Vesper do?',
+      a: "Vesper is an AI content assistant that monitors your team's Slack channels, classifies messages worth amplifying — customer wins, product launches, hiring news, and founder insights — and drafts LinkedIn posts your team can approve in Slack.",
+    },
+    {
+      q: 'Does Vesper post to LinkedIn automatically, without my approval?',
+      a: 'No. Every post Vesper drafts requires explicit human approval before it publishes. Drafts arrive in your #social-queue Slack channel where your team can approve, edit, request a rewrite, or reject — nothing goes live without sign-off.',
+    },
+    {
+      q: 'Who is Vesper for?',
+      a: 'Vesper is built for founders and GTM leaders who want to share their team\'s momentum — customer wins, product launches, and company updates — with their professional audience on LinkedIn. Startup marketing teams also use it to run company LinkedIn pages and employee advocacy programs.',
+    },
+    {
+      q: 'How is Vesper different from a generic AI writing tool?',
+      a: 'Generic AI writers start from a blank prompt. Vesper starts from real internal signals and drafts posts grounded in actual team context, then routes them through a Slack approval workflow.',
+    },
+    {
+      q: 'How does Vesper help founders post consistently on LinkedIn?',
+      a: 'Vesper removes the bottleneck of remembering to write. It continuously watches your Slack workspace, surfaces moments worth sharing, and delivers ready-to-approve drafts — so founders can build a consistent posting habit without manually tracking company updates or staring at a blank page.',
+    },
+    {
+      q: 'Can marketing teams use Vesper for employee advocacy and launch content?',
+      a: 'Yes. Teams use Vesper to capture launches, customer stories, and hiring announcements as they happen, then approve and schedule LinkedIn posts directly from Slack.',
+    },
+  ]
+
+  return (
+    <section id="faq" className={styles.faqSection}>
+      <div className={styles.sectionInner}>
+        <p className={styles.sectionEyebrow} data-reveal>FAQ</p>
+        <h2 className={styles.sectionTitle} data-reveal data-delay="1">
+          Frequently asked questions
+        </h2>
+        <div className={styles.faqList}>
+          {faqs.map((item, i) => (
+            <details key={i} className={styles.faqItem} data-reveal data-delay={String((i % 3) + 1)}>
+              <summary className={styles.faqQuestion}>{item.q}</summary>
+              <p className={styles.faqAnswer}>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
 // ─── Landing (main export) ───────────────────────────────────────────────────
 
@@ -863,6 +966,23 @@ function PricingSection() {
 }
 
 export default function Landing() {
+  useSEO({
+    title: 'Turn Slack Updates Into LinkedIn Posts',
+    description:
+      'Vesper is an AI content assistant that turns Slack messages, launch updates, customer wins, and internal announcements into ready-to-publish LinkedIn posts — reviewed and approved by your team in Slack.',
+    canonical: '/',
+    ogType: 'website',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Vesper',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: 'https://tryvesper.vercel.app/',
+      description:
+        'AI content assistant that turns Slack messages into LinkedIn posts for founders and startup teams.',
+    },
+  })
   useScrollReveal()
 
   return (
@@ -873,9 +993,11 @@ export default function Landing() {
       <ProblemSection />
       <TrustStrip />
       <HowItWorksSection />
+      <UseCasesSection />
       <PipelineSection />
 
       <PricingSection />
+      <FAQSection />
 
       {/* Footer */}
       <footer className={styles.footer}>

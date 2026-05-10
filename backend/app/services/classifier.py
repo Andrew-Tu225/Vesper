@@ -168,11 +168,15 @@ These give the drafting agent context that may span multiple days of conversatio
 not just the current scan window. A message does not need to qualify as a content \
 signal to be worth storing.
 
-Include messages that carry domain-specific information:
-- Work being done: technical decisions, implementations, approaches, blockers, breakthroughs
-- Customer or user interactions, even brief ("Acme renewed", "user said login was confusing")
+Include only messages that contain concrete, specific information — at least one of: \
+a named feature or product, a customer or user name, a measurable outcome or metric, \
+or a decision with a stated rationale.
+
+Types that qualify:
+- Technical decisions with rationale: what was chosen and why, or what was ruled out
+- Customer or user interactions with specific detail ("Acme renewed", "user said login was confusing")
 - Concrete outcomes or metrics ("we hit 1000 users", "latency down to 40ms")
-- Product thinking, priorities, or strategic decisions from anyone on the team
+- Product or strategic decisions grounded in a specific context or trade-off
 
 Exclude messages with no informational value:
 - Reactions and acknowledgements: "sounds good", "ok", "noted", "thanks", "+1", emoji-only
@@ -182,7 +186,15 @@ Exclude messages with no informational value:
 "add the blog post" — only exclude if the message is solely a directive with no product \
 thinking, rationale, or outcome attached. A message that mixes task language with product \
 positioning or launch intent is still worth storing.
-- Backlog and feature request messages with no surrounding strategic rationale
+- Vague future intent without specifics: "I'll work on marketing", "we should figure out X someday", \
+"I will work out different campaigns" — exclude if no concrete details are attached
+- Incomplete or fragmentary messages that lack enough context to be useful alone: \
+"I found these platforms to start", "we can look into this", "this should be good"
+- Internal meta-discussion about the team's own workflow, tools, or processes with no \
+product, customer, or outcome substance attached
+
+Ask: would this message help a copywriter understand the company's product, customers, or \
+outcomes in a month from now? If it contains no specific facts, skip it.
 
 Always include all source_ids from Task 1 candidates in this list — \
 signal-worthy messages are always worth storing as context.
