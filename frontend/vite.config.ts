@@ -13,7 +13,11 @@ if (process.env.PRERENDER === 'true') {
   const { default: prerender } = await import('vite-plugin-prerender')
   prerenderPlugin = prerender({
     staticDir: path.join(path.dirname(new URL(import.meta.url).pathname), 'dist'),
-    routes: ['/', '/privacy', '/terms'],
+    routes: [
+      '/',
+      '/privacy',
+      '/terms',
+    ],
   }) as PluginOption
 }
 
