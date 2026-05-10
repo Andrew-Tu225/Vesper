@@ -144,10 +144,11 @@
       <!--
         Static crawler-visible fallback. React hydrates over this on load.
         Until prerendering is added (Step 8), this is what Googlebot, Bing,
-        and LLM fetchers see when they do not execute JS. Remove hidden attr
-        and data-static-seo once prerendering is confirmed working.
+        and LLM fetchers see when they do not execute JS.
+        Visually hidden via inline CSS so crawlers/LLMs can read plain-text
+        content, while the element is invisible and non-interactive for users.
       -->
-      <main hidden aria-hidden="true" data-static-seo="true">
+      <main aria-hidden="true" data-static-seo="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
         <h1>Turn Slack updates into ready-to-post LinkedIn content</h1>
         <p>
           Vesper is an AI content assistant for founders and startup teams. It monitors your Slack workspace, classifies launches, customer wins, hiring news, and founder insights, and drafts LinkedIn posts your team can approve in Slack — without leaving the tools you already use.
