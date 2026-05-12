@@ -1,0 +1,1660 @@
+[
+  {
+    "scenario_id": "s001",
+    "description": "Draftly — Monday morning general channel. All logistics and ops noise, zero content signals.",
+    "company_context": "Draftly: B2B content workflow tool, 8-person team. Helps marketing teams manage content pipelines from brief to publish.",
+    "messages": [
+      {
+        "source_id": "1746000001.000001",
+        "channel_id": "C_general",
+        "user_id": "U_james",
+        "text": "morning everyone 👋",
+        "thread_ts": null,
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746000060.000002",
+        "channel_id": "C_general",
+        "user_id": "U_sarah",
+        "text": "morning! fully heads down until 2 today fyi",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000120.000003",
+        "channel_id": "C_general",
+        "user_id": "U_ben",
+        "text": "@james quick q — is the design review still at 3 or did that move",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000180.000004",
+        "channel_id": "C_general",
+        "user_id": "U_james",
+        "text": "moved to 4. rachel couldn't make 3",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000240.000005",
+        "channel_id": "C_general",
+        "user_id": "U_ben",
+        "text": "👍",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000360.000006",
+        "channel_id": "C_general",
+        "user_id": "U_lisa",
+        "text": "anyone else getting 504s from staging on /api/v2/drafts? just started a few minutes ago",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000420.000007",
+        "channel_id": "C_general",
+        "user_id": "U_ben",
+        "text": "yeah, think it's the redis restart from earlier. looking at it now",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746000600.000008",
+        "channel_id": "C_general",
+        "user_id": "U_lisa",
+        "text": "fixed, ty @ben",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000720.000009",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "can someone drop the Q2 planning doc in the shared drive? can't find where james put it",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000780.000010",
+        "channel_id": "C_general",
+        "user_id": "U_james",
+        "text": "lol sorry, just added it to the General folder",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746000840.000011",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "got it ty",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746001000.000012",
+        "channel_id": "C_general",
+        "user_id": "U_mike",
+        "text": "out at 1:30 for a call, back around 3",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746001200.000013",
+        "channel_id": "C_general",
+        "user_id": "U_jen",
+        "text": "does anyone have the brand hex codes handy? client needs our primary blue for a partnership thing",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746001260.000014",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "it's in Figma under Brand Assets. primary is #2563EB",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746001320.000015",
+        "channel_id": "C_general",
+        "user_id": "U_jen",
+        "text": "perfect, thank you!",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746001500.000016",
+        "channel_id": "C_general",
+        "user_id": "U_ben",
+        "text": "anyone reviewing PRs today? small one up for the export refactor",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746001560.000017",
+        "channel_id": "C_general",
+        "user_id": "U_lisa",
+        "text": "i'll grab it after lunch",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746001620.000018",
+        "channel_id": "C_general",
+        "user_id": "U_ben",
+        "text": "🙏",
+        "thread_ts": null,
+        "reaction_count": 0
+      }
+    ],
+    "gold": {
+      "candidates": [],
+      "embed_message_ids": []
+    }
+  },
+  {
+    "scenario_id": "s002",
+    "description": "Draftly — product discussion in general channel, then Mike finds a months-old Healthbridge email buried in his inbox and shares it.",
+    "company_context": "Draftly: B2B content workflow tool, 8-person team. Helps marketing teams manage content pipelines from brief to publish.",
+    "messages": [
+      {
+        "source_id": "1746100001.000001",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "heads up — design sync moved to 2pm, just updated the cal invite",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746100060.000002",
+        "channel_id": "C_general",
+        "user_id": "U_jen",
+        "text": "👍 saw that, ty",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746100120.000003",
+        "channel_id": "C_general",
+        "user_id": "U_lisa",
+        "text": "quick question about the editor toolbar — are we shipping the comment feature in v1 or holding it?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746100180.000004",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "holding it for now, too many edge cases. @jen can you drop a ticket in Jira with the context?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746100240.000005",
+        "channel_id": "C_general",
+        "user_id": "U_jen",
+        "text": "on it",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746100600.000006",
+        "channel_id": "C_general",
+        "user_id": "U_mike",
+        "text": "yo guys — was clearing out my inbox this morning and found something from back in March that i apparently never shared 😅",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746100660.000007",
+        "channel_id": "C_general",
+        "user_id": "U_mike",
+        "text": "Healthbridge's content lead sent this after their first month: \"Switching our content team to Draftly was the best call we made this quarter. What used to take 3 full days to produce a campaign brief now takes one afternoon. Our writers actually want to use it, which sounds small but it's everything.\"",
+        "thread_ts": null,
+        "reaction_count": 7
+      },
+      {
+        "source_id": "1746100720.000008",
+        "channel_id": "C_general",
+        "user_id": "U_james",
+        "text": "WAIT. this was sitting in your inbox since March??",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746100780.000009",
+        "channel_id": "C_general",
+        "user_id": "U_mike",
+        "text": "i know i know, i'm sorry 😭 it was buried under a ton of stuff",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746100840.000010",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "3 days to one afternoon is such a specific metric, i love it",
+        "thread_ts": null,
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746100900.000011",
+        "channel_id": "C_general",
+        "user_id": "U_jen",
+        "text": "can we actually use this somewhere? like this is perfect copy",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746100960.000012",
+        "channel_id": "C_general",
+        "user_id": "U_mike",
+        "text": "i'll ask Healthbridge if we can quote them publicly. pretty sure they'd say yes, they've been super happy",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746101020.000013",
+        "channel_id": "C_general",
+        "user_id": "U_james",
+        "text": "yes please do. also @rachel maybe this feeds into the case study you were sketching last week?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746101080.000014",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "for sure, adding it to the doc now",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746101200.000015",
+        "channel_id": "C_general",
+        "user_id": "U_lisa",
+        "text": "also btw — confirmed the comment feature needs another 2 weeks minimum. definitely the right call to hold it",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746101260.000016",
+        "channel_id": "C_general",
+        "user_id": "U_rachel",
+        "text": "ok good. let's revisit next sprint",
+        "thread_ts": null,
+        "reaction_count": 0
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746100660.000007",
+            "1746100840.000010"
+          ],
+          "signal_type": "customer_praise",
+          "summary_must_contain": [
+            "Healthbridge",
+            "three days",
+            "one afternoon",
+            "campaign brief"
+          ],
+          "reason": "Named customer, before/after metric (3 days → 1 afternoon), specific use case (campaign briefs), quote from content lead"
+        }
+      ],
+      "embed_message_ids": [
+        "1746100660.000007",
+        "1746100840.000010",
+        "1746100960.000012"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s003",
+    "description": "Draftly — Ben debugging a slow export endpoint, discovers and fixes a separate reports query in passing. Performance numbers shared mid-debugging thread.",
+    "company_context": "Draftly: B2B content workflow tool, 8-person team. Helps marketing teams manage content pipelines from brief to publish.",
+    "messages": [
+      {
+        "source_id": "1746200001.000001",
+        "channel_id": "C_engineering",
+        "user_id": "U_ben",
+        "text": "staging is acting up again — /api/exports is super slow for any doc over 100 pages. like 12+ seconds",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200060.000002",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "ugh, yeah saw complaints about that in the support queue last week. what's causing it?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200120.000003",
+        "channel_id": "C_engineering",
+        "user_id": "U_ben",
+        "text": "still digging. first guess was the PDF renderer but profiling doesn't show it there",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200240.000004",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "could it be the brand asset loading? i remember sarah mentioned something about that a while back",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200360.000005",
+        "channel_id": "C_engineering",
+        "user_id": "U_ben",
+        "text": "...yes. oh wow. it's making one DB call per brand asset instead of batching. classic n+1, i can't believe we shipped this",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746200420.000006",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "haha oh no. fixing it now or want me to grab it?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200480.000007",
+        "channel_id": "C_engineering",
+        "user_id": "U_ben",
+        "text": "i'm already in it, i'll fix. btw while i'm in here — i also finally fixed that reports query thing from last week. the one sarah flagged",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200540.000008",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "the one that was taking like 4 seconds?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200600.000009",
+        "channel_id": "C_engineering",
+        "user_id": "U_ben",
+        "text": "yeah. down to 160ms now. was missing a composite index on (workspace_id, created_at). obvious in hindsight",
+        "thread_ts": null,
+        "reaction_count": 4
+      },
+      {
+        "source_id": "1746200660.000010",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "nice, that's a huge diff. always is lol",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200900.000011",
+        "channel_id": "C_engineering",
+        "user_id": "U_ben",
+        "text": "ok exports fix is on staging. can you test a 100+ page doc?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746200960.000012",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "testing now... ok that's way better. what are we looking at now?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746201020.000013",
+        "channel_id": "C_engineering",
+        "user_id": "U_ben",
+        "text": "under 2s. was 12-15 before. i'll put it in the release notes — customers have complained about large exports for a while",
+        "thread_ts": null,
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746201080.000014",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "🎉 great catch. i'll remind you about the release notes later this week",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746201200.000015",
+        "channel_id": "C_engineering",
+        "user_id": "U_sarah",
+        "text": "nice work @ben. also @lisa can you take a look at the auth token refresh PR when you have a sec? want to ship it today",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746201260.000016",
+        "channel_id": "C_engineering",
+        "user_id": "U_lisa",
+        "text": "will do, linking it in thread",
+        "thread_ts": "1746201200.000015",
+        "reaction_count": 0
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746200600.000009",
+            "1746201020.000013"
+          ],
+          "signal_type": "product_win",
+          "summary_must_contain": [
+            "exports",
+            "2 seconds"
+          ],
+          "reason": "Two specific performance improvements with before/after numbers (4s→160ms, 12-15s→2s), directly caused by customer complaints"
+        }
+      ],
+      "embed_message_ids": [
+        "1746200600.000009",
+        "1746201020.000013",
+        "1746200360.000005"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s004",
+    "description": "Draftly — founders-only channel. James processing something that frustrated him, turns into a genuine reflection about building for yourself vs building for users.",
+    "company_context": "Draftly: B2B content workflow tool, 8-person team. Helps marketing teams manage content pipelines from brief to publish.",
+    "messages": [
+      {
+        "source_id": "1746300001.000001",
+        "channel_id": "C_founders",
+        "user_id": "U_james",
+        "text": "ok i need to process something. been thinking about it all weekend",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300060.000002",
+        "channel_id": "C_founders",
+        "user_id": "U_sarah",
+        "text": "shoot",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300120.000003",
+        "channel_id": "C_founders",
+        "user_id": "U_james",
+        "text": "we spent the first 6 months obsessing over the editor. like genuinely obsessing. every keyboard shortcut, every animation, every pixel of the toolbar. i was so proud of it",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300180.000004",
+        "channel_id": "C_founders",
+        "user_id": "U_james",
+        "text": "and then when we finally did real user research — properly, not just asking friends — the thing every single person cared about was the editorial calendar. not the editor. not the keyboard shortcuts. just: when is stuff getting published and who owns what",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746300240.000005",
+        "channel_id": "C_founders",
+        "user_id": "U_sarah",
+        "text": "we built what WE thought was impressive instead of what they needed to do their job",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300300.000006",
+        "channel_id": "C_founders",
+        "user_id": "U_james",
+        "text": "exactly. and the worst part — i have a note from month 2. someone in our beta said \"i need better visibility into what's in progress across the team.\" i literally wrote it down and then just... moved on. because i was excited about the editor",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746300360.000007",
+        "channel_id": "C_founders",
+        "user_id": "U_sarah",
+        "text": "to be fair the editor IS good now. but yeah we wasted months",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300420.000008",
+        "channel_id": "C_founders",
+        "user_id": "U_james",
+        "text": "i'm writing this down as a rule: next time a user says 'I need X to do my job' it goes to the top of the pile, not after the thing we personally find interesting to build",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300480.000009",
+        "channel_id": "C_founders",
+        "user_id": "U_sarah",
+        "text": "agreed. also — the way you just framed it is worth writing down more broadly. building what we found impressive vs what they needed to do their job",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746300540.000010",
+        "channel_id": "C_founders",
+        "user_id": "U_james",
+        "text": "ha. it's kind of embarrassing to admit we did that",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300600.000011",
+        "channel_id": "C_founders",
+        "user_id": "U_sarah",
+        "text": "that's exactly why it's worth sharing. every early-stage team does this, basically nobody talks about it honestly",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746300660.000012",
+        "channel_id": "C_founders",
+        "user_id": "U_james",
+        "text": "maybe i'll write something about it at some point",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746300720.000013",
+        "channel_id": "C_founders",
+        "user_id": "U_sarah",
+        "text": "you should. it's real",
+        "thread_ts": null,
+        "reaction_count": 0
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746300120.000003",
+            "1746300180.000004",
+            "1746300300.000006",
+            "1746300420.000008",
+            "1746300480.000009"
+          ],
+          "signal_type": "founder_insight",
+          "summary_must_contain": [
+            "user feedback",
+            "impressive",
+            "needed"
+          ],
+          "reason": "Founder sharing a specific, lived lesson about building what the team found impressive rather than what users needed — includes a concrete example (ignored beta feedback about calendar visibility)"
+        }
+      ],
+      "embed_message_ids": [
+        "1746300180.000004",
+        "1746300300.000006",
+        "1746300420.000008",
+        "1746300480.000009"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s005",
+    "description": "Pipestack — Alex casually notices 100-workspace milestone mid-morning. The celebration leads naturally into Nina raising they need a CS hire.",
+    "company_context": "Pipestack: B2B sales automation, 10-person team. Helps SDR-heavy sales teams automate sequence management and follow-up timing.",
+    "messages": [
+      {
+        "source_id": "1746400001.000001",
+        "channel_id": "C_general",
+        "user_id": "U_omar",
+        "text": "morning all — heads up, i'm in back-to-back demos from 9 to noon so mostly async until then",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746400060.000002",
+        "channel_id": "C_general",
+        "user_id": "U_priya",
+        "text": "noted 👍",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746400120.000003",
+        "channel_id": "C_general",
+        "user_id": "U_tom",
+        "text": "same, deploying the webhook retry fix this morning, will shout if anything breaks",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746400180.000004",
+        "channel_id": "C_general",
+        "user_id": "U_omar",
+        "text": "cool, ping me if it does. @nina how'd the Forsythe call go yesterday?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746400240.000005",
+        "channel_id": "C_general",
+        "user_id": "U_nina",
+        "text": "went well! they want a 30-day pilot. sending the agreement today",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746400300.000006",
+        "channel_id": "C_general",
+        "user_id": "U_omar",
+        "text": "nice. ok jumping into first demo",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746401800.000007",
+        "channel_id": "C_general",
+        "user_id": "U_alex",
+        "text": "hey — just wanted to flag something real quick. was looking at the dashboard this morning and we quietly crossed 100 active workspaces sometime last week. nobody noticed apparently 😅",
+        "thread_ts": null,
+        "reaction_count": 8
+      },
+      {
+        "source_id": "1746401860.000008",
+        "channel_id": "C_general",
+        "user_id": "U_priya",
+        "text": "WAIT actually?? 100??",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746401920.000009",
+        "channel_id": "C_general",
+        "user_id": "U_tom",
+        "text": "oh wow, that snuck up on us",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746401980.000010",
+        "channel_id": "C_general",
+        "user_id": "U_nina",
+        "text": "100 workspaces while we're still in beta!! that's actually huge",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746402040.000011",
+        "channel_id": "C_general",
+        "user_id": "U_alex",
+        "text": "yeah, and like 60% of them have been active in the last 14 days which is the part that gets me. retention at this stage is usually terrible",
+        "thread_ts": null,
+        "reaction_count": 5
+      },
+      {
+        "source_id": "1746402100.000012",
+        "channel_id": "C_general",
+        "user_id": "U_wei",
+        "text": "60% 14-day retention while in beta is genuinely good ngl",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746402160.000013",
+        "channel_id": "C_general",
+        "user_id": "U_omar",
+        "text": "saw this while jumping between demos — 100 workspaces!! we should put something out there",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746402220.000014",
+        "channel_id": "C_general",
+        "user_id": "U_nina",
+        "text": "totally, and while we're on this — we're going to start feeling the squeeze on the CS side soon. i've been personally onboarding every new workspace and it's becoming a lot to manage",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746402280.000015",
+        "channel_id": "C_general",
+        "user_id": "U_omar",
+        "text": "yeah i've been thinking the same. i think we need a dedicated CS hire",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746402340.000016",
+        "channel_id": "C_general",
+        "user_id": "U_carlos",
+        "text": "seconded. i've been trying to help nina where i can but the volume is real",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746402400.000017",
+        "channel_id": "C_general",
+        "user_id": "U_nina",
+        "text": "my vote is sooner than you think. even a part-time contractor to start",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746402460.000018",
+        "channel_id": "C_general",
+        "user_id": "U_omar",
+        "text": "ok let's make it official. @nina can you put together a JD this week and we'll post it?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746402520.000019",
+        "channel_id": "C_general",
+        "user_id": "U_nina",
+        "text": "will do, i'll draft something today and share for feedback",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746402580.000020",
+        "channel_id": "C_general",
+        "user_id": "U_wei",
+        "text": "good timing with the 100 workspaces milestone — makes the job post look great 😄",
+        "thread_ts": null,
+        "reaction_count": 3
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746401800.000007",
+            "1746401980.000010",
+            "1746402040.000011"
+          ],
+          "signal_type": "product_win",
+          "summary_must_contain": [
+            "100 active",
+            "beta",
+            "60%",
+            "14 days"
+          ],
+          "reason": "Specific milestone (100 active workspaces) with retention metric (60% 14-day) while still in beta — concrete numbers, not a vague update"
+        },
+        {
+          "source_ids": [
+            "1746402220.000014",
+            "1746402280.000015",
+            "1746402400.000017",
+            "1746402460.000018"
+          ],
+          "signal_type": "hiring",
+          "summary_must_contain": [
+            "customer success",
+            "onboarding"
+          ],
+          "reason": "CS hire being formally decided, driven by real growth pressure — concrete role, real rationale, decision made in this scan"
+        }
+      ],
+      "embed_message_ids": [
+        "1746401800.000007",
+        "1746402040.000011",
+        "1746402220.000014",
+        "1746402400.000017"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s006",
+    "description": "Pipestack — Carlos drops a detailed customer success story in #sales-wins. Thread follows with the team pulling out the ROI angle.",
+    "company_context": "Pipestack: B2B sales automation, 10-person team. Helps SDR-heavy sales teams automate sequence management and follow-up timing.",
+    "messages": [
+      {
+        "source_id": "1746500001.000001",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "dropping this here because i need everyone to see it 👇",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746500060.000002",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "just got off a check-in with Meridian Financial. their Head of RevOps — Tricia Chen — spent the first 5 minutes of the call just talking about how different their team's week looks now",
+        "thread_ts": null,
+        "reaction_count": 5
+      },
+      {
+        "source_id": "1746500120.000003",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "before Pipestack: their SDRs were averaging 2.5 hours a day on sequence management and follow-up timing. after 6 weeks on us: down to about 40 minutes",
+        "thread_ts": null,
+        "reaction_count": 9
+      },
+      {
+        "source_id": "1746500180.000004",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "she said verbatim: \"My team doesn't dread their mornings anymore. That's not an exaggeration.\"",
+        "thread_ts": null,
+        "reaction_count": 11
+      },
+      {
+        "source_id": "1746500240.000005",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_nina",
+        "text": "\"my team doesn't dread their mornings anymore\" is the best thing i've ever read",
+        "thread_ts": "1746500060.000002",
+        "reaction_count": 4
+      },
+      {
+        "source_id": "1746500300.000006",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_omar",
+        "text": "carlos did you get that quote in writing?",
+        "thread_ts": "1746500060.000002",
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746500360.000007",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "she's happy to let us use it. i sent a follow-up email immediately and she replied yes within 5 minutes",
+        "thread_ts": "1746500060.000002",
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746500420.000008",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_tom",
+        "text": "2.5 hours down to 40 mins... that's basically getting a full workday back every week per SDR",
+        "thread_ts": "1746500060.000002",
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746500480.000009",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "that's exactly what i said to her. she loved that framing. she's actually planning an internal presentation about the ROI for their CRO",
+        "thread_ts": "1746500060.000002",
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746500540.000010",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_nina",
+        "text": "we should ask if she'd do a full case study. Meridian Financial on our website would be huge for enterprise credibility",
+        "thread_ts": "1746500060.000002",
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746500600.000011",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "already floated it. she needs to run it by their legal/comms team but seemed positive",
+        "thread_ts": "1746500060.000002",
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746500660.000012",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_omar",
+        "text": "great work carlos. @nina let's follow up in the sales sync tomorrow",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746500720.000013",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_nina",
+        "text": "for sure. @wei this might be worth feeding into the ROI calculator you're building — the hours-saved angle is very concrete",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746500780.000014",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_wei",
+        "text": "yep, adding it now",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746500840.000015",
+        "channel_id": "C_sales-wins",
+        "user_id": "U_carlos",
+        "text": "also — she mentioned she'll introduce us to their CRO next month. no promises but worth noting",
+        "thread_ts": null,
+        "reaction_count": 2
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746500060.000002",
+            "1746500120.000003",
+            "1746500180.000004",
+            "1746500480.000009"
+          ],
+          "signal_type": "customer_praise",
+          "summary_must_contain": [
+            "Meridian Financial",
+            "2.5 hours",
+            "40 minutes",
+            "SDR",
+            "Tricia Chen"
+          ],
+          "reason": "Named customer, named contact, specific before/after time metric (2.5h → 40min per SDR per day), direct quote, 6-week timeline"
+        }
+      ],
+      "embed_message_ids": [
+        "1746500060.000002",
+        "1746500120.000003",
+        "1746500180.000004",
+        "1746500480.000009",
+        "1746500840.000015"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s007",
+    "description": "Pipestack — Tuesday launch prep. Team aligns on what they're saying publicly: the product story, the differentiator, who it's for. Launch-day logistics mixed in.",
+    "company_context": "Pipestack: B2B sales automation, 10-person team. Helps SDR-heavy sales teams automate sequence management and follow-up timing.",
+    "messages": [
+      {
+        "source_id": "1746600001.000001",
+        "channel_id": "C_product",
+        "user_id": "U_wei",
+        "text": "ok launch is Tuesday. want to make sure we're all saying the same thing externally before anyone posts anything",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600060.000002",
+        "channel_id": "C_product",
+        "user_id": "U_omar",
+        "text": "good call. what's the core message you keep coming back to?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600120.000003",
+        "channel_id": "C_product",
+        "user_id": "U_wei",
+        "text": "we give sales teams their time back. the features aren't the point — the outcome is. the feature list alone is boring",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746600180.000004",
+        "channel_id": "C_product",
+        "user_id": "U_alex",
+        "text": "agree. what's interesting is the 40% reduction in admin time we're seeing across our pilots. that's the number worth leading with",
+        "thread_ts": null,
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746600240.000005",
+        "channel_id": "C_product",
+        "user_id": "U_wei",
+        "text": "right, so maybe the framing is: 'your SDRs didn't sign up to spend half their day on admin. here's 2 hours back'",
+        "thread_ts": null,
+        "reaction_count": 4
+      },
+      {
+        "source_id": "1746600300.000006",
+        "channel_id": "C_product",
+        "user_id": "U_nina",
+        "text": "i like that. specific enough to feel real without overselling",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600360.000007",
+        "channel_id": "C_product",
+        "user_id": "U_omar",
+        "text": "what's the thing about how we work that would actually surprise someone in the space?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600420.000008",
+        "channel_id": "C_product",
+        "user_id": "U_wei",
+        "text": "honestly? the adaptive sequencing. most tools make you set up sequences and then you manage them manually forever. we actually adjust timing and channel based on real-time engagement signals. nobody else does this at our price point",
+        "thread_ts": null,
+        "reaction_count": 5
+      },
+      {
+        "source_id": "1746600480.000009",
+        "channel_id": "C_product",
+        "user_id": "U_alex",
+        "text": "that's what made Meridian actually trust it — once they saw it adjusting timing autonomously they stopped babysitting their sequences",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746600540.000010",
+        "channel_id": "C_product",
+        "user_id": "U_omar",
+        "text": "so the story is: here's what we do (give time back), here's what's different (adaptive sequencing), here's who it's for (SDR teams drowning in admin)",
+        "thread_ts": null,
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746600600.000011",
+        "channel_id": "C_product",
+        "user_id": "U_wei",
+        "text": "exactly. i'll write the first draft of the LinkedIn post today",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600660.000012",
+        "channel_id": "C_product",
+        "user_id": "U_nina",
+        "text": "i'll make sure support docs are up before EOD Monday so we're not launching into chaos",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746600720.000013",
+        "channel_id": "C_product",
+        "user_id": "U_alex",
+        "text": "infra-wise we're good, load tested over the weekend",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600780.000014",
+        "channel_id": "C_product",
+        "user_id": "U_omar",
+        "text": "@carlos you want to do the first post from your account? you've got the most follower traction",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600840.000015",
+        "channel_id": "C_product",
+        "user_id": "U_carlos",
+        "text": "happy to. just send me the copy and i'll adapt it to sound like me",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600900.000016",
+        "channel_id": "C_product",
+        "user_id": "U_wei",
+        "text": "also confirming: core automation features launch Tuesday, advanced reporting stays in beta. no exceptions",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746600960.000017",
+        "channel_id": "C_product",
+        "user_id": "U_alex",
+        "text": "confirmed",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746601020.000018",
+        "channel_id": "C_product",
+        "user_id": "U_omar",
+        "text": "alright. excited for Tuesday 🚀",
+        "thread_ts": null,
+        "reaction_count": 4
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746600120.000003",
+            "1746600180.000004",
+            "1746600240.000005",
+            "1746600420.000008",
+            "1746600540.000010"
+          ],
+          "signal_type": "launch_update",
+          "summary_must_contain": [
+            "adaptive sequencing",
+            "40%",
+            "sales",
+            "admin"
+          ],
+          "reason": "Imminent launch with clear product story: what it does (adaptive sequencing), who it's for (SDR teams), specific outcome (40% admin reduction, 2 hours back). Team actively building the external narrative"
+        }
+      ],
+      "embed_message_ids": [
+        "1746600120.000003",
+        "1746600180.000004",
+        "1746600240.000005",
+        "1746600420.000008",
+        "1746600480.000009",
+        "1746600540.000010"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s008",
+    "description": "Trackr — sprint close-out day. Dan mentions Product Hunt numbers in passing among a flurry of housekeeping messages. Signal is easy to miss.",
+    "company_context": "Trackr: Project management SaaS for small teams, 6-person team. Aiming to give small teams the power of Jira without the complexity.",
+    "messages": [
+      {
+        "source_id": "1746700001.000001",
+        "channel_id": "C_general",
+        "user_id": "U_dan",
+        "text": "reminder: sprint ends today, please update your Jira tickets before standup (yes i know, using Jira to track our own work is the most ironic thing we do 😂)",
+        "thread_ts": null,
+        "reaction_count": 3
+      },
+      {
+        "source_id": "1746700060.000002",
+        "channel_id": "C_general",
+        "user_id": "U_kate",
+        "text": "haha the cobbler's children problem",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746700120.000003",
+        "channel_id": "C_general",
+        "user_id": "U_sam",
+        "text": "prod deploy at 10pm tonight btw, should be under 5 mins of downtime",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700180.000004",
+        "channel_id": "C_general",
+        "user_id": "U_dan",
+        "text": "👍 lmk if anything goes sideways",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700240.000005",
+        "channel_id": "C_general",
+        "user_id": "U_zoe",
+        "text": "can someone look at the new board view mockups in Figma before I go further? just want a quick gut check before I invest more time",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700300.000006",
+        "channel_id": "C_general",
+        "user_id": "U_kate",
+        "text": "will look after standup",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700360.000007",
+        "channel_id": "C_general",
+        "user_id": "U_sam",
+        "text": "same",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700500.000008",
+        "channel_id": "C_general",
+        "user_id": "U_dan",
+        "text": "anyone else notice our community Slack has been weirdly active this week? like 20 messages yesterday vs our usual 2-3",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700560.000009",
+        "channel_id": "C_general",
+        "user_id": "U_kate",
+        "text": "i noticed that too. think it's the PH thing?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700620.000010",
+        "channel_id": "C_general",
+        "user_id": "U_dan",
+        "text": "maybe. we ended up with 340 upvotes last week. honestly higher than i expected for a PM tool",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746700680.000011",
+        "channel_id": "C_general",
+        "user_id": "U_kate",
+        "text": "340 is actually solid for our category. most PM tools don't clear 200",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746700740.000012",
+        "channel_id": "C_general",
+        "user_id": "U_dan",
+        "text": "yeah. also — checked the dashboard this morning, we crossed 1000 signups from that week. decent chunk are still on free but the conversion is tracking ok so far",
+        "thread_ts": null,
+        "reaction_count": 5
+      },
+      {
+        "source_id": "1746700800.000013",
+        "channel_id": "C_general",
+        "user_id": "U_kate",
+        "text": "oh nice! ok that's genuinely good progress",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700860.000014",
+        "channel_id": "C_general",
+        "user_id": "U_sam",
+        "text": "deploy done btw, all green 👍",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746700920.000015",
+        "channel_id": "C_general",
+        "user_id": "U_dan",
+        "text": "nice, thanks sam",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746701000.000016",
+        "channel_id": "C_general",
+        "user_id": "U_zoe",
+        "text": "board view mockups are in Figma now if you haven't had a chance to look — lmk what you think",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746701060.000017",
+        "channel_id": "C_general",
+        "user_id": "U_kate",
+        "text": "looking now",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746701120.000018",
+        "channel_id": "C_general",
+        "user_id": "U_sam",
+        "text": "same, leaving comments in a sec",
+        "thread_ts": null,
+        "reaction_count": 0
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746700620.000010",
+            "1746700680.000011",
+            "1746700740.000012"
+          ],
+          "signal_type": "product_win",
+          "summary_must_contain": [
+            "340 upvotes",
+            "Product Hunt",
+            "1000 signups"
+          ],
+          "reason": "Concrete Product Hunt result (340 upvotes, top for category) combined with downstream milestone (1000 signups). Mentioned casually mid-conversation, but specific numbers make it a genuine signal"
+        }
+      ],
+      "embed_message_ids": [
+        "1746700620.000010",
+        "1746700680.000011",
+        "1746700740.000012"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s009",
+    "description": "Trackr — TaskAI ships. Launch message in #company-updates, then Kate writes an unprompted reflection on what they got wrong about project management.",
+    "company_context": "Trackr: Project management SaaS for small teams, 6-person team. Aiming to give small teams the power of Jira without the complexity.",
+    "messages": [
+      {
+        "source_id": "1746800001.000001",
+        "channel_id": "C_company-updates",
+        "user_id": "U_dan",
+        "text": "we shipped it. TaskAI is live 🎉",
+        "thread_ts": null,
+        "reaction_count": 8
+      },
+      {
+        "source_id": "1746800060.000002",
+        "channel_id": "C_company-updates",
+        "user_id": "U_kate",
+        "text": "🎉🎉🎉",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746800120.000003",
+        "channel_id": "C_company-updates",
+        "user_id": "U_sam",
+        "text": "LET'S GOOO",
+        "thread_ts": null,
+        "reaction_count": 2
+      },
+      {
+        "source_id": "1746800180.000004",
+        "channel_id": "C_company-updates",
+        "user_id": "U_zoe",
+        "text": "finally 😭 i'm so proud of this one",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746800240.000005",
+        "channel_id": "C_company-updates",
+        "user_id": "U_sam",
+        "text": "quick summary of what's live: auto-prioritization based on deadlines and dependencies, natural language task creation (just type 'add a bug report for the login page' and it does it), smart deadline suggestions based on your team's historical velocity",
+        "thread_ts": null,
+        "reaction_count": 5
+      },
+      {
+        "source_id": "1746800300.000006",
+        "channel_id": "C_company-updates",
+        "user_id": "U_dan",
+        "text": "and importantly: zero config required. it just starts working when you turn it on. that took 2 extra months to get right but was non-negotiable",
+        "thread_ts": null,
+        "reaction_count": 6
+      },
+      {
+        "source_id": "1746800360.000007",
+        "channel_id": "C_company-updates",
+        "user_id": "U_kate",
+        "text": "that zero-config piece is the thing i'm proudest of. our onboarding research showed that 60% of churn for tools like ours happens in week one from setup friction. we just removed that",
+        "thread_ts": null,
+        "reaction_count": 7
+      },
+      {
+        "source_id": "1746800420.000008",
+        "channel_id": "C_company-updates",
+        "user_id": "U_maya",
+        "text": "the 60% churn-in-week-1 stat is wild every time i hear it",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746800480.000009",
+        "channel_id": "C_company-updates",
+        "user_id": "U_kate",
+        "text": "ok i also just want to say something about why we built this the way we did. because i've been sitting with it for a while",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746800540.000010",
+        "channel_id": "C_company-updates",
+        "user_id": "U_dan",
+        "text": "go for it",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746800600.000011",
+        "channel_id": "C_company-updates",
+        "user_id": "U_kate",
+        "text": "when we started Trackr i thought project management was a data problem. like if you just had the right views and filters you could manage anything. i was very confident about this",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746800660.000012",
+        "channel_id": "C_company-updates",
+        "user_id": "U_kate",
+        "text": "3 years later i'm pretty sure i was completely wrong. the actual problem is cognitive load. teams don't fail at project management because they don't have data — they fail because nobody wants to spend 45 minutes a week deciding what to work on. they just want to work",
+        "thread_ts": null,
+        "reaction_count": 9
+      },
+      {
+        "source_id": "1746800720.000013",
+        "channel_id": "C_company-updates",
+        "user_id": "U_sam",
+        "text": "this is so true. i've seen this in every team i've worked on",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746800780.000014",
+        "channel_id": "C_company-updates",
+        "user_id": "U_kate",
+        "text": "TaskAI is us finally building the thing we should have built first. the tool that does the prioritization FOR you so you can just show up and start doing things",
+        "thread_ts": null,
+        "reaction_count": 6
+      },
+      {
+        "source_id": "1746800840.000015",
+        "channel_id": "C_company-updates",
+        "user_id": "U_sam",
+        "text": "someone screenshot this, this IS the launch post",
+        "thread_ts": null,
+        "reaction_count": 4
+      },
+      {
+        "source_id": "1746800900.000016",
+        "channel_id": "C_company-updates",
+        "user_id": "U_dan",
+        "text": "haha. kate please write this up properly",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746800960.000017",
+        "channel_id": "C_company-updates",
+        "user_id": "U_kate",
+        "text": "maybe i will 😅",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746801020.000018",
+        "channel_id": "C_company-updates",
+        "user_id": "U_zoe",
+        "text": "please do, it's the best explanation of what we're building i've heard from anyone on this team",
+        "thread_ts": null,
+        "reaction_count": 2
+      }
+    ],
+    "gold": {
+      "candidates": [
+        {
+          "source_ids": [
+            "1746800001.000001",
+            "1746800240.000005",
+            "1746800300.000006",
+            "1746800360.000007"
+          ],
+          "signal_type": "launch_update",
+          "summary_must_contain": [
+            "TaskAI",
+            "auto-prioritization",
+            "natural language",
+            "60%",
+            "churn"
+          ],
+          "reason": "Product shipped today. Feature set described specifically (auto-prioritization, NL task creation, velocity-based deadlines). Zero-config design choice grounded in churn research (60% week-1 churn from setup friction)"
+        },
+        {
+          "source_ids": [
+            "1746800600.000011",
+            "1746800660.000012",
+            "1746800780.000014"
+          ],
+          "signal_type": "founder_insight",
+          "summary_must_contain": [
+            "cognitive load",
+            "data"
+          ],
+          "reason": "Co-founder sharing a genuine intellectual reversal: she thought PM was a data problem, discovered it's a cognitive load problem. Specific (3 years of building, 45 min weekly decision cost), honest about being wrong"
+        }
+      ],
+      "embed_message_ids": [
+        "1746800240.000005",
+        "1746800300.000006",
+        "1746800360.000007",
+        "1746800600.000011",
+        "1746800660.000012",
+        "1746800780.000014"
+      ]
+    }
+  },
+  {
+    "scenario_id": "s010",
+    "description": "Trackr — pure engineering ops. Deployment, a DB migration discussion, and a dashboard perf issue raised. No content signals, but several embed-worthy technical decisions.",
+    "company_context": "Trackr: Project management SaaS for small teams, 6-person team. Aiming to give small teams the power of Jira without the complexity.",
+    "messages": [
+      {
+        "source_id": "1746900001.000001",
+        "channel_id": "C_engineering",
+        "user_id": "U_sam",
+        "text": "deploying the task bulk-update fix now. heads up if you're testing anything in staging",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900060.000002",
+        "channel_id": "C_engineering",
+        "user_id": "U_kate",
+        "text": "what was the root cause?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900120.000003",
+        "channel_id": "C_engineering",
+        "user_id": "U_sam",
+        "text": "race condition in the optimistic update. the frontend was sending state changes before the DB confirmed the previous write. added a simple serialization queue on the client side",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900180.000004",
+        "channel_id": "C_engineering",
+        "user_id": "U_kate",
+        "text": "gotcha. any chance that's the same root cause as the due date weirdness from last month?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900240.000005",
+        "channel_id": "C_engineering",
+        "user_id": "U_sam",
+        "text": "different symptoms, same underlying pattern. now that i've fixed it in one place i should audit the other update endpoints for the same issue. i'll put it in the backlog",
+        "thread_ts": null,
+        "reaction_count": 1
+      },
+      {
+        "source_id": "1746900300.000006",
+        "channel_id": "C_engineering",
+        "user_id": "U_kate",
+        "text": "good call. also — you were going to write up the JSONB migration plan? we're going to regret not doing it before we add more metadata fields",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900360.000007",
+        "channel_id": "C_engineering",
+        "user_id": "U_sam",
+        "text": "yeah, switching from the naive JSON column to JSONB with a proper schema and index. should be a 2-day job, low migration risk since it's additive. will write it up today",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900420.000008",
+        "channel_id": "C_engineering",
+        "user_id": "U_kate",
+        "text": "perfect. let's plan it for next sprint",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900480.000009",
+        "channel_id": "C_engineering",
+        "user_id": "U_sam",
+        "text": "deploy done. bulk-update fix is live, watching logs for 30 min",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900540.000010",
+        "channel_id": "C_engineering",
+        "user_id": "U_kate",
+        "text": "👍",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900600.000011",
+        "channel_id": "C_engineering",
+        "user_id": "U_dan",
+        "text": "@sam when you have a sec — small perf issue on the dashboard for workspaces with more than 500 tasks. not urgent but it's noticeable",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900660.000012",
+        "channel_id": "C_engineering",
+        "user_id": "U_sam",
+        "text": "noted. probably the same view query that's been bothering me. i'll look at it tomorrow",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900720.000013",
+        "channel_id": "C_engineering",
+        "user_id": "U_dan",
+        "text": "no rush. also @kate — the new pricing page is ready internally if you want to look before it goes to beta users next week",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900780.000014",
+        "channel_id": "C_engineering",
+        "user_id": "U_kate",
+        "text": "will look today. what changed?",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900840.000015",
+        "channel_id": "C_engineering",
+        "user_id": "U_dan",
+        "text": "added annual billing option, cleaned up the plan comparison table. old conversion data was pretty bad so we rethought the layout",
+        "thread_ts": null,
+        "reaction_count": 0
+      },
+      {
+        "source_id": "1746900900.000016",
+        "channel_id": "C_engineering",
+        "user_id": "U_kate",
+        "text": "makes sense. i'll leave feedback in the doc",
+        "thread_ts": null,
+        "reaction_count": 0
+      }
+    ],
+    "gold": {
+      "candidates": [],
+      "embed_message_ids": [
+        "1746900120.000003",
+        "1746900240.000005",
+        "1746900360.000007",
+        "1746900840.000015"
+      ]
+    }
+  }
+]

@@ -2,7 +2,12 @@
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
-addopts = "--cov=app --cov-report=term-missing --cov-fail-under=80"
+# Exclude eval/ from the default run — eval tests call real LLMs and are not
+# measuring app code coverage. Run them explicitly: pytest tests/eval/
+addopts = "--cov=app --cov-report=term-missing --cov-fail-under=80 --ignore=tests/eval"
+markers = [
+    "llm_judge: marks tests that call a real LLM for qualitative evaluation (set EVAL_LLM_JUDGE=1)",
+]
 
 [tool.coverage.run]
 omit = [
