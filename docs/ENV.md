@@ -31,6 +31,18 @@ Redirect URI to register in Slack app settings → OAuth & Permissions:
 {APP_BASE_URL}/api/oauth/slack/callback
 ```
 
+Slack approval cards use interactive buttons and modals. In the Slack app
+dashboard, enable Interactivity under **Interactivity & Shortcuts** and set the
+Request URL to:
+```
+{APP_BASE_URL}/api/webhooks/slack/actions
+```
+
+For local development, `APP_BASE_URL` must be a public HTTPS tunnel URL such as
+ngrok or Cloudflare Tunnel. Slack cannot call `localhost`, and button clicks will
+show "This app isn't configured to be interactive" when Interactivity is disabled
+or the Request URL is missing.
+
 ## Google / Gmail
 
 | Variable | Required | Description | Where to get it |
