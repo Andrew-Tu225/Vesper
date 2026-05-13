@@ -280,15 +280,16 @@ async def test_summary_contains_key_facts(signal_scenarios):
 @pytest.mark.asyncio
 async def test_summary_quality_llm_judge(signal_scenarios):
     """Use GPT-4o-mini to score each detected summary on specificity and utility."""
-    from openai import AsyncOpenAI
     from pydantic import BaseModel
+
+    from app.services.openai_client import get_openai_client
 
     class SummaryScore(BaseModel):
         specificity: int  # 1-5: does it name outcomes, customers, metrics?
         utility: int      # 1-5: would a copywriter find this actionable?
         reasoning: str
 
-    client = AsyncOpenAI()
+    client = get_openai_client()
     scores: list[dict] = []
 
     for scenario in signal_scenarios:
