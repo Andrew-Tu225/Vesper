@@ -24,7 +24,7 @@ export function PublicNav() {
         <div className={styles.navLinks}>
           <a href="/#how-it-works" className={styles.navLink}>How it works</a>
           <Link to={ROUTES.BLOG_INDEX} className={styles.navLink}>Blog</Link>
-          <a href="/#pricing" className={styles.navLink}>Pricing</a>
+          <a href="/#open-source" className={styles.navLink}>Open source</a>
         </div>
         <Link to={ROUTES.LOGIN} className={styles.navLogin}>Login</Link>
         <button
@@ -42,7 +42,7 @@ export function PublicNav() {
         <div className={styles.mobileMenu}>
           <a href="/#how-it-works" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>How it works</a>
           <Link to={ROUTES.BLOG_INDEX} className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Blog</Link>
-          <a href="/#pricing" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Pricing</a>
+          <a href="/#open-source" className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Open source</a>
           <Link to={ROUTES.LOGIN} className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>Login</Link>
         </div>
       )}

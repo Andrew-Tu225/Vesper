@@ -27,14 +27,13 @@ function renderApp(initialPath = '/') {
 describe('App smoke tests', () => {
   it('renders the login page at /login', () => {
     renderApp('/login')
-    expect(screen.getByText('Vesper')).toBeInTheDocument()
-    expect(screen.getByText(/sign in with google/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /sign in to vesper/i })).toBeInTheDocument()
+    expect(screen.getByText(/continue with google/i)).toBeInTheDocument()
   })
 
-  it('redirects unauthenticated users from / to login', async () => {
+  it('renders the landing page at /', async () => {
     renderApp('/')
-    // RequireAuth redirects to /login when /api/auth/me returns 401
-    expect(await screen.findByText(/sign in with google/i)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /into linkedin stories/i })).toBeInTheDocument()
   })
 
   it('shows 404 page for unknown routes', () => {

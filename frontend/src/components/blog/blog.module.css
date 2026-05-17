@@ -110,16 +110,16 @@
 
 .indexTitle {
   font-family: var(--font-body);
-  font-size: 1.875rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   color: var(--text);
-  margin: 0 0 0.625rem;
+  margin: 0 0 0.5rem;
 }
 
 .indexSub {
-  font-size: 1rem;
+  font-size: 1.0625rem;
   color: var(--text-muted);
   line-height: 1.65;
   max-width: 44rem;
@@ -138,7 +138,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.75rem;
 }
 
 .categoryPill {
@@ -171,80 +171,142 @@
   color: #fff;
 }
 
-/* ─── Featured post ─────────────────────────────────────────────── */
+/* ─── Featured post — editorial ──────────────────────────────────── */
 
 .featuredSection {
-  margin-bottom: 2.5rem;
-  padding-bottom: 2.5rem;
+  margin-bottom: 0;
+  padding-bottom: 2.25rem;
   border-bottom: 1px solid var(--border);
 }
 
 .featuredCard {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 2rem 2.5rem 1.75rem;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 150ms ease;
+  gap: 0.875rem;
+  padding: 0.5rem 0 0.25rem;
 }
 
-.featuredCard:hover {
-  box-shadow: var(--shadow-md);
+.featuredCardTop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.featuredBadge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-hover);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  white-space: nowrap;
+}
+
+.featuredCardMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
 }
 
 .featuredCardTitle {
   font-family: var(--font-display);
-  font-size: clamp(1.375rem, 2.5vw, 1.875rem);
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.18;
   letter-spacing: -0.02em;
-  margin: 0.5rem 0 0.875rem;
+  margin: 0;
   color: var(--text);
 }
 
 .featuredCardSubtitle {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: var(--text-muted);
   line-height: 1.65;
   max-width: 52rem;
-  margin: 0 0 1.25rem;
+  margin: 0;
 }
 
-/* ─── Post grid ─────────────────────────────────────────────────── */
+.featuredCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.125rem;
+}
+
+.featuredCardAuthor {
+  font-size: 0.8125rem;
+  color: var(--text-dim);
+}
+
+/* ─── Post list — editorial rows ─────────────────────────────────── */
 
 .recentSection {
   margin-top: 0;
 }
 
-.postGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
+.listLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 2rem 0 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
 }
 
-/* ─── Default card ──────────────────────────────────────────────── */
-
-.card {
-  background: var(--white);
-  border-radius: 0;
-  padding: 1.75rem 2rem;
+.postList {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  transition: background 150ms;
 }
 
-.card:hover {
-  background: #f9f7f3;
-  box-shadow: none;
-  transform: none;
+/* ─── Default card — list item ───────────────────────────────────── */
+
+.card {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0 2.5rem;
+  padding: 1.875rem 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+
+.card:hover .cardTitleLink {
+  color: var(--accent);
+}
+
+.cardLeft {
+  padding-top: 0.15em;
+}
+
+.cardDate {
+  font-size: 0.8125rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.cardRight {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardTopMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .cardEyebrow {
@@ -255,11 +317,18 @@
   color: var(--accent);
 }
 
+.cardReadTime {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+
 .cardTitle {
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: 1.1875rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   margin: 0;
   color: var(--text);
@@ -280,9 +349,8 @@
   color: var(--text-muted);
   line-height: 1.6;
   margin: 0;
-  flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -295,7 +363,6 @@
   font-weight: 600;
   color: var(--accent);
   text-decoration: none;
-  margin-top: 0.5rem;
   transition: gap 150ms;
 }
 
@@ -378,10 +445,10 @@
 
 .postTitle {
   font-family: var(--font-display);
-  font-size: clamp(1.875rem, 4.5vw, 2.75rem);
+  font-size: clamp(2.25rem, 5vw, 3.25rem);
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   color: var(--text);
   margin: 0 0 1rem;
 }
@@ -689,10 +756,18 @@
   }
 
   .featuredCard {
-    padding: 1.5rem 1.25rem;
+    padding: 0.25rem 0;
   }
 
-  .postGrid,
+  .card {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .cardLeft {
+    display: none;
+  }
+
   .relatedGrid {
     grid-template-columns: 1fr;
   }

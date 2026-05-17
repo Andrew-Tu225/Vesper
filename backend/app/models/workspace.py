@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -35,16 +34,6 @@ class Workspace(Base, TimestampMixin):
     onboarding_complete: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
     )
-    # Billing
-    subscription_status: Mapped[str] = mapped_column(
-        String(16), nullable=False, default="trialing"
-    )  # trialing | active | suspended | cancelled
-    trial_ends_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    stripe_customer_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    stripe_subscription_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
-
     # Relationships
     owner: Mapped[User] = relationship(
         "User", back_populates="owned_workspaces", foreign_keys=[owner_user_id]

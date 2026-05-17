@@ -1,15 +1,32 @@
 import { defineConfig } from 'vitest/config'
 import { loadEnv } from 'vite'
+import type { PluginOption } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
+
+// Loaded dynamically so the normal `build` script never pulls in puppeteer
+// unless PRERENDER=true is set. Run `npm run build:prerender` to generate
+// static HTML for /, /privacy, and /terms.
+let prerenderPlugin: PluginOption = false
+if (process.env.PRERENDER === 'true') {
+  const { default: prerender } = await import('vite-plugin-prerender')
+  prerenderPlugin = prerender({
+    staticDir: path.join(path.dirname(new URL(import.meta.url).pathname), 'dist'),
+    routes: [
+      '/',
+      '/privacy',
+      '/terms',
+    ],
+  }) as PluginOption
+}
 
 export default defineConfig(({ mode }) => {
   // loadEnv with prefix '' loads ALL .env vars (not just VITE_-prefixed ones)
   // so RESEND_API_KEY and RESEND_AUDIENCE_ID are available server-side
   const env = loadEnv(mode, process.cwd(), '')
 
-  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8001'
+  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8000'
 
   return {
     plugins: [
@@ -85,6 +102,7 @@ export default defineConfig(({ mode }) => {
           )
         },
       },
+      prerenderPlugin,
     ],
     resolve: {
       alias: {
@@ -99,7 +117,7 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           // Cookies (vesper_session) flow through automatically when using
-          // relative /api/... paths. Never use absolute http://localhost:8001 URLs.
+          // relative /api/... paths. Never use absolute backend URLs.
         },
       },
     },
@@ -107,6 +125,7 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
+      exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
     },
   }
 })
