@@ -87,6 +87,7 @@ Update `MODEL_CLASSIFY` and `MODEL_GENERATE` when switching providers.
 |----------|----------|-------------|---------|
 | `APP_SECRET_KEY` | Yes | 64-character hex string (32 random bytes) for AES-256-GCM token encryption. Generate: `python -c "import secrets; print(secrets.token_hex(32))"` | `a3f1...` (64 hex chars) |
 | `APP_BASE_URL` | Yes | Public base URL of the backend — used for OAuth redirect URIs | `http://localhost:8000` |
+| `APP_FRONTEND_URL` | Yes | Public base URL of the frontend - used after OAuth redirects and app links | `http://localhost:5173` |
 | `APP_ENV` | No | Runtime environment. Controls debug behaviour. Default: `development` | `development` \| `production` |
 <!-- AUTO-GENERATED END -->
 

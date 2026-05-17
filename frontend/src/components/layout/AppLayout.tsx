@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
-import { TrialBanner } from '@/components/billing/TrialBanner'
 import { NAV_ITEMS } from '@/lib/constants'
 import './layout.css'
 
@@ -51,7 +50,6 @@ export function AppLayout() {
           </button>
           <span className="topbar__title">{pageTitle}</span>
         </header>
-        <TrialBanner />
         <main className="main-content">
           <Outlet />
         </main>

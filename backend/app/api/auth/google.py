@@ -2,7 +2,6 @@
 
 import json
 import os
-from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -42,7 +41,7 @@ async def google_login(
 
     Accepts an optional ``?next=<path>`` parameter (allowlisted) that controls
     where the user lands after a successful OAuth round-trip.  Defaults to
-    ``/onboarding`` so new trial signups arrive at the connect-Slack step.
+    ``/onboarding`` so new users arrive at the connect-Slack step.
     """
     next_path = next if next in _ALLOWED_NEXT_PATHS else "/dashboard"
     state = os.urandom(32).hex()
@@ -63,7 +62,7 @@ async def google_callback(
     1. Verify and consume the one-time CSRF state.
     2. Exchange the authorization code for a verified Google identity.
     3. Upsert the User row.
-    4. Ensure the user has a workspace — creates a trial workspace if not.
+    4. Ensure the user has a workspace.
     5. Create a server-side session in Redis and set an HttpOnly cookie.
     6. Redirect to the path stored in the OAuth state (default: /onboarding).
     """
@@ -90,7 +89,7 @@ async def google_callback(
         )
 
     user = await upsert_user(db, google_user)
-    await _ensure_trial_workspace(user, db)
+    await _ensure_workspace(user, db)
 
     session_id = os.urandom(32).hex()
     session_data = json.dumps({"user_id": str(user.id)})
@@ -111,8 +110,8 @@ async def google_callback(
     return response
 
 
-async def _ensure_trial_workspace(user: User, db: AsyncSession) -> None:
-    """Create a 30-day trial workspace for a user who has none.
+async def _ensure_workspace(user: User, db: AsyncSession) -> None:
+    """Create a workspace for a user who has none.
 
     Runs after every Google sign-in so that users who signed up via the
     landing-page CTA (before connecting Slack) get a workspace immediately,
@@ -131,7 +130,6 @@ async def _ensure_trial_workspace(user: User, db: AsyncSession) -> None:
     workspace = Workspace(
         name=f"{display}'s workspace",
         owner_user_id=user.id,
-        trial_ends_at=datetime.now(tz=timezone.utc) + timedelta(days=30),
     )
     db.add(workspace)
     await db.flush()
@@ -161,5 +159,3 @@ async def google_logout(
         secure=settings.is_production,
     )
     return response
-
-

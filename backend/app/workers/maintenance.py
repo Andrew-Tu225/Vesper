@@ -31,8 +31,6 @@ def dispatch_intake_scans(self) -> None:
 
     Eligibility criteria (checked in SQL for atomicity):
     - onboarding_complete = TRUE
-    - subscription_status = 'active'
-      OR (subscription_status = 'trialing' AND trial_ends_at > now())
     - enrichment_channels in settings is a non-empty JSON array
 
     Runs 2x/day via Celery Beat at 00:00 and 12:00 UTC.
@@ -50,13 +48,6 @@ def dispatch_intake_scans(self) -> None:
                 """
                 SELECT id::text FROM workspace
                 WHERE onboarding_complete = TRUE
-                  AND (
-                    subscription_status = 'active'
-                    OR (
-                      subscription_status = 'trialing'
-                      AND trial_ends_at > now()
-                    )
-                  )
                   AND settings->'enrichment_channels' IS NOT NULL
                   AND jsonb_array_length(settings->'enrichment_channels') > 0
                 """

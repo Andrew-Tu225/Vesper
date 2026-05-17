@@ -35,15 +35,15 @@ export default function TermsOfService() {
             <section className={styles.section}>
               <h2>1. The Service</h2>
               <p>
-                Vesper provides a B2B SaaS platform that integrates with Slack workspaces and
+                Vesper provides open-source software that integrates with Slack workspaces and
                 Gmail accounts to monitor designated communication channels, classify messages
                 as potential thought-leadership content, generate draft LinkedIn posts using AI,
                 and route those drafts through a human approval workflow within Slack ("the
-                Service"). Access to the Service is provided on a subscription basis.
+                Service"). You may self-host the Service on infrastructure you control.
               </p>
               <p>
                 The Service is in active development. Features may change, be added, or be
-                removed during your subscription. We will make reasonable efforts to notify
+                removed over time. We will make reasonable efforts to document
                 you of significant changes that materially affect your use of the Service.
               </p>
             </section>
@@ -119,26 +119,16 @@ export default function TermsOfService() {
             </section>
 
             <section className={styles.section}>
-              <h2>6. Subscription, Billing, and Payment</h2>
+              <h2>6. Self-Hosting and Third-Party Costs</h2>
               <p>
-                During early access and the waitlist period, Vesper may provide access at no
-                charge or at promotional pricing. Founding member pricing committed during this
-                period will be honoured for the duration of the initial subscription term.
-                Paid subscription terms, billing cycles, and pricing will be communicated
-                before any charges are applied.
+                Vesper does not require a Vesper subscription, licence key, or payment account
+                to run. You are responsible for any infrastructure and third-party API costs
+                incurred by your own deployment, including hosting, database, Redis-compatible
+                services, OpenAI usage, and connected platform accounts.
               </p>
               <p>
-                Unless otherwise stated, subscriptions automatically renew for successive
-                periods equal to the initial subscription term. You may cancel your
-                subscription before the renewal date by{' '}
-                <a href="mailto:andrewt.tu@mail.utoronto.ca">contacting us</a>. Fees paid are
-                non-refundable except where required by applicable law or as otherwise agreed
-                in writing.
-              </p>
-              <p>
-                We reserve the right to change subscription fees with 30 days' written notice.
-                Your continued use of the Service after the notice period constitutes acceptance
-                of the new pricing.
+                Any optional hosted or managed offering, if provided separately, will be governed
+                by the terms presented with that offering.
               </p>
             </section>
 
@@ -224,10 +214,10 @@ export default function TermsOfService() {
             <section className={styles.section}>
               <h2>12. Term and Termination</h2>
               <p>
-                These Terms remain in effect for as long as you use the Service or have an
-                active subscription. Either party may terminate the agreement with 30 days'
-                written notice. We may suspend or terminate your access immediately if you
-                materially breach these Terms, fail to pay fees when due, or if required by law.
+                These Terms remain in effect for as long as you use the Service. Either party
+                may terminate the agreement with 30 days' written notice. We may suspend or
+                terminate access to any hosted instance we operate if you materially breach
+                these Terms or if required by law.
               </p>
               <p>
                 Upon termination, your right to access and use the Service ceases immediately.
@@ -268,7 +258,7 @@ export default function TermsOfService() {
               <h2>15. General Provisions</h2>
               <p>
                 <strong>Entire Agreement.</strong> These Terms, together with our Privacy Policy
-                and any order forms or subscription agreements, constitute the entire agreement
+                and any written agreements for optional hosted services, constitute the entire agreement
                 between you and Vesper regarding the Service and supersede any prior agreements.
               </p>
               <p>

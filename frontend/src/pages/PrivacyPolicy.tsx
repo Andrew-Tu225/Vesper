@@ -163,9 +163,8 @@ export default function PrivacyPolicy() {
             <section className={styles.section}>
               <h2>6. Data Retention</h2>
               <p>
-                We retain account data for as long as your subscription is active plus 90 days
-                following termination, unless a longer retention period is required by law or
-                you request deletion earlier. Ingested message content used for classification
+                In a self-hosted deployment, you control account data retention through your
+                database and infrastructure. Ingested message content used for classification
                 and draft generation is retained for 12 months to support audit trails and
                 re-generation requests. Anonymised, aggregated analytics may be retained
                 indefinitely.

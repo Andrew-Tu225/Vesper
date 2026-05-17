@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './landing.module.css'
 import { DashboardPreview } from '../components/landing/DashboardPreview'
 import { PublicNav } from '../components/layout/PublicNav'
-import { usePricingPlans, formatPrice } from '../hooks/usePricingPlans'
 import { useSEO } from '../hooks/useSEO'
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
@@ -358,12 +357,12 @@ function HeroSection() {
 
         <div className={styles.heroCtas}>
           <a href="/api/auth/google/login" className={styles.heroCta}>
-            Start your free trial
+            Start self-hosting
           </a>
         </div>
 
         <div className={styles.heroProof}>
-          <span className={styles.heroProofItem}><CheckIcon /> Try one month for free</span>
+          <span className={styles.heroProofItem}><CheckIcon /> Open source and self-hostable</span>
           <span className={styles.heroProofItem}><CheckIcon /> Integrates with existing Slack</span>
           <span className={styles.heroProofItem}><CheckIcon /> 100% approval-gated</span>
         </div>
@@ -865,86 +864,43 @@ function FAQSection() {
 
 // ─── Landing (main export) ───────────────────────────────────────────────────
 
-const CUSTOM_PLAN = {
-  name: 'Custom',
-  description: 'For larger teams with multiple brands, special workflows, or higher publishing volume.',
+const SELF_HOST_PLAN = {
+  name: 'Self-hosted',
+  description: 'Run the full Slack-to-LinkedIn workflow on your own infrastructure.',
   features: [
-    'Multi-workspace setup',
-    'Custom approval paths',
-    'Priority onboarding',
-    'Dedicated support',
+    'FastAPI backend, React frontend, Celery workers',
+    'Postgres with pgvector and Redis-compatible broker',
+    'Slack, Google, LinkedIn, and OpenAI integrations',
+    'No Stripe account, license key, or subscription gate',
   ],
 } as const
 
 function PricingSection() {
-  const { data, isLoading } = usePricingPlans()
-
   return (
-    <section id="pricing" className={styles.pricingSection}>
+    <section id="open-source" className={styles.pricingSection}>
       <div className={styles.sectionInner}>
-        <p className={styles.sectionEyebrow} data-reveal>Pricing</p>
+        <p className={styles.sectionEyebrow} data-reveal>Open source</p>
         <h2 className={styles.sectionTitle} data-reveal data-delay="1">
-          Simple pricing, powerful workflow
+          Run Vesper on your own stack
         </h2>
         <p className={styles.sectionSub} data-reveal data-delay="2">
-          Start with a 30-day free trial. No credit card required.
+          Bring your own OAuth apps, database, Redis, and OpenAI key. No paywall is required.
         </p>
 
         <div className={styles.pricingGrid}>
-          {/* Pro plan — fetched from Stripe */}
-          {isLoading ? (
-            <article className={`${styles.pricingCard} ${styles.pricingCardFeatured} ${styles.pricingCardSkeleton}`} />
-          ) : (data?.plans ?? []).map((plan, i) => (
-            <article
-              key={plan.id}
-              className={`${styles.pricingCard}${plan.featured ? ` ${styles.pricingCardFeatured}` : ''}`}
-            >
-              <div className={styles.pricingCardTop}>
-                <div>
-                  <h3 className={styles.pricingName}>{plan.name}</h3>
-                  <p className={styles.pricingDescription}>{plan.description}</p>
-                </div>
-                <div className={styles.pricingAmount}>
-                  <span className={styles.pricingPrice}>{formatPrice(plan.unit_amount, plan.currency)}</span>
-                  {plan.unit_amount !== null && <span className={styles.pricingCadence}>/{plan.interval}</span>}
-                </div>
-              </div>
-
-              <ul className={styles.pricingList}>
-                {plan.features.map((feature) => (
-                  <li key={feature} className={styles.pricingItem}>
-                    <CheckIcon />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className={styles.pricingCtaGroup}>
-                <a
-                  href="/api/auth/google/login"
-                  className={`${styles.pricingCta}${plan.featured ? ` ${styles.pricingCtaFeatured}` : ''}`}
-                >
-                  Start free trial
-                </a>
-                <p className={styles.pricingCtaNote}>No credit card required</p>
-              </div>
-            </article>
-          ))}
-
-          {/* Custom / enterprise tile — always static */}
-          <article className={styles.pricingCard} data-reveal data-delay="2">
+          <article className={`${styles.pricingCard} ${styles.pricingCardFeatured}`} data-reveal data-delay="2">
             <div className={styles.pricingCardTop}>
               <div>
-                <h3 className={styles.pricingName}>{CUSTOM_PLAN.name}</h3>
-                <p className={styles.pricingDescription}>{CUSTOM_PLAN.description}</p>
+                <h3 className={styles.pricingName}>{SELF_HOST_PLAN.name}</h3>
+                <p className={styles.pricingDescription}>{SELF_HOST_PLAN.description}</p>
               </div>
               <div className={styles.pricingAmount}>
-                <span className={styles.pricingPrice}>Let's talk</span>
+                <span className={styles.pricingPrice}>Free</span>
               </div>
             </div>
 
             <ul className={styles.pricingList}>
-              {CUSTOM_PLAN.features.map((feature) => (
+              {SELF_HOST_PLAN.features.map((feature) => (
                 <li key={feature} className={styles.pricingItem}>
                   <CheckIcon />
                   <span>{feature}</span>
@@ -953,10 +909,10 @@ function PricingSection() {
             </ul>
 
             <div className={styles.pricingCtaGroup}>
-              <a href="mailto:hello@vesper.app" className={styles.pricingCta}>
-                Contact us
+              <a href="/api/auth/google/login" className={`${styles.pricingCta} ${styles.pricingCtaFeatured}`}>
+                Open the app
               </a>
-              <p className={styles.pricingCtaNote}>&nbsp;</p>
+              <p className={styles.pricingCtaNote}>Configure your local or hosted instance first</p>
             </div>
           </article>
         </div>

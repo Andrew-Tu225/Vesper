@@ -50,7 +50,14 @@ cd backend
 celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,intake,publishing,maintenance
 ```
 
-### 6. Full stack via Docker
+### 6. Scheduler (separate terminal)
+
+```bash
+cd backend
+celery -A app.workers.celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule
+```
+
+### 7. Full stack via Docker
 
 ```bash
 docker compose up
@@ -68,6 +75,7 @@ Services:
 |---------|-------------|
 | `uvicorn app.main:app --reload` | Start dev API server with hot reload |
 | `celery -A app.workers.celery_app worker --loglevel=info` | Start Celery worker |
+| `celery -A app.workers.celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule` | Start scheduled jobs |
 | `alembic upgrade head` | Apply all pending migrations |
 | `alembic downgrade -1` | Roll back one migration |
 | `alembic revision --autogenerate -m "description"` | Generate a new migration |

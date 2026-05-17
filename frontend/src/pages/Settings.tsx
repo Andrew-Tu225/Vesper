@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useSlackStatus } from '@/hooks/useSlackStatus'
 import { useLinkedInStatus } from '@/hooks/useLinkedInStatus'
-import { BillingCard } from '@/components/billing/BillingCard'
 import './settings.css'
 
 function SlackLogo() {
@@ -154,13 +153,6 @@ export default function Settings() {
             connectHref="/api/oauth/linkedin/install"
           />
         </div>
-      </section>
-
-      <section className="settings__section">
-        <div className="settings__section-header">
-          <p className="settings__section-label">Billing</p>
-        </div>
-        <BillingCard />
       </section>
 
       {modalOpen && <ComingSoonModal onClose={() => setModalOpen(false)} />}

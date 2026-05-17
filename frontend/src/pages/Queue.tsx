@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { SignalCard } from '@/components/queue/SignalCard'
 import { Spinner } from '@/components/ui/Spinner'
-import { UpgradeNotice } from '@/components/billing/UpgradeNotice'
 import { useSignals, useApprove, useReject, useRewrite } from '@/hooks/useSignals'
 import '@/components/queue/queue.css'
 import '@/components/ui/ui.css'
@@ -52,8 +51,6 @@ export default function Queue() {
           </button>
         ))}
       </div>
-
-      <UpgradeNotice />
 
       {/* States */}
       {isLoading && (

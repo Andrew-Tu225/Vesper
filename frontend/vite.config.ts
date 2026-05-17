@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
   // so RESEND_API_KEY and RESEND_AUDIENCE_ID are available server-side
   const env = loadEnv(mode, process.cwd(), '')
 
-  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8001'
+  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8000'
 
   return {
     plugins: [
@@ -117,7 +117,7 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           // Cookies (vesper_session) flow through automatically when using
-          // relative /api/... paths. Never use absolute http://localhost:8001 URLs.
+          // relative /api/... paths. Never use absolute backend URLs.
         },
       },
     },
@@ -125,6 +125,7 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
+      exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
     },
   }
 })

@@ -128,7 +128,7 @@ export default function BlogPost() {
       <section className={styles.postCta}>
         <p className={styles.postCtaText}>Turn your team's Slack signals into LinkedIn posts — automatically.</p>
         <a href="/api/auth/google/login" className={styles.postCtaBtn}>
-          Start your free trial
+          Start self-hosting
         </a>
       </section>
 
