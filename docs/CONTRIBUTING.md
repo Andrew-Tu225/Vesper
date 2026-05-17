@@ -4,128 +4,144 @@
 
 - Python 3.12+
 - Node.js 20+
-- Docker + Docker Compose
-- PostgreSQL 16 with pgvector (or use Docker)
-- Redis 7 (or use Docker)
+- Docker and Docker Compose
+- PostgreSQL 16 with pgvector, or the Docker Compose `db` service
+- Redis 7, or the Docker Compose `redis` service
 
-## Quick Start
+## Quick Start With Docker
 
-### 1. Clone and configure
+1. Clone and configure.
 
 ```bash
 git clone <repo>
-cd vesper
+cd Vesper
 cp .env.example .env
-# Fill in all required values — see docs/ENV.md
 ```
 
-### 2. Generate the encryption key
+2. Generate `APP_SECRET_KEY` and paste it into `.env`.
 
 ```bash
 python -c "import secrets; print(secrets.token_hex(32))"
-# Paste result into APP_SECRET_KEY in .env
 ```
 
-### 3. Start infrastructure
+3. Fill in the OAuth/API keys you need. See [ENV.md](ENV.md).
+
+4. Start the stack.
+
+```bash
+docker compose up --build
+```
+
+5. Apply migrations.
+
+```bash
+docker compose exec backend alembic upgrade head
+```
+
+Services:
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
+- Health: http://localhost:8000/health
+- API docs: http://localhost:8000/docs
+
+## Manual Development
+
+Start infrastructure:
 
 ```bash
 docker compose up db redis -d
 ```
 
-### 4. Backend setup
+Backend:
 
 ```bash
 cd backend
 python -m venv venv
-source venv/Scripts/activate   # Windows: venv\Scripts\activate
+source venv/Scripts/activate
 pip install -r requirements-dev.txt
 alembic upgrade head
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 5. Worker (separate terminal)
+PowerShell activation:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Worker:
 
 ```bash
 cd backend
 celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,intake,publishing,maintenance
 ```
 
-### 6. Scheduler (separate terminal)
+Scheduler:
 
 ```bash
 cd backend
 celery -A app.workers.celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule
 ```
 
-### 7. Full stack via Docker
-
-```bash
-docker compose up
-```
-
-Services:
-- Backend API: http://localhost:8000
-- Frontend:    http://localhost:5173
-- API docs:    http://localhost:8000/docs
-
 ## Available Commands
 
-<!-- AUTO-GENERATED: backend commands -->
 | Command | Description |
 |---------|-------------|
-| `uvicorn app.main:app --reload` | Start dev API server with hot reload |
-| `celery -A app.workers.celery_app worker --loglevel=info` | Start Celery worker |
+| `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload` | Start dev API server |
+| `celery -A app.workers.celery_app worker --loglevel=info -Q draft_pipeline,intake,publishing,maintenance` | Start Celery worker |
 | `celery -A app.workers.celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule` | Start scheduled jobs |
 | `alembic upgrade head` | Apply all pending migrations |
 | `alembic downgrade -1` | Roll back one migration |
-| `alembic revision --autogenerate -m "description"` | Generate a new migration |
-| `pytest` | Run test suite with coverage |
+| `alembic revision --autogenerate -m "description"` | Generate a migration |
+| `pytest` | Run backend tests with coverage |
 | `ruff check .` | Lint Python code |
-| `black .` | Format Python code |
-| `mypy app` | Run static type checker |
-<!-- AUTO-GENERATED END -->
+| `black --check .` | Check Python formatting |
+| `mypy app` | Run backend type checks |
+| `npm test` | Run frontend unit tests |
+| `npm run build` | Type-check and build the frontend |
 
 ## Testing
 
+Backend:
+
 ```bash
 cd backend
-pytest                          # Run all tests (requires 80% coverage)
-pytest -k "test_health"         # Run a specific test
-pytest --cov=app --cov-report=html  # HTML coverage report
+pip install -r requirements-dev.txt
+pytest
 ```
 
-Coverage threshold is enforced at **80%** — the build will fail below this.
+The backend coverage threshold is 80%.
 
-Test categories via `pytest.mark`:
-- `@pytest.mark.unit` — pure logic, no I/O
-- `@pytest.mark.integration` — hits real DB or Redis
-
-## Code Style
-
-All Python code must pass:
+Frontend:
 
 ```bash
-ruff check .          # linting (E, F, I, UP, B, S rules)
-black --check .       # formatting
-mypy app              # strict type checking
+cd frontend
+npm test
+npm run build
 ```
-
-Line length: **100** characters. Python target: **3.12**.
 
 ## Database Migrations
 
-1. Modify or add a model in `backend/app/models/`
-2. Generate the migration: `alembic revision --autogenerate -m "short description"`
-3. Review the generated file in `backend/migrations/versions/`
-4. Apply: `alembic upgrade head`
+1. Modify or add a model in `backend/app/models/`.
+2. Generate a migration: `alembic revision --autogenerate -m "short description"`.
+3. Review the generated file in `backend/migrations/versions/`.
+4. Apply it with `alembic upgrade head`.
 
-Never edit the `001_initial_schema.py` file directly.
+Do not edit `001_initial_schema.py` after it has shipped. Add a new migration instead.
 
 ## Pull Request Checklist
 
-- [ ] Tests written and passing (`pytest`)
-- [ ] Coverage stays ≥ 80%
-- [ ] Linting clean (`ruff check .`, `black --check .`)
-- [ ] Types pass (`mypy app`)
-- [ ] No secrets or credentials in code
-- [ ] Migration included if schema changed
+- [ ] Backend tests pass where relevant.
+- [ ] Frontend tests/build pass where relevant.
+- [ ] Linting and formatting are clean for touched code.
+- [ ] No secrets or credentials are committed.
+- [ ] Migration included for schema changes.

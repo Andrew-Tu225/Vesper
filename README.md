@@ -2,6 +2,8 @@
 
 Open-source AI content assistant for turning Slack signals into reviewed LinkedIn drafts.
 
+Vesper monitors selected Slack channels, classifies useful company updates, generates LinkedIn draft variants, and routes them through a human approval flow before publishing.
+
 ## What Runs
 
 - Frontend: React + Vite
@@ -11,7 +13,6 @@ Open-source AI content assistant for turning Slack signals into reviewed LinkedI
 - Background jobs: Celery worker
 - Scheduler: Celery Beat
 
-Vesper does not require Stripe, a licence key, or a Vesper subscription.
 
 ## Quick Start
 
@@ -59,9 +60,9 @@ docker compose exec backend alembic upgrade head
 For local Docker setup, register these callback URLs:
 
 - Google: `http://localhost:8000/api/auth/google/callback`
-- Slack: `http://localhost:8000/api/oauth/slack/callback`
-- LinkedIn: `http://localhost:8000/api/oauth/linkedin/callback`
+- Slack OAuth: `http://localhost:8000/api/oauth/slack/callback`
 - Slack interactivity: `http://localhost:8000/api/webhooks/slack/actions`
+- LinkedIn: `http://localhost:8000/api/oauth/linkedin/callback`
 
 ## Processes
 
@@ -72,9 +73,15 @@ The Docker Compose stack starts:
 - `backend`: FastAPI API
 - `worker`: Celery queues `draft_pipeline,intake,publishing,maintenance`
 - `beat`: scheduled scans, token refresh, cleanup, due-post dispatch
-- `frontend`: static Vite build served by nginx
+- `frontend`: Vite build served by nginx, with `/api` proxied to `backend`
 
 ## Manual Development
+
+Start database and Redis:
+
+```bash
+docker compose up db redis -d
+```
 
 Backend:
 
@@ -108,3 +115,9 @@ Beat:
 cd backend
 celery -A app.workers.celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule
 ```
+
+## More Docs
+
+- Environment variables: [docs/ENV.md](docs/ENV.md)
+- Contributing and tests: [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+- Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
